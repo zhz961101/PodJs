@@ -1,7 +1,7 @@
-const Poi = require("./Poi.js");
-const EventObj = require("./event.js");
-const TplEng = require("./template.js");
-const Jsvm = require("./util/JsVm.js");
+const Poi = require("./core/Poi");
+const EventObj = require("./core/event");
+const TplEng = require("./core/template");
+const Jsvm = require("./util/JsVm");
 
 Poi.__TEST__ = {
     ev: (() => {

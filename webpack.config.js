@@ -6,7 +6,8 @@ const {
 
 module.exports = {
     entry: {
-        base: resolve(__dirname, "./src/main.js")
+        Poi: resolve(__dirname, "./src/entry.js"),
+        "Poi.core": resolve(__dirname, "./src/core/Poi.js")
     },
     output: {
         path: resolve(__dirname, "./dist"),

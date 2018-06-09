@@ -1,17 +1,7 @@
-// <a bind:herf="url"></a>
-// <a herf="<% url %>"></a>
-// <a on:click="alertLove"></a>
-// <a data-event-id=random></a>
-//
-// upper.addlisenter("click",(e)=>{
-//      e.target.getAttribute("data-event-id")==random?alertLove(e):undefined;
-// })
-//
-// <input model:value="url"></input>
-// <input bind:value="url" on:onchage="url = this.value"></input>
-
-const Jsvm = require("./util/JsVm.js");
-const {deepClone} = require("./util/util.js");
+const JsVm = require("../util/JsVm.js");
+const {
+    deepClone
+} = require("../util/util.js");
 const evIdSuffix = "event-id";
 
 var randHash = H_length => {
@@ -36,7 +26,7 @@ class TemplateEngine {
         preMark = fixRegKeyWord(preMark) || "<%";
         tailMark = fixRegKeyWord(tailMark) || "%>";
         let re = new RegExp(preMark + "(.+?)" + tailMark, "g"),
-            reExp = /(^( )?(var|let|if|for|else|switch|case|break|{|}|;))(.*)?/g,
+            reExp = /(^( )?(var|let|if|for|else|switch|case|default|break|{|}|;))(.+)?/g,
             cursor = 0,
             code = 'var r=[];\n',
             match;
@@ -51,8 +41,12 @@ class TemplateEngine {
         }
         add(html.substr(cursor, html.length - cursor));
         this.code = (code + 'return r.join("");').replace(/[\r\t\n]/g, ' ');
+
+        // joint for bind
+        // this.prehtml(this.joint({}))
     }
     prehtml(html) {
+        // afterJoint(html) {
         let insert_item = (str, item, index) => {
             let newstr = ""; //初始化一个空字符串
             let tmp = str.substring(0, index);
@@ -102,13 +96,10 @@ class TemplateEngine {
         return newHeml;
     }
     joint(options) {
-        let result;
-        try {
-            // result = new Function('obj', this.code).apply(options, [options]);
-            result = Jsvm.vm(this.code, deepClone(options));
-        } catch (err) {
-            console.error("'" + err.message + "'", " in \n\nCode:\n", this.code.replace(/;/g, ";\n").replace(/({|})/g, "$1\n"));
-        }
+        let result
+        // result = new Function('obj', "with(obj){"+this.code+"}").apply(options, [options]);
+        result = JsVm.safe(this.code, options);
+        // result = JsVm.vm(this.code, deepClone(options));
         return result;
     }
 }

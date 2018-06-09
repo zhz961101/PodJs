@@ -1,8 +1,8 @@
-const {ev_supList} = require("./util/util.js");
+const {ev_supList} = require("../util/util");
 
 
 var isFunction = (obj)=>{
-    return typeof obj === "function"
+    return typeof obj == "function"
 }
 
 class EventObj {
@@ -42,6 +42,13 @@ class EventObjForEle extends EventObj {
             })
         })
     }
+    // addEventListener(evName,ele,fn){
+    //     this.el.addEventListener(evName, e => {
+    //         if(e.target==ele){
+    //             fn()
+    //         }
+    //     })
+    // }
 }
 
 module.exports = EventObjForEle;
