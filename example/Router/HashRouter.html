@@ -15,14 +15,30 @@
 <body>
     <div id="app"></div>
     <script type="text/x-template" id="app-template2" charset="utf-8">
-        <rLink to="index">首页</rLink>
-        <rLink to="login">注册页</rLink>
-        <rLink to="news">新闻页</rLink>
-        <rLink to="aikdhuahidw">某一页</rLink>
+        <rLink to="index">Home</rLink>
+        <rLink to="login">Login</rLink>
+        <rLink to="news">News</rLink>
+        <rLink to="aikdhuahidw">Run 404</rLink>
         <div id="page">
-            <p {{ isHidden("index") }}>首页</p>
-            <p {{ isHidden("news") }}>news page</p>
-            <p {{ isHidden("login") }}>登陆</p>
+            <p {{ isHidden("index") }}>Home page</p>
+            <div {{ isHidden("news") }}>
+                <ul>
+                    <li>01</li>
+                    <li>02</li>
+                    <li>03</li>
+                    <li>04</li>
+                    <li>05</li>
+                </ul>
+            </div>
+            <div {{ isHidden("login") }}>
+                <span>name:</span>
+                <input type="text">
+                <br>
+                <span>password:</span>
+                <input type="text">
+                <br>
+                <button type="button" name="button">login</button>
+            </div>
             <p {{ isHidden("") }}>404 NOT FOUND</p>
         </div>
     </script>

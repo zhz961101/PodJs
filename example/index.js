@@ -8,6 +8,9 @@ let app = Poi({
         addRandom: function() {
             this.items.push(Math.floor((Math.random() * 100)))
             // console.log(self.items)
+        },
+        reverseMsg: function() {
+            this.msg = this.msg.split('').reverse().join('')
         }
     },
     watch: {

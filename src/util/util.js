@@ -66,14 +66,14 @@ let GetAttrElement = (attr, val) => {
     return a;
 }
 
-let arrDiffer=(a, b)=>{
+let arrDiffer = (a, b) => {
     // if the other array is a falsy value, return
     if (!a || !b)
         return false
     // compare lengths - can save a lot of time
     if (a.length != b.length)
         return false
-    let isIn = (arr1,arr2)=>{
+    let isIn = (arr1, arr2) => {
         for (let i in arr1) {
             let nullInOther = true
             for (let j in arr2) {
@@ -81,13 +81,13 @@ let arrDiffer=(a, b)=>{
                     nullInOther = false
                 }
             }
-            if(nullInOther){
+            if (nullInOther) {
                 return false
             }
         }
         return true
     }
-    return isIn(a,b) && isIn(b,a)
+    return isIn(a, b) && isIn(b, a)
 }
 
 let domApi = {
@@ -97,11 +97,11 @@ let domApi = {
             if (this.empty) {
                 return ''
             }
-            if (!_newHtml) {
-                return this.innerHTML;
-            } else {
+            if (_newHtml != undefined) {
                 this.innerHTML = _newHtml;
                 return _newHtml;
+            } else {
+                return this.innerHTML;
             }
         };
         return ele
@@ -134,9 +134,9 @@ let domApi = {
         }
     },
     remove: targetElement => {
-        if(targetElement==undefined)return
+        if (targetElement == undefined) return
         let parent = targetElement.parentNode
-        if(parent==undefined){
+        if (parent == undefined) {
             targetElement = null
             return
         }
@@ -162,41 +162,63 @@ let domApi = {
             )
         }
     },
-    classListDiff: (ele1,ele2)=>{
-        if (ele1.classList.length!=ele2.classList.length){
+    classListDiff: (ele1, ele2) => {
+        if (ele1.classList.length != ele2.classList.length) {
             return false
         }
-        let cList2Arr = ele=>{
+        let cList2Arr = ele => {
             let res = []
-            ele.classList.forEach(val=>{
+            ele.classList.forEach(val => {
                 res.push(val)
             })
             return res
         }
-        return arrDiffer(cList2Arr(ele1),cList2Arr(ele2))
+        return arrDiffer(cList2Arr(ele1), cList2Arr(ele2))
     },
-    attributesDiff: (ele1,ele2)=>{
-        if(ele1.attributes.length!=ele2.attributes.length){
-            return false
-        }
-        let attributes2Arr = ele=>{
+    attributesDiff: (ele1, ele2) => {
+        // *** bad idea! ***
+        // if(ele1.attributes.length!=ele2.attributes.length){
+        //     return false
+        // }
+        let attributes2Arr = ele => {
             let res = []
             let tempCur = 0
-            while(true){
-                if(ele.attributes[tempCur]){
-                    if(ele.attributes[tempCur].name=="class"){
-                        tempCur+=1
+            let blacks = ["class"]
+            while (true) {
+                let curNode = ele.attributes[tempCur]
+                if (curNode) {
+                    if (/(.+?):.+?/g.test(curNode.name)) {
+                        blacks.push(/(.+?):(.+)/g.exec(curNode.name)[2])
+                        tempCur += 1
                         continue
                     }
-                    res.push(ele.attributes[tempCur].nodeValue)
-                }else{
+                    if (blacks.indexOf(curNode.name) != -1) {
+                        tempCur += 1
+                        continue
+                    }
+                    res.push(curNode.nodeValue)
+                } else {
                     break
                 }
-                tempCur+=1
+                tempCur += 1
             }
             return res
         }
-        return arrDiffer(attributes2Arr(ele1),attributes2Arr(ele2))
+        return arrDiffer(attributes2Arr(ele1), attributes2Arr(ele2))
+    },
+    // #901
+    // Failed to execute 'setNamedItem' on 'NamedNodeMap':
+    // The node provided is an attribute node that is alre-
+    // ady an attribute of another Element; attribute node-
+    // s must be explicitly cloned.
+    //
+    attributesClone: (ele, to) => {
+        for (let attr of ele.attributes) {
+            ele.attributes.removeNamedItem(attr.name)
+        }
+        for (let attr of to.attributes) {
+            ele.attributes.setNamedItem(attr.cloneNode(true))
+        }
     },
     Comparable: (ele1, ele2) => {
         if (ele1 == undefined || ele2 == undefined) return false;

@@ -21,20 +21,24 @@ let _Poi = function(finder, template, data, watch, subPos, mixwith, mounts) {
     // #401 babel es5 leads to mistakes
     let that = this;
     this.render = () => {
-        this.el.html(this.Po.assemble())
-        this.Po.bind();
         this.$on("_rerender_", () => {
             that.rerender();
         })
+        this.Event.block("_rerender_")
+        this.el.html("")
+        let patchArr = diff(this.el, this.Po.assemble());
+        if(patchArr.length!=0){
+            this.Po.bind(patchArr)
+        }
+        this.Event.unblock("_rerender_")
     }
-    this.rerenderBlock = false
     this.rerender = () => {
-        if(this.rerenderBlock)return
-        this.rerenderBlock = true
+        this.Event.block("_rerender_")
         // dirty checking maybe
-        diff(this.el, this.Po.assemble());
+        let patchArr = diff(this.el, this.Po.assemble());
+        this.Po.bind(patchArr)
         // this.Po.bind();
-        this.rerenderBlock = false
+        this.Event.unblock("_rerender_")
     }
     let subPoi = subPos ? generateSubPo(subPos,this.Event) : undefined
     this.Po = new Po(template, data, watch, this.Event, subPoi, mixwith);
@@ -75,7 +79,7 @@ let Poi = function(config) {
             tpl_content = tpl_content.replace(/&lt;/g, "<").replace(/&gt;/g, ">")
         }
     }
-    let that = _Poi.apply({}, [config.el, tpl_content, config.data, config.watch, config.pos, config.mixwith, config.mounted]);
+    let that = _Poi.apply({}, [config.el, tpl_content, config.data, config.watch, config.components, config.mixwith, config.mounted]);
     that.render();
     return that;
 }

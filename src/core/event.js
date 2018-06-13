@@ -1,18 +1,15 @@
 const {ev_supList} = require("../util/util");
 
 
-var isFunction = (obj)=>{
-    return typeof obj == "function"
-}
-
 class EventObj {
     constructor() {
         this.subscribe = {}
     }
     on(channel, fn) {
-        let old = this.subscribe[channel];
-        this.subscribe[channel] = function(_args) {
-            if (isFunction(old)) {
+        let old = this.subscribe[channel]?this.subscribe[channel].func:undefined;
+        if (old==undefined) this.subscribe[channel] = {locked:0}
+        this.subscribe[channel].func = function(_args) {
+            if (typeof old == "function") {
                 old(_args);
             }
             fn(_args);
@@ -20,10 +17,21 @@ class EventObj {
     }
     emit(channel, _args) {
         if(this.subscribe[channel]!==undefined){
-            if (isFunction(this.subscribe[channel])) {
-                this.subscribe[channel](_args);
+            if (this.subscribe[channel].locked>0)return
+            else this.block(channel)
+            if (typeof this.subscribe[channel].func == "function") {
+                this.subscribe[channel].func(_args);
             }
+            this.unblock(channel)
         }
+    }
+    block(channel) {
+        if(this.subscribe[channel]==undefined)return
+        this.subscribe[channel].locked += 1
+    }
+    unblock(channel) {
+        if(this.subscribe[channel]==undefined)return
+        this.subscribe[channel].locked -= 1
     }
     clear(){
         this.subscribe = {};

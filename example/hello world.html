@@ -11,6 +11,7 @@
         <p>{{ msg }}</p>
         <input type="text" name="" bind:value="msg" on:keyup="msg=self.value">
         <button type="button" name="button" on:click="msg=msg+msg">deouble!!</button>
+        <button type="button" name="button" on:click="reverseMsg()">reverse text</button>
         <button type="button" name="button" on:click="addRandom()">push random item!</button>
         <ul>
             {{ for(let item of items){ }}
