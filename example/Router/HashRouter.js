@@ -6,6 +6,7 @@ let router = Poi({
     components:{
         rLink:{
             tpl: `<a bind:href="'#/'+to" bind:class="state()">{{ _content }}</a>`,
+            // tpl: `<a bind:href="'#/'+to" class="{{state()}}">{{ _content }}</a>`,
             data: {
                 state:function(){
                     if(this.currentPage=="/"+this.to){
