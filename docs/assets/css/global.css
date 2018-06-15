@@ -33,6 +33,24 @@ header>*:not(nav) {
     margin-top: 50px;
 }
 
+#topprogress{
+    height: 100%;
+    border-radius: 3px;
+    background-color: #2c3e50;
+    font-size: 4px;
+    line-height: 4px;
+    color: rgb(238, 238, 238);
+    text-align: right;
+}
+.progress{
+    position: fixed;
+    top: 0;
+    height: 5px;
+    width: 100%;
+    border-radius: 3px;
+    z-index: 1000;
+}
+
 footer {
     font-size: 12px;
     flex: 0 0 auto;

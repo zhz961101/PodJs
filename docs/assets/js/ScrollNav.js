@@ -1,17 +1,22 @@
 "use strict";
 let $head = document.querySelector("header")
 let headHeight = $head.clientHeight
-window.onresize = function(){
+window.onresize = function() {
     let $lnav = document.querySelector('#ScrollLeftNav');
     let $plnav = document.querySelector('.leftNav');
-    if($lnav&&$plnav){
+    if ($lnav && $plnav) {
         $lnav.style.width = $plnav.offsetWidth + "px";
     }
 }
 window.onscroll = function() {
-    let $nav = document.querySelector('#ScrollNav');
-    let $lnav = document.querySelector('#ScrollLeftNav');
-    let $plnav = document.querySelector('.leftNav');
+    let $nav = document.querySelector('#ScrollNav'),
+        $lnav = document.querySelector('#ScrollLeftNav'),
+        $plnav = document.querySelector('.leftNav'),
+        $top = document.querySelector("#topprogress");
+    if ($top) {
+        let p = document.documentElement.scrollTop / (document.documentElement.scrollHeight - document.documentElement.clientHeight)
+        $top.style.width = p * 100 + "%"
+    }
     var a = document.documentElement.scrollTop || document.body.scrollTop; //滚动条y轴上的距离
     if (a + 10 >= headHeight) {
         if (!$nav) {
@@ -20,8 +25,8 @@ window.onscroll = function() {
             $nav.classList.add("fixed")
             $head.appendChild($nav)
         }
-        if($plnav){
-            if(!$lnav){
+        if ($plnav) {
+            if (!$lnav) {
                 $lnav = $plnav.cloneNode(true)
                 $lnav.setAttribute("id", "ScrollLeftNav")
                 $lnav.classList.add("fixed")
@@ -33,7 +38,7 @@ window.onscroll = function() {
         if ($nav) {
             $head.removeChild($nav)
         }
-        if($plnav&&$lnav){
+        if ($plnav && $lnav) {
             $plnav.parentNode.removeChild($lnav)
         }
     }

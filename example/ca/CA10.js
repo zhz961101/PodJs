@@ -27,8 +27,8 @@ let poiApp = Poi({
             }
             let isSurvival = (state, Neighbours) => {
                 let saveCount = 0;
-                for (let _s of Neighbours) {
-                    saveCount += _s;
+                for (let cell_state of Neighbours) {
+                    saveCount += cell_state?1:0;
                 }
                 if (state == 1) {
                     if (saveCount < 2) {
@@ -73,7 +73,7 @@ let poiApp = Poi({
                 let t_rows = []
                 for (let celli in row) {
                     let cell = row[celli]
-                    t_rows.push(isSurvival(cell, getNearArr(parseInt(rowi), parseInt(celli)))?1:0)
+                    t_rows.push(isSurvival(cell, getNearArr(parseInt(rowi), parseInt(celli)))?true:false)
                 }
                 tempStates.push(t_rows)
             }
@@ -86,7 +86,7 @@ let poiApp = Poi({
             for (let i = 0; i < maxX; i++) {
                 let row = []
                 for (let j = 0; j < maxY; j++) {
-                    row.push(Math.random()>0.5?1:0)
+                    row.push(Math.random()>0.5?true:false)
                 }
                 tempStates.push(row)
             }
@@ -97,5 +97,10 @@ let poiApp = Poi({
         // msg:(self)=>{
         //     console.log(self);
         // }
+    },
+    mounted: {
+        init: function() {
+            this.random();
+        }
     }
 })

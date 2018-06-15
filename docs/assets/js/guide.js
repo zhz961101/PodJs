@@ -2,7 +2,7 @@
 var maxX = 10,maxY = 10;
 let app2 = Poi({
     el: "#app2",
-    tpl: `<button type="button" name="button" on:click="random(true)">random</button><button type="button" name="button" on:click="next()">Next step</button><hr><div class="container">{{ for(let i = 0;i<states.length ;i++){ }}{{ for(let j = 0;j<states[0].length ;j++){ }}<div class={{ (states[i][j]==1?'"item live"':'"item"')}}></div>{{ } }}{{ } }}</div><hr>`,
+    tpl: `<button type="button" name="button" on:click="random(true)">random</button><button type="button" name="button" on:click="next()">Next step</button><hr><div class="container">{{ for(let i = 0;i<states.length ;i++){ }}{{ for(let j = 0;j<states[0].length ;j++){ }}<div class={{ (states[i][j]?'"item live"':'"item"')}}></div>{{ } }}{{ } }}</div><hr>`,
     data: {
         states: [],
         next: function(){
@@ -12,8 +12,8 @@ let app2 = Poi({
             }
             let isSurvival = (state, Neighbours) => {
                 let saveCount = 0;
-                for (let _s of Neighbours) {
-                    saveCount += _s;
+                for (let cell_state of Neighbours) {
+                    saveCount += cell_state?1:0;
                 }
                 if (state == 1) {
                     if (saveCount < 2) {
@@ -58,7 +58,7 @@ let app2 = Poi({
                 let t_rows = []
                 for (let celli in row) {
                     let cell = row[celli]
-                    t_rows.push(isSurvival(cell, getNearArr(parseInt(rowi), parseInt(celli)))?1:0)
+                    t_rows.push(isSurvival(cell, getNearArr(parseInt(rowi), parseInt(celli)))?true:false)
                 }
                 tempStates.push(t_rows)
             }
@@ -69,7 +69,7 @@ let app2 = Poi({
             for (let i = 0; i < maxX; i++) {
                 let row = []
                 for (let j = 0; j < maxY; j++) {
-                    row.push(Math.random()>0.5?1:0)
+                    row.push(Math.random()>0.5?true:false)
                 }
                 tempStates.push(row)
             }

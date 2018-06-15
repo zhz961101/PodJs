@@ -15,6 +15,9 @@
 </head>
 
 <body>
+    <div class="progress">
+        <div id="topprogress">#</div>
+    </div>
     <header id="header">
         <nav>
             <a href="../index_cn.html">首页</a>
@@ -136,9 +139,9 @@ Poi({
 &lt;input type="text" bind:value="inputText" on:keyup="inputText=self.value"&gt;
 &lt;button type="button" name="button" on:click="add()" &gt;add&lt;/button&gt;
 &lt;ul&gt;
-    {{ for(let todo of todos){ }}
-        &lt;li class= "{{ todos[todoi].state?"ok":"continue" }}" on:click="toggle({{ todoi }})"&gt;
-            {{ todos[todoi].content }}
+    {{ for(index in todos){ }}
+        &lt;li class= "{{ todos[index].state?"ok":"continue" }}" on:click="toggle({{ index }})"&gt;
+            {{ todos[index].content }}
         &lt;/li&gt;
     {{ } }}
 &lt;/ul&gt;</code>
@@ -171,8 +174,8 @@ Poi({
             // ...
             let isSurvival = (state, Neighbours) => {
                 let saveCount = 0;
-                for (let _s of Neighbours) {
-                    saveCount += _s;
+                for (cell_state of Neighbours) {
+                    saveCount += cell_state;
                 }
                 if (state == 1) {
                     if (saveCount < 2) {
@@ -222,7 +225,7 @@ Poi({
     {{ for(let i = 0;i&lt;states.length ;i++){ }}
         {{ for(let j = 0;j&lt;states[0].length ;j++){ }}
             &lt;div class=
-            {{ (states[i][j]==1?'"item live"':'"item"')}}
+            {{ states[i][j]?'"item live"':'"item"'}}
             &gt;&lt;/div&gt;
         {{ } }}
     {{ } }}
