@@ -1,36 +1,33 @@
 const Poi = require("./core/Poi");
-const EventObj = require("./core/event");
-const TplEng = require("./core/template");
-const Jsvm = require("./util/JsVm");
+// const EventObj = require("./core/event");
+// const TplEng = require("./core/template");
+// const Jsvm = require("./util/JsVm");
 
-Poi.__TEST__ = {
-    ev: (() => {
-        let evobj = new EventObj(document);
-        evobj.on("__TEST__", () => {
-            console.log("event manger is working!")
-        })
-        return evobj;
-    })(),
-    tpl: (_t, _d) => {
-        return new TplEng(_t).joint(_d || {});
-    },
-    vm: Jsvm
-};
-window.Poi = Poi;
+// Poi.__TEST__ = {
+//     ev: (() => {
+//         let evobj = new EventObj(document);
+//         evobj.on("__TEST__", () => {
+//             console.log("event manger is working!")
+//         })
+//         return evobj;
+//     })(),
+//     tpl: (_t, _d) => {
+//         return new TplEng(_t).joint(_d || {});
+//     },
+//     vm: Jsvm
+// };
+if(typeof window != 'undefined')window.Poi = Poi
 
 let usage = () => {
     if (console) {
         let msg = `
         thx for u using!!!!poi~
 
-        now,poi is working!
-        you can use the following instructions to do a few simple tests of functional integrity:
-
-        >> Poi.__TEST__.tpl("<% console.log('getcha') %>",{console:console})
-        >> Poi.__TEST__.ev.emit("__TEST__")
-        >> Poi.__TEST__.vm.safe("console.log(msg)",{msg:"yahoo!"})
+        now,poi is working!have fun.
         `;
         console.log(msg);
     }
 }
 usage();
+
+if(typeof moudle != 'undefined')module.exports = Poi;
