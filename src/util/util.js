@@ -76,6 +76,36 @@ function proxy_arr_len(arr, cb) {
     })
 }
 
+function proxy_catch_set(that, cb){
+    if(Object.prototype.toString.call(that) == "[object Array]"){
+        return proxy_arr(that, cb);
+    }
+    return new Proxy(that, {
+        set(obj, prop, val) {
+            if(obj[prop] != val){
+                obj[prop] = val;
+                cb();
+            }
+            return true;
+        }
+    })
+}
+
+function proxy_arr(arr, cb) {
+    if(arr.length!=0){
+        for (var i = 0; i < arr.length; i++) {
+            arr[i] = proxy_catch_set(arr[i],()=>cb(arr));
+        }
+    }
+    return new Proxy(arr, {
+        set(obj, prop, val) {
+            obj[prop] = val
+            if (prop == 'length') cb(obj);
+            return true;
+        }
+    })
+}
+
 
 module.exports = {
     deepClone: deepClone,

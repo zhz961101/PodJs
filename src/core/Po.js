@@ -65,7 +65,7 @@ let _init_DateValueProperty = (data, _ev) => {
                 continue
             data[variable] = function() {
                 let _resTemp = setVal.apply(data, arguments)
-                // _ev.emit("_rerender_");
+                _ev.emit("_rerender_");
                 return _resTemp
             }
             continue;
