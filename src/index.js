@@ -1,3 +1,5 @@
+import "regenerator-runtime";
+
 const Poi = require("./core/Poi");
 // const EventObj = require("./core/event");
 // const TplEng = require("./core/template");
@@ -29,5 +31,3 @@ let usage = () => {
     }
 }
 usage();
-
-if(typeof moudle != 'undefined')module.exports = Poi;

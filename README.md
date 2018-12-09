@@ -7,13 +7,25 @@ web MVVM framework
 https://zhzLuke96.github.io/PoiJs
 
 # Todo
-- [ ] review
+- [x] review
+- [x] time-slicing
 - [ ] gh-pages
-- [ ] time-slicing
 - [ ] diff-Refactoring
 - [ ] slots on template
 - [ ] unit test
 - [ ] typescript
+
+# time slice
+![before](/docs/bad_slice.png)
+
+(阻塞了paint和事件捕获)
+> 这个版本有个小问题...多次emit重绘操作，不过并不妨碍对比(可以算成4次重绘)
+
+![after](/docs/time_slicing.png)
+
+(异步diff异步渲染VM)
+> 很明显，diff效率慢了一些，还吞了事件，不过确实解决了阻塞的问题，看上去和异步渲染无异(了吧...)
+> <br>无法高效的处理并发的问题，其实很多diff可以不用全部跑完，之后会尝试引入中断的方法来解决看看(没有Vdom真的写得头大)
 
 # 其他
 - 其实一直想重写，又一直没动手，现在看了下，很多写的实在太奇怪了...

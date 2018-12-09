@@ -5,11 +5,15 @@ let app = Poi({
     data: {
         msg: "Poi! ",
         items: ["touch random!"],
-        addRandom: function() {
+        addRandom() {
+            // this.items = this.items + [(Math.floor((Math.random() * 100)))]
             this.items.push(Math.floor((Math.random() * 100)))
             // console.log(self.items)
         },
-        reverseMsg: function() {
+        popone(){
+            this.items.pop()
+        },
+        reverseMsg() {
             this.msg = this.msg.split('').reverse().join('')
         }
     },
@@ -18,7 +22,7 @@ let app = Poi({
             console.log(self)
         },
         items: self => {
-            console.log(self)
+            console.log(self,self.length)
         }
     }
 })

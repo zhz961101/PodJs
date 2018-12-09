@@ -1,9 +1,12 @@
+
+const {domApi} = require("../util/domApi.js");
+
 const {
-    domApi
-} = require("../util/util.js");
+    frameify
+} = require('../util/frameify.js');
 
 // const debugObj = require("../util/debug")
-let _lcsDomArr = (newDomEle, oldDomEle, targetDom) => {
+let _lcsDomArr = async (newDomEle, oldDomEle, targetDom) => {
     let planArr = [];
     if (oldDomEle.length == 0) {
         for (let nEli in newDomEle) {
@@ -15,7 +18,7 @@ let _lcsDomArr = (newDomEle, oldDomEle, targetDom) => {
         }
         return planArr
     }
-    if (newDomEle == 0) {
+    if (newDomEle.length == 0) {
         for (let oEli in oldDomEle) {
             planArr.push({
                 option: "delete",
@@ -24,7 +27,7 @@ let _lcsDomArr = (newDomEle, oldDomEle, targetDom) => {
         }
         return planArr
     }
-    let lcs_arr = lcsOnArr(newDomEle, oldDomEle, domApi.isSame),
+    let lcs_arr = await frameify(lcsOnArr(newDomEle, oldDomEle, domApi.isSame)),
         curA = 0,
         curB = 0;
 
@@ -77,13 +80,15 @@ let _lcsDomArr = (newDomEle, oldDomEle, targetDom) => {
                 option: "delete",
                 ele: oldDomEle[curB]
             })
-            planArr.push({
-                option: "add",
-                before: oldDomEle[curB],
-                after: oldDomEle[curB + 1],
-                ele: newDomEle[curA],
-                upper: targetDom
-            })
+            // #201 Matrix boundary
+            if(newDomEle[curA] != undefined)
+                planArr.push({
+                    option: "add",
+                    before: oldDomEle[curB],
+                    after: oldDomEle[curB + 1],
+                    ele: newDomEle[curA],
+                    upper: targetDom
+                })
             curA += 1;
             curB += 1;
             continue;
@@ -92,7 +97,7 @@ let _lcsDomArr = (newDomEle, oldDomEle, targetDom) => {
                 option: "delete",
                 ele: oldDomEle[curB]
             })
-            curB += 1
+            curB += 1;
             continue;
         } else {
             // tb+1"_" ta+1char
@@ -109,13 +114,14 @@ let _lcsDomArr = (newDomEle, oldDomEle, targetDom) => {
     return planArr
 }
 // #101 Time complexity: O(arr1.length * arr2.length)
-let lcsOnArr = (arr1, arr2, compareFn) => {
+let lcsOnArr = function*(arr1, arr2, compareFn) {
     // let dbg = new debugObj("lcsOnArr");
     let lcsArr = [];
     for (let indexA in arr1) {
         let rowArr = [],
             itemA = arr1[indexA];
         for (let indexB in arr2) {
+            yield void 0;
             let itemB = arr2[indexB],
                 lv = indexB == 0 ? 0 : rowArr[indexB - 1],
                 tv = indexA == 0 ? 0 : lcsArr[indexA - 1][indexB],
@@ -131,7 +137,7 @@ let lcsOnArr = (arr1, arr2, compareFn) => {
     // dbg.log()
     return lcsArr;
 }
-let lcsDomtree = (newChildren, oldTree) => {
+let lcsDomtree = async (newChildren, oldTree) => {
     let isSameTree = (ele1, ele2) => {
         return (
             ele1.nodeName == ele2.nodeName &&
@@ -179,7 +185,7 @@ let lcsDomtree = (newChildren, oldTree) => {
             OsubTree.push(child)
         }
     }
-    if(Ochi.length==0&&OsubTree.length==0){
+    if (Ochi.length == 0 && OsubTree.length == 0) {
         Nchi = []
         NsubTree = []
         for (let index in newChildren) {
@@ -190,7 +196,7 @@ let lcsDomtree = (newChildren, oldTree) => {
         }
     }
     // let plan = lcsDomArr(Nchi, Ochi, oldTree)
-    let plan = _lcsDomArr(Nchi, Ochi, oldTree)
+    let plan = await _lcsDomArr(Nchi, Ochi, oldTree)
 
     if (plan.length != 0) {
         planArr.push.apply(planArr, plan)
@@ -224,8 +230,10 @@ let lcsDomtree = (newChildren, oldTree) => {
                 } else {
                     planArr = lcsDomtree(ntree.childNodes, otree)
                 }
-                delete NsubTree[ni]
-                delete OsubTree[oi]
+                // delete NsubTree[ni]
+                // delete OsubTree[oi]
+                NsubTree.splice(ni,1)
+                OsubTree.splice(oi,1)
                 break
             }
         }
@@ -254,8 +262,9 @@ let lcsDomtree = (newChildren, oldTree) => {
     return planArr
 }
 
-let patch = (plan) => {
+let patch = function*(plan) {
     for (let ch of plan) {
+        yield void 0;
         if (ch.option == "add") {
             if (ch.after != undefined) {
                 domApi.insertBefore(ch.ele, ch.after)
@@ -267,26 +276,29 @@ let patch = (plan) => {
         }
     }
     for (let ch of plan) {
+        yield void 0;
         if (ch.option == "delete") {
             domApi.remove(ch.ele)
         }
     }
     for (let ch of plan) {
+        yield void 0;
         if (ch.option == "classChange") {
             ch.ele.classList = ch.list
         }
     }
     for (let ch of plan) {
+        yield void 0;
         if (ch.option == "attributesChange") {
             domApi.attributesClone(ch.ele, ch.to)
         }
     }
 }
 
-let diff = (targetDom, newHtml) => {
+let diff = async (targetDom, newHtml) => {
     let newTreeChilds = domApi.createDomTree(newHtml)
-    let patchArr = lcsDomtree(newTreeChilds, targetDom)
-    patch(patchArr)
+    let patchArr = await lcsDomtree(newTreeChilds, targetDom)
+    await frameify(patch(patchArr))
     return patchArr
 }
 

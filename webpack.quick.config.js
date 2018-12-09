@@ -1,3 +1,6 @@
+// 本地快速测试编译
+// 不用babel，只做打包和sourcemap
+// -----------------------------
 const webpack = require('webpack');
 const CleanWebpackPlugin = require("clean-webpack-plugin");
 const {
@@ -5,9 +8,9 @@ const {
 } = require('path');
 
 module.exports = {
+    devtool : "#cheap-module-eval-source-map",
     entry: {
-        Poi: resolve(__dirname, "./src/index.js"),
-        "Poi.core": resolve(__dirname, "./src/core/Poi.js")
+        Poi: resolve(__dirname, "./src/index.js")
     },
     output: {
         path: resolve(__dirname, "./dist"),
@@ -16,24 +19,15 @@ module.exports = {
     module: {
         rules: [{
                 test: /(\.jsx|\.js)$/,
-                use: {
-                    loader: "babel-loader"
-                },
                 exclude: /node_modules/
             }]
     },
     plugins: [
-        new webpack.BannerPlugin(" 版权所有，翻版算球"),
         new CleanWebpackPlugin(
             ['./dist/*.*'], {
                 root: resolve(__dirname, "./"),
                 verbose: true,
                 dry: false
-            }),
-        new webpack.ProvidePlugin({
-            regeneratorRuntime:"regenerator-runtime"
-        })
+            })
     ]
 }
-
-if(process.env.NODE_ENV=="development") module.exports.devtool = "#cheap-module-eval-source-map"

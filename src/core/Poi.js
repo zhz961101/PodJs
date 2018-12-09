@@ -4,9 +4,17 @@ const {
     Po,
     generateSubPo
 } = require("./Po");
-const {
-    domApi
-} = require("../util/util");
+const {domApi} = require("../util/domApi.js");
+
+function async_render(__ctx__) {
+    (async () => {
+        __ctx__.Event.block("_rerender_")
+        // dirty checking maybe
+        let patchArr = await diff(__ctx__.el, __ctx__.Po.assemble());
+        __ctx__.Po.bind(patchArr)
+        __ctx__.Event.unblock("_rerender_")
+    })();
+}
 
 let _Poi = function(finder, template, data, watch, subPos, mixwith, mounts) {
     this.el = domApi.$(finder);
@@ -21,26 +29,29 @@ let _Poi = function(finder, template, data, watch, subPos, mixwith, mounts) {
     // #401 babel es5 leads to mistakes
     let that = this;
     this.render = () => {
-        this.$on("_rerender_", () => {
-            that.rerender();
-        })
-        this.Event.block("_rerender_")
-        this.el.html("")
-        let patchArr = diff(this.el, this.Po.assemble());
-        if(patchArr.length!=0){
-            this.Po.bind(patchArr)
-        }
-        this.Event.unblock("_rerender_")
+        (async ()=>{
+            this.$on("_rerender_", () => {
+                that.rerender();
+            })
+            this.Event.block("_rerender_")
+            this.el.html("")
+            let patchArr = await diff(this.el, this.Po.assemble());
+            if (patchArr.length != 0) {
+                this.Po.bind(patchArr)
+            }
+            this.Event.unblock("_rerender_")
+        })()
     }
     this.rerender = () => {
-        this.Event.block("_rerender_")
-        // dirty checking maybe
-        let patchArr = diff(this.el, this.Po.assemble());
-        this.Po.bind(patchArr)
-        // this.Po.bind();
-        this.Event.unblock("_rerender_")
+        // this.Event.block("_rerender_")
+        // // dirty checking maybe
+        // let patchArr = diff(this.el, this.Po.assemble());
+        // this.Po.bind(patchArr)
+        // // this.Po.bind();
+        // this.Event.unblock("_rerender_")
+        async_render(this)
     }
-    let subPoi = subPos ? generateSubPo(subPos,this.Event) : undefined
+    let subPoi = subPos ? generateSubPo(subPos, this.Event) : undefined
     this.Po = new Po(template, data, watch, this.Event, subPoi, mixwith);
     this.$data = this.Po.data;
     // #402 mounted init function

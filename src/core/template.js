@@ -2,18 +2,18 @@ const JsVm = require("../util/JsVm.js");
 const {
     deepClone
 } = require("../util/util.js");
-const evIdSuffix = "event-id";
+// const evIdSuffix = "event-id";
 
-var randHash = H_length => {
-    H_length = H_length || 10;
-    let res = "",
-        $chars = "ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678",
-        maxPos = $chars.length;　　
-    for (let i = 0; i < H_length; i++) {
-        res += $chars.charAt(Math.floor(Math.random() * maxPos));　　
-    }
-    return res
-}
+// var randHash = H_length => {
+//     H_length = H_length || 10;
+//     let res = "",
+//         $chars = "ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678",
+//         maxPos = $chars.length;　　
+//     for (let i = 0; i < H_length; i++) {
+//         res += $chars.charAt(Math.floor(Math.random() * maxPos));　　
+//     }
+//     return res
+// }
 //
 // this is F!!! shit!
 //

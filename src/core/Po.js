@@ -1,7 +1,8 @@
 const {
     deepClone,
     extend,
-    GetAttrElement
+    GetAttrElement,
+    proxyArr
 } = require("../util/util");
 const TplEng = require("./template");
 const Jsvm = require("../util/JsVm");
@@ -50,6 +51,15 @@ let _init_DateValueProperty = (data, _ev) => {
     for (let variable in data) {
         let setVal = data[variable];
         let option = {}
+        if (Object.prototype.toString.call(setVal) == "[object Array]") {
+            // #101 length problem
+            setVal = proxyArr(setVal, newVal => {
+                _ev.emit("SET_" + variable, newVal);
+                _ev.emit("_rerender_");
+                if (source[variable].length == newVal.length) return
+                source[variable] = newVal;
+            })
+        }
         if (typeof setVal === "function") {
             if (/_ev.emit/g.test(setVal.toString()))
                 continue
@@ -151,11 +161,11 @@ let Po = function(template, data, watch, evManger, subPos, mixwith) {
     // tpl
     this.Clone = _data => {
         return {
-            $pureData:Object.assign(deepClone(_data),this.$pureData),
-            tpl:this.tpl,
-            data:_init_DateValueProperty(deepClone(Object.assign(deepClone(_data),deepClone(this.$pureData))),evManger),
-            assemble:function(data, _id){
-                return this.tpl.joint(Object.assign(this.data,data), _id)
+            $pureData: Object.assign(deepClone(_data), this.$pureData),
+            tpl: this.tpl,
+            data: _init_DateValueProperty(deepClone(Object.assign(deepClone(_data), deepClone(this.$pureData))), evManger),
+            assemble: function(data, _id) {
+                return this.tpl.joint(Object.assign(this.data, data), _id)
             }
         }
     }
@@ -179,7 +189,7 @@ let Po = function(template, data, watch, evManger, subPos, mixwith) {
         }
         evManger.unblock("_rerender_")
         let res = this.tpl.joint(data, _id)
-        if (subPos!=undefined) {
+        if (subPos != undefined) {
             return replaceSubNode(res, subPos, this.data, this.$localPo)
         } else {
             return res
