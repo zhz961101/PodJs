@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Poi!Poi! - Mvvm 前端框架</title>
+    <link rel="stylesheet" href="docs/assets/css/global.css">
+    <link rel="stylesheet" href="docs/assets/css/index.css">
+    <link href="https://cdn.bootcss.com/highlight.js/9.11.0/styles/atom-one-dark.min.css" rel="stylesheet">
+    <style media="screen">
+        header {
+            height: 100%;
+            display: flex;
+            flex-flow: column;
+            justify-content: space-around;
+            align-items: center;
+        }
+        header > *{
+            max-width: 1080px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="progress">
+        <div id="topprogress">#</div>
+    </div>
+    <header id="header">
+        <nav>
+            <a href="#Feature">特性</a>
+            <a href="#Docs">文档</a>
+            <a href="docs/Guide.html">教程</a>
+            <a href="https://github.com/zhzLuke96/PoiJs">Github</a>
+        </nav>
+        <h1>
+            Poi.js<br>
+            <small style="font-size:.3em">一个前端框架</small>
+        </h1>
+        <div id="showBox">
+            <div class="point">
+                <h3>门槛低</h3>
+                <small>只会CSS、HTML、JavaScript?打开教程火速上手!</small>
+            </div>
+            <div class="point">
+                <h3>扩展</h3>
+                <small>你的页面构建于易于维护的组件之上，一次编码处处好使</small>
+            </div>
+            <div class="point">
+                <h3>小巧</h3>
+                <small>性能保障的同时，运行代码15kb+，无虚拟DOM</small>
+            </div>
+        </div>
+        <div id="badges">
+            <a href="https://opensource.org/licenses/GPL-3.0/">
+                <img src="https://camo.githubusercontent.com/e0500fa8899e55097a876f55e41c988590023b9a/68747470733a2f2f6261646765732e66726170736f66742e636f6d2f6f732f67706c2f67706c2e7376673f763d313033" alt="GPL Licence">
+            </a>
+            <a href="https://github.com/zhzLuke96/PoiJs" alt="star pls!">
+                <img class="badge-img clickable" src="https://img.shields.io/amo/stars/dustman.svg?maxAge=2592000" alt="star pls!">
+            </a>
+        </div>
+        <div id="languageBox">
+            <span>Languages : </span>
+            <a href="index_cn.html">Chinese</a>
+            <a href="index.html">English</a>
+        </div>
+    </header>
+    <div id="content">
+        <div class="rowMask">
+            <h1>Poi!Poi!</h1>
+            <img id="poiImg" src="./docs/img/poi.gif" alt="">
+            <p class="pillow">优化是不可能优化的</p>
+            <div id="Feature"></div>
+        </div>
+        <div class="rowMask">
+            <h2>特性</h2>
+            <p>双向绑定、数据驱动、模板引擎、组件化...</p>
+            <div class="preView">
+                <div class="title">
+                    <h4>双向绑定</h4>
+                    <hr>
+                </div>
+                <pre>
+                    <span class="CodeTag">JS</span>
+                    <code class="javascript">
+let app = Poi({
+    el: "#app1",
+    data: {
+        msg: "Poi! "
+    }
+})</code></pre>
+                <pre>
+    <span class="CodeTag">Html</span>
+    <code class="html">
+&lt;p&gt;{{ msg }}&lt;/p&gt;
+&lt;input type="text" name="" bind:value="msg" on:keyup="msg=self.value"&gt;
+</code></pre>
+                <div id="app1" class="appBox"></div>
+            </div>
+            <div class="preView">
+                <div class="title">
+                    <h4>数据驱动</h4>
+                    <hr>
+                </div>
+                <pre>
+                    <span class="CodeTag">JS</span>
+                    <code class="javascript">
+let app = Poi({
+    el: "#app2",
+    data: {
+        msg: "Poi! ",
+        reverseMsg: function() {
+            this.msg = this.msg.split('').reverse().join('')
+        }
+    }
+})</code></pre>
+                <pre>
+    <span class="CodeTag">Html</span>
+    <code class="html">
+&lt;input type="text" name="" bind:value="msg" on:keyup="msg=self.value"&gt;
+&lt;button type="button" name="button" on:click="reverseMsg()"&gt;reverse text&lt;/button&gt;
+&lt;button type="button" name="button" on:click="msg=msg+msg"&gt;deouble&lt;/button&gt;
+&lt;p&gt;{{ msg }}&lt;/p&gt;
+</code></pre>
+                <div id="app2" class="appBox"></div>
+            </div>
+            <div class="preView">
+                <div class="title">
+                    <h4>模板引擎 - 支持原生Js</h4>
+                    <hr>
+                </div>
+                <pre>
+                    <span class="CodeTag">JS</span>
+                    <code class="javascript">
+let app = Poi({
+    el: "#app3",
+    data: {
+        items: ["push random button"],
+        addRandom: function() {
+            this.items.push(Math.floor((Math.random() * 100)))
+        }
+    }
+})</code></pre>
+                <pre>
+    <span class="CodeTag">Html</span>
+    <code class="html">
+&lt;button type="button" name="button" on:click="addRandom()"&gt;
+    push random item!&lt;button&gt;
+&lt;ul&gt;
+    {{ for(let item of items){ }}
+        &lt;li&gt;{{ item }}&lt;/li&gt;
+    {{ } }}
+&lt;/ul&gt;
+</code></pre>
+                <div id="app3" class="appBox"></div>
+            </div>
+            <div id="Docs"></div>
+        </div>
+        <div class="rowMask">
+            <h2>快速上手</h2>
+            <p>远离恼火的dom操作，</p>
+            <p>直指业务逻辑，快速构建你的页面</p>
+            <a href="docs/Guide.html">
+                <div class="goGuide">Go</div>
+            </a>
+        </div>
+        <div class="rowMask">
+            <h2>实用模块 <small>有在做吧...</small></h2>
+            <div id="showBox">
+                <div class="point">
+                    <h4>Router</h4>
+                    <pre>
+                        <code class="javascript">new Router({
+    path:"/",
+    compant:[],
+    child:[]
+})</code>
+                    </pre>
+                    <p>直观的前端路由!</p>
+                </div>
+                <div class="point">
+                    <h4>PinterestJs</h4>
+                    <pre>
+                        <code class="javascript">// come soon</code>
+                    </pre>
+                    <p>瀑布流布局，大气高端!</p>
+                </div>
+                <div class="point">
+                    <h4>你的作品</h4>
+                    <pre>
+                        <code class="javascript">// your precious code</code>
+                    </pre>
+                    <p>组件化生产，了解一下!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <a href="#header">Goto Top</a>
+        <p>至尊微软紫</p>
+        <span>Copyright © 2018-now</span><a href="https://github.com/zhzLuke96"> zhzLuke96</a>
+    </footer>
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/highlight.min.js"></script>
+    <script src="https://cdn.bootcss.com/highlight.js/9.12.0/languages/javascript.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+    <script src="docs/assets/js/ScrollNav.js" charset="utf-8"></script>
+    <script src="dist/Poi.bundle.js" charset="utf-8"></script>
+    <script src="docs/assets/js/index.js" charset="utf-8"></script>
+</body>
+
+</html>

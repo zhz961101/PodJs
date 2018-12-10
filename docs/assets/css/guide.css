@@ -1,0 +1,158 @@
+header{
+    padding-bottom: 0;
+}
+nav.fixed{
+    padding-top: 10px;
+    left:auto;
+    padding-left: 5px;
+    border-radius: 0 0 0 5px;
+}
+footer{
+    z-index: 100;
+}
+.leftNav.fixed{
+    height: 100%;
+    background-color: inherit;
+    z-index: 99;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+}
+#content{
+    padding-top: 0;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    align-items:stretch;
+}
+.leftNav{
+    padding: 5vw 0 0 2vw;
+    flex: 8;
+    min-width: 200px;
+    max-width: 260px;
+    border: 1px solid #999;
+    padding-bottom: 50px;
+    overflow-y: scroll;
+}
+.leftNav>*:not(hr){
+    padding-top: 15px;
+}
+.leftNav>*:first-child{
+    padding-top:0;
+}
+.leftNav ul{
+    color: #7f8c8d;
+}
+.leftNav ul>li{
+    padding-bottom: 10px;
+}
+.leftNav li{
+    color: inherit;
+    padding-left: 1em;
+    font-weight: 300;
+    padding-top: 5px;
+    list-style-type: none;
+    width: 100%;
+}
+.leftNav li>ul{
+    margin-left: 1.5em;
+    padding-top: 10px;
+}
+.leftNav li>ul>li{
+    padding-bottom: 0;
+}
+.leftNav a{
+    text-decoration: none;
+    color: inherit;
+}
+.leftNav li.checked>a{
+    color: rgba(153, 102, 204, 0.7);
+}
+.leftNav a:hover{
+    color: rgba(153, 102, 204, 0.7);
+    text-decoration: underline;
+}
+#guideView{
+    padding: 5vw;
+    flex: 13;
+}
+#guideView>.row{
+    padding-left: 50px;
+    padding-top: 25px;
+    padding-bottom: 75px;
+    width: 50vw;
+    min-width: 400px;
+}
+#guideView>.row>*:not(hr){
+    padding-bottom: 12.5px;
+    padding-top: 12.5px;
+}
+#guideView>.row>p{
+    font-size: 15px;
+    font-weight: 400;
+    text-indent: 2em;
+}
+#guideView .anchor{
+    color: rgba(153, 102, 204, 0.7);
+    padding-right: 0.5em;
+}
+#guideView pre,code{
+    border-radius: 5px;
+}
+span.CodeTag{
+    top:55px;
+}
+
+span.string{
+    color: #98c379;
+}
+span.keyword{
+    font-weight: 1000;
+    color: #c678dd;
+}
+.infoCard{
+    font-size: 15px;
+    padding: 25px;
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+}
+.infoCard img{
+    border-radius: 25px;
+    border: 5px solid rgba(153, 153, 153,0.3);
+}
+.infoCard>#left{
+    flex: 3;
+}
+.infoCard>#right{
+    padding: 25px;
+    flex: 7;
+}
+.infoCard>#right>*:first-child{
+    font-size: 20px;
+    font-weight: 1000;
+    pointer-events: none;
+}
+
+.infoCard>*{
+    padding: 0;
+}
+.infoCard dl{
+    padding: 12.5px;
+}
+.infoCard dt{
+    margin-right: 7px;
+}
+.infoCard dt,dd{
+    display: inline;
+}
+.infoCard dd::after{
+    content:' ';
+    display: block;
+    padding-top: 10px;
+}
+
+/* app1 style */
+.ok{
+    text-decoration: line-through;
+}
