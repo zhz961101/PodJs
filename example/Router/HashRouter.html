@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Poi Router</title>
+    <style media="screen">
+        .active{
+            color: #bbb;
+            background-color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="app"></div>
+    <script type="text/x-template" id="app-template2" charset="utf-8">
+        <rLink to="index">Home</rLink>
+        <rLink to="login">Login</rLink>
+        <rLink to="news">News</rLink>
+        <rLink to="aikdhuahidw">Run 404</rLink>
+        <div id="page">
+            <p {{ isHidden("index") }}>Home page</p>
+            <div {{ isHidden("news") }}>
+                <ul>
+                    <li>01</li>
+                    <li>02</li>
+                    <li>03</li>
+                    <li>04</li>
+                    <li>05</li>
+                </ul>
+            </div>
+            <div {{ isHidden("login") }}>
+                <span>name:</span>
+                <input type="text">
+                <br>
+                <span>password:</span>
+                <input type="text">
+                <br>
+                <button type="button" name="button">login</button>
+            </div>
+            <p {{ isHidden("") }}>404 NOT FOUND</p>
+        </div>
+    </script>
+    <script type="text/x-template" id="app-template" charset="utf-8">
+        <a href="#/index" class={{ currentPage=="/index"?"active":"" }}>首页</a>
+        <a href="#/news" class={{ currentPage=="/news"?"active":"" }}>新闻页</a>
+        <a href="#/login" class={{ currentPage=="/login"?"active":"" }}>注册</a>
+        <button type="button" name="button" on:click="go(993)">404page</button>
+        <div id="page">
+            {{ switch(currentPage){case "":case "/":case "/index": }}
+                <p>首页</p>
+            {{ break;case "/news": }}
+                <p>news page</p>
+            {{ break;case "/login": }}
+                <p>登陆</p>
+            {{ break;default: }}
+                <p>404 NOT FOUND</p>
+            {{ } }}
+        </div>
+    </script>
+    <script src="../../dist/Poi.bundle.js" charset="utf-8"></script>
+    <script src="./HashRouter.js" charset="utf-8"></script>
+</body>
+</html>

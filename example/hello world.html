@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Poi test</title>
+</head>
+<body>
+    <div id="app1">
+        <p>{{ msg }}</p>
+        <input type="text" name="" bind:value="msg" on:keyup="msg=self.value">
+        <button type="button" name="button" on:click="msg=msg+msg">deouble!!</button>
+        <button type="button" name="button" on:click="reverseMsg()">reverse text</button>
+        <button type="button" name="button" on:click="addRandom()">push random item!</button>
+        <button type="button" name="button" on:click="popone()">pop item!</button>
+        <ul>
+            {{ for(let item of items){ }}
+                <li>{{ item }}</li>
+            {{ } }}
+        </ul>
+    </div>
+    <div id="app2"></div>
+    <script src="../dist/Poi.bundle.js" charset="utf-8"></script>
+    <script src="./index.js" charset="utf-8"></script>
+</body>
+</html>
