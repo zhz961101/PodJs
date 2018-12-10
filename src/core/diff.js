@@ -43,7 +43,6 @@ let _lcsDomArr = async (newDomEle, oldDomEle, targetDom) => {
             val = cr[curB];
         if (domApi.isSame(newDomEle[curA], oldDomEle[curB])) {
             // same char
-            // console.log(curA,curB,ltv,nv,ltv+1==nv)
             if (newDomEle[curA].classList != undefined) {
                 if (!domApi.classListDiff(newDomEle[curA], oldDomEle[curB]))
                     planArr.push({
@@ -115,7 +114,6 @@ let _lcsDomArr = async (newDomEle, oldDomEle, targetDom) => {
 }
 // #101 Time complexity: O(arr1.length * arr2.length)
 let lcsOnArr = function*(arr1, arr2, compareFn) {
-    // let dbg = new debugObj("lcsOnArr");
     let lcsArr = [];
     for (let indexA in arr1) {
         let rowArr = [],
@@ -134,7 +132,6 @@ let lcsOnArr = function*(arr1, arr2, compareFn) {
         }
         lcsArr.push(rowArr);
     }
-    // dbg.log()
     return lcsArr;
 }
 let lcsDomtree = async (newChildren, oldTree) => {
@@ -226,12 +223,10 @@ let lcsDomtree = async (newChildren, oldTree) => {
                 }
                 // diff ending
                 if (planArr.length != 0) {
-                    planArr.push.apply(planArr, lcsDomtree(ntree.childNodes, otree))
+                    planArr.push.apply(planArr,await lcsDomtree(ntree.childNodes, otree))
                 } else {
-                    planArr = lcsDomtree(ntree.childNodes, otree)
+                    planArr = await lcsDomtree(ntree.childNodes, otree)
                 }
-                // delete NsubTree[ni]
-                // delete OsubTree[oi]
                 NsubTree.splice(ni,1)
                 OsubTree.splice(oi,1)
                 break
