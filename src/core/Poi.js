@@ -4,14 +4,26 @@ const {
     Po,
     generateSubPo
 } = require("./Po");
-const {domApi} = require("../util/domApi.js");
+const {
+    domApi
+} = require("../util/domApi.js");
 
 function async_render(__ctx__) {
+    if (__ctx__.current_render_INT_OBJ) {
+        // Interrupt check
+        __ctx__.current_render_INT_OBJ.wtever = true;
+        if (__ctx__.current_render_INT_OBJ.clear)
+            __ctx__.current_render_INT_OBJ.clear()
+        __ctx__.Event.unblock("_rerender_");
+        __ctx__.current_render_INT_OBJ = {
+            wtever: false
+        }
+    }
     (async () => {
         __ctx__.Event.block("_rerender_")
         // dirty checking maybe
-        let patchArr = await diff(__ctx__.el, __ctx__.Po.assemble());
-        __ctx__.Po.bind(patchArr)
+        let patchArr = await diff(__ctx__.el, __ctx__.Po.assemble(), __ctx__.current_render_INT_OBJ);
+        __ctx__.Po.$bind(patchArr)
         __ctx__.Event.unblock("_rerender_")
     })();
 }
@@ -29,7 +41,7 @@ let _Poi = function(finder, template, data, watch, subPos, mixwith, mounts) {
     // #401 babel es5 leads to mistakes
     let that = this;
     this.render = () => {
-        (async ()=>{
+        (async () => {
             this.$on("_rerender_", () => {
                 that.rerender();
             })
@@ -37,11 +49,14 @@ let _Poi = function(finder, template, data, watch, subPos, mixwith, mounts) {
             this.el.html("")
             let patchArr = await diff(this.el, this.Po.assemble());
             if (patchArr.length != 0) {
-                this.Po.bind(patchArr)
+                this.Po.$bind(patchArr)
             }
             this.Event.unblock("_rerender_")
         })()
     }
+    this.current_render_INT_OBJ = {
+        wtever: false
+    };
     this.rerender = () => {
         // this.Event.block("_rerender_")
         // // dirty checking maybe

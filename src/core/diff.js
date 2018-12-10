@@ -1,12 +1,13 @@
-
-const {domApi} = require("../util/domApi.js");
+const {
+    domApi
+} = require("../util/domApi.js");
 
 const {
     frameify
 } = require('../util/frameify.js');
 
 // const debugObj = require("../util/debug")
-let _lcsDomArr = async (newDomEle, oldDomEle, targetDom) => {
+let _lcsDomArr = async (newDomEle, oldDomEle, targetDom, INT_OBJ) => {
     let planArr = [];
     if (oldDomEle.length == 0) {
         for (let nEli in newDomEle) {
@@ -27,9 +28,13 @@ let _lcsDomArr = async (newDomEle, oldDomEle, targetDom) => {
         }
         return planArr
     }
-    let lcs_arr = await frameify(lcsOnArr(newDomEle, oldDomEle, domApi.isSame)),
+    let lcs_arr = await frameify(lcsOnArr(newDomEle, oldDomEle, domApi.isSame), INT_OBJ),
         curA = 0,
         curB = 0;
+    // Interrupt Request
+    // react的做法是通过throw一个非error对象，然后在最顶层捕获
+    // 这里我没搞这么麻烦，就回复空return就行，毕竟只是针对单一用例
+    if (lcs_arr === undefined) return planArr
 
     while (true) {
         if (curA >= lcs_arr.length && curB >= lcs_arr[0].length) {
@@ -80,7 +85,7 @@ let _lcsDomArr = async (newDomEle, oldDomEle, targetDom) => {
                 ele: oldDomEle[curB]
             })
             // #201 Matrix boundary
-            if(newDomEle[curA] != undefined)
+            if (newDomEle[curA] != undefined)
                 planArr.push({
                     option: "add",
                     before: oldDomEle[curB],
@@ -134,7 +139,7 @@ let lcsOnArr = function*(arr1, arr2, compareFn) {
     }
     return lcsArr;
 }
-let lcsDomtree = async (newChildren, oldTree) => {
+let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
     let isSameTree = (ele1, ele2) => {
         return (
             ele1.nodeName == ele2.nodeName &&
@@ -193,7 +198,7 @@ let lcsDomtree = async (newChildren, oldTree) => {
         }
     }
     // let plan = lcsDomArr(Nchi, Ochi, oldTree)
-    let plan = await _lcsDomArr(Nchi, Ochi, oldTree)
+    let plan = await _lcsDomArr(Nchi, Ochi, oldTree, INT_OBJ)
 
     if (plan.length != 0) {
         planArr.push.apply(planArr, plan)
@@ -223,12 +228,12 @@ let lcsDomtree = async (newChildren, oldTree) => {
                 }
                 // diff ending
                 if (planArr.length != 0) {
-                    planArr.push.apply(planArr,await lcsDomtree(ntree.childNodes, otree))
+                    planArr.push.apply(planArr, await lcsDomtree(ntree.childNodes, otree, INT_OBJ))
                 } else {
-                    planArr = await lcsDomtree(ntree.childNodes, otree)
+                    planArr = await lcsDomtree(ntree.childNodes, otree, INT_OBJ)
                 }
-                NsubTree.splice(ni,1)
-                OsubTree.splice(oi,1)
+                NsubTree.splice(ni, 1)
+                OsubTree.splice(oi, 1)
                 break
             }
         }
@@ -257,9 +262,8 @@ let lcsDomtree = async (newChildren, oldTree) => {
     return planArr
 }
 
-let patch = function*(plan) {
+let patch = function(plan) {
     for (let ch of plan) {
-        yield void 0;
         if (ch.option == "add") {
             if (ch.after != undefined) {
                 domApi.insertBefore(ch.ele, ch.after)
@@ -271,29 +275,29 @@ let patch = function*(plan) {
         }
     }
     for (let ch of plan) {
-        yield void 0;
         if (ch.option == "delete") {
             domApi.remove(ch.ele)
         }
     }
     for (let ch of plan) {
-        yield void 0;
         if (ch.option == "classChange") {
             ch.ele.classList = ch.list
         }
     }
     for (let ch of plan) {
-        yield void 0;
         if (ch.option == "attributesChange") {
             domApi.attributesClone(ch.ele, ch.to)
         }
     }
 }
 
-let diff = async (targetDom, newHtml) => {
+let diff = async (targetDom, newHtml, INT_OBJ) => {
     let newTreeChilds = domApi.createDomTree(newHtml)
-    let patchArr = await lcsDomtree(newTreeChilds, targetDom)
-    await frameify(patch(patchArr))
+    let patchArr = await lcsDomtree(newTreeChilds, targetDom, INT_OBJ)
+    // dont int patch func
+    if (INT_OBJ && INT_OBJ.wtever) return patchArr
+    // await frameify(patch(patchArr), void 0)
+    patch(patchArr)
     return patchArr
 }
 

@@ -1,4 +1,6 @@
-const {ev_supList} = require("../util/util");
+const {
+    ev_supList
+} = require("../util/util");
 
 
 class EventObj {
@@ -6,8 +8,10 @@ class EventObj {
         this.subscribe = {}
     }
     on(channel, fn) {
-        let old = this.subscribe[channel]?this.subscribe[channel].func:undefined;
-        if (old==undefined) this.subscribe[channel] = {locked:0}
+        let old = this.subscribe[channel] ? this.subscribe[channel].func : undefined;
+        if (old == undefined) this.subscribe[channel] = {
+            locked: 0
+        }
         this.subscribe[channel].func = function(_args) {
             if (typeof old == "function") {
                 old(_args);
@@ -16,8 +20,8 @@ class EventObj {
         }
     }
     emit(channel, _args) {
-        if(this.subscribe[channel]!==undefined){
-            if (this.subscribe[channel].locked>0)return
+        if (this.subscribe[channel] !== undefined) {
+            if (this.subscribe[channel].locked > 0) return
             else this.block(channel)
             if (typeof this.subscribe[channel].func == "function") {
                 this.subscribe[channel].func(_args);
@@ -25,15 +29,18 @@ class EventObj {
             this.unblock(channel)
         }
     }
+    isblcok(channel) {
+        return this.subscribe[channel].locked && this.subscribe[channel].locked > 0
+    }
     block(channel) {
-        if(this.subscribe[channel]==undefined)return
+        if (this.subscribe[channel] == undefined) return
         this.subscribe[channel].locked += 1
     }
     unblock(channel) {
-        if(this.subscribe[channel]==undefined)return
+        if (this.subscribe[channel] == undefined) return
         this.subscribe[channel].locked -= 1
     }
-    clear(){
+    clear() {
         this.subscribe = {};
     }
 }
@@ -44,9 +51,11 @@ class EventObjForEle extends EventObj {
         this.__init_nativeEv();
     }
     __init_nativeEv() {
-        ev_supList.forEach((val, index) => {
-            this.el.addEventListener(val, e => {
-                this.emit(val, e);
+        ev_supList.forEach(evName => {
+            this.el.addEventListener(evName, e => {
+                // window.requestIdleCallback(() => this.emit(evName, e))
+                // setTimeout(() => this.emit(evName, e), 1);
+                this.emit(evName, e)
             })
         })
     }

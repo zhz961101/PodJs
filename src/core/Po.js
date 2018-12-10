@@ -7,7 +7,6 @@ const {
 const TplEng = require("./template");
 const Jsvm = require("../util/JsVm");
 
-// const debugObj = require("../util/debug")
 
 let replaceSubNode = (html, subPos, supper, localPo) => {
     let resloveData = attrs => {
@@ -65,7 +64,7 @@ let _init_DateValueProperty = (data, _ev) => {
                 continue
             data[variable] = function() {
                 let _resTemp = setVal.apply(data, arguments)
-                _ev.emit("_rerender_");
+                // _ev.emit("_rerender_");
                 return _resTemp
             }
             continue;
@@ -181,13 +180,13 @@ let Po = function(template, data, watch, evManger, subPos, mixwith) {
     //
     this.$localPo = []
     this.assemble = function(data, _id) {
-        evManger.block("_rerender_")
+        // evManger.block("_rerender_")
         if (data != undefined) {
             Object.assign(deepClone(data), this.data)
         } else {
             data = deepClone(this.data)
         }
-        evManger.unblock("_rerender_")
+        // evManger.unblock("_rerender_")
         let res = this.tpl.joint(data, _id)
         if (subPos != undefined) {
             return replaceSubNode(res, subPos, this.data, this.$localPo)
@@ -196,7 +195,7 @@ let Po = function(template, data, watch, evManger, subPos, mixwith) {
         }
     };
 
-    this.bind = patchs => {
+    this.$bind = patchs => {
         // if (subPos) {
         //     for (let subi in subPos) {
         //         subPos[subi].bind()

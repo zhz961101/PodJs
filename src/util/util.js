@@ -1,22 +1,6 @@
 function getType(obj) {
-    //tostring会返回对应不同的标签的构造函数
-    var toString = Object.prototype.toString;
-    var map = {
-        '[object Boolean]': 'boolean',
-        '[object Number]': 'number',
-        '[object String]': 'string',
-        '[object Function]': 'function',
-        '[object Array]': 'array',
-        '[object Date]': 'date',
-        '[object RegExp]': 'regExp',
-        '[object Undefined]': 'undefined',
-        '[object Null]': 'null',
-        '[object Object]': 'object'
-    };
-    if (obj instanceof Element) {
-        return 'element';
-    }
-    return map[toString.call(obj)];
+    if (obj instanceof Element) return 'dom';
+    return Object.prototype.toString.call(obj).slice(8).slice(0, -1).toLowerCase();
 }
 
 function deepClone(data) {
@@ -27,7 +11,6 @@ function deepClone(data) {
     } else if (type === 'object') {
         obj = {};
     } else {
-        //不再具有下一层次
         return data;
     }
     if (type === 'array') {
@@ -76,13 +59,13 @@ function proxy_arr_len(arr, cb) {
     })
 }
 
-function proxy_catch_set(that, cb){
-    if(Object.prototype.toString.call(that) == "[object Array]"){
+function proxy_catch_set(that, cb) {
+    if (Object.prototype.toString.call(that) == "[object Array]") {
         return proxy_arr(that, cb);
     }
     return new Proxy(that, {
         set(obj, prop, val) {
-            if(obj[prop] != val){
+            if (obj[prop] != val) {
                 obj[prop] = val;
                 cb();
             }
@@ -92,9 +75,9 @@ function proxy_catch_set(that, cb){
 }
 
 function proxy_arr(arr, cb) {
-    if(arr.length!=0){
+    if (arr.length != 0) {
         for (var i = 0; i < arr.length; i++) {
-            arr[i] = proxy_catch_set(arr[i],()=>cb(arr));
+            arr[i] = proxy_catch_set(arr[i], () => cb(arr));
         }
     }
     return new Proxy(arr, {
