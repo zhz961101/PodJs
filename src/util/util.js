@@ -49,16 +49,6 @@ let GetAttrElement = (attr, val) => {
     return a;
 }
 
-function proxy_arr_len(arr, cb) {
-    return new Proxy(arr, {
-        set(obj, prop, val) {
-            obj[prop] = val
-            if (prop == 'length') cb(obj);
-            return true;
-        }
-    })
-}
-
 function proxy_catch_set(that, cb) {
     if (Object.prototype.toString.call(that) == "[object Array]") {
         return proxy_arr(that, cb);
@@ -82,8 +72,14 @@ function proxy_arr(arr, cb) {
     }
     return new Proxy(arr, {
         set(obj, prop, val) {
-            obj[prop] = val
-            if (prop == 'length') cb(obj);
+            var calling = false
+            if (prop == 'length')calling = true
+            else if (obj[prop] != val){
+                calling = true
+            }
+            if(calling)cb(obj);
+            if(!isNaN(prop))obj[prop] = proxy_catch_set(val, () => cb(obj))
+            else obj[prop] = val
             return true;
         }
     })
@@ -96,5 +92,5 @@ module.exports = {
     arrMerge: arrMerge,
     ev_supList: support_list,
     GetAttrElement: GetAttrElement,
-    proxyArr: proxy_arr_len
+    proxyArr: proxy_arr
 };

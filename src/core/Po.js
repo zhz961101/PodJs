@@ -203,10 +203,10 @@ let Po = function(template, data, watch, evManger, subPos, mixwith) {
             let attrs = ele.attributes
             if (attrs.length == 0) return
             let isOn = node => {
-                return /^on:/g.test(node.nodeName)
+                return /on:/g.test(node.nodeName)
             }
             let isBind = node => {
-                return /^bind:/g.test(node.nodeName)
+                return /bind:/g.test(node.nodeName)
             }
             for (let attri in attrs) {
                 let attr = attrs[attri]

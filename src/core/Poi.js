@@ -81,7 +81,7 @@ let _Poi = function(finder, template, data, watch, subPos, mixwith, mounts) {
     return this;
 }
 
-let Poi = function(config) {
+module.exports = function(config) {
     let tpl_content
     if (config.tpl) {
         if (config.tpl[0] == "#") {
@@ -102,5 +102,3 @@ let Poi = function(config) {
     that.render();
     return that;
 }
-
-module.exports = Poi;
