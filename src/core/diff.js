@@ -158,14 +158,18 @@ let lcsOnArr = function* (arr1, arr2, compareFn) {
     return lcsArr;
 }
 let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
+    const toarr = o => Array.prototype.slice.call(o)
+    const layer_num = ele => ele.parentNode?toarr(ele.parentNode.children).indexOf(ele):0
     let isSameTree = (ele1, ele2, is_super) => {
-        console.log(ele1, ele2, is_super)
+        // console.log(ele1, ele2, is_super)
         if (is_super && (!ele1 || !ele2)) return true;
+        if(ele1.parentNode.parentNode == null && ele1.children.length > 0)return true;
         return (
             ele1.nodeName == ele2.nodeName
             && ele1.nodeType == ele2.nodeType
-            && (is_super ? true : ele1.id == ele2.id)
-            && (ele1.parentNode && ele2.parentNode ? isSameTree(ele1.parentNode, ele2.parentNode, true) : true)
+            && layer_num(ele1) == layer_num(ele2)
+            // && (is_super ? true : ele1.id == ele2.id)
+            // && (ele1.parentNode && ele2.parentNode ? isSameTree(ele1.parentNode, ele2.parentNode, true) : true)
             // && ele1.children.length == ele2.children.length
             // class并不作为对比关键
             // *改这里真的要给我改吐了，必须拥抱typescript!!!
@@ -257,8 +261,10 @@ let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
                 } else {
                     planArr = await lcsDomtree(ntree.childNodes, otree, INT_OBJ)
                 }
-                NsubTree.splice(ni, 1)
-                OsubTree.splice(oi, 1)
+                delete NsubTree[ni]
+                delete OsubTree[oi]
+                // NsubTree.splice(ni, 1)
+                // OsubTree.splice(oi, 1)
                 break
             }
         }
@@ -289,9 +295,13 @@ let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
 
 let patch = function* (plan) {
     function patch_on(oldDOM, newDOM) {
-        oldDOM.classList = newDOM.classList;
-        domApi.attributesClone(oldDOM, newDOM);
-        if (oldDOM.innerHTML.trim() != newDOM.innerHTML.trim()) oldDOM.innerHTML = newDOM.innerHTML;
+        if(oldDOM.nodeType == 3){
+            if(oldDOM.textContent != newDOM.textContent)oldDOM.textContent = newDOM.textContent
+        }else{
+            oldDOM.classList = newDOM.classList;
+            domApi.attributesClone(oldDOM, newDOM);
+            if (oldDOM.innerHTML.trim() != newDOM.innerHTML.trim()) oldDOM.innerHTML = newDOM.innerHTML;
+        }
     }
     for (let ch of plan) {
         yield void 0;
