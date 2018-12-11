@@ -33,7 +33,8 @@ let _lcsDomArr = async (newDomEle, oldDomEle, targetDom, INT_OBJ) => {
         curB = 0;
     // Interrupt Request
     // react的做法是通过throw一个非error对象，然后在最顶层捕获
-    // 这里我没搞这么麻烦，就回复空return就行，毕竟只是针对单一用例
+    // 这里我没搞这么麻烦(机智)，就回复空return就行
+    // 毕竟只是针对单一用例(只有rerender需要协程支持)
     if (lcs_arr === undefined) return planArr
 
     while (true) {
@@ -80,10 +81,9 @@ let _lcsDomArr = async (newDomEle, oldDomEle, targetDom, INT_OBJ) => {
             continue;
         } else if (rv == bv) {
             // ta+1"_" tb+1cahr
-            planArr.push({
-                option: "delete",
-                ele: oldDomEle[curB]
-            })
+
+            // TODO: 对于按相同tag的元素可以不用删了又加，添加一个新的动作patch
+            //       用来改变原元素的属性，而不用重绘
             // #201 Matrix boundary
             if (newDomEle[curA] != undefined)
                 planArr.push({
@@ -93,6 +93,11 @@ let _lcsDomArr = async (newDomEle, oldDomEle, targetDom, INT_OBJ) => {
                     ele: newDomEle[curA],
                     upper: targetDom
                 })
+            // *前后操作不能调换，对于末尾元素需要olddom来定位所以必须先add
+            planArr.push({
+                option: "delete",
+                ele: oldDomEle[curB]
+            })
             curA += 1;
             curB += 1;
             continue;

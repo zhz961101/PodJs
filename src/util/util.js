@@ -50,18 +50,22 @@ let GetAttrElement = (attr, val) => {
 }
 
 function proxy_catch_set(that, cb) {
-    if (Object.prototype.toString.call(that) == "[object Array]") {
+    if ( getType(that) == "array" ) {
         return proxy_arr(that, cb);
     }
-    return new Proxy(that, {
-        set(obj, prop, val) {
-            if (obj[prop] != val) {
-                obj[prop] = val;
-                cb();
+    if ( getType(that) == "object"){
+        return new Proxy(that, {
+            set(obj, prop, val) {
+                if (obj[prop] != val) {
+                    obj[prop] = val;
+                    cb();
+                }
+                return true;
             }
-            return true;
-        }
-    })
+        })
+    }
+    // default
+    return that
 }
 
 function proxy_arr(arr, cb) {
