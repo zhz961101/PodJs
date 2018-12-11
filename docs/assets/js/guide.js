@@ -85,7 +85,7 @@ let app2 = Poi({
 
 let app1 = Poi({
     el: "#app1",
-    tpl: `<input type="text" bind:value="inputText" on:keyup="inputText=self.value"><button type="button" name="button" on:click="add()" >add</button><ul>{{ for(let todoi in todos){ }}<li class= "{{ todos[todoi].state?"ok":"continue" }}" on:click="toggle({{ todoi }})">{{ todos[todoi].content }}</li>{{ } }}</ul>`,
+    tpl: `<input type="text" bind:value="inputText" on:keyup="inputText=self.value"><button type="button" name="button" on:click="add()" >add</button><ul>{{ for(let todoi in todos){ }}<li class= "{{ todos[todoi].state?"ok":"continue" }}">{{ todos[todoi].content }}<button on:click="toggle({{ todoi }})">toggle</button></li>{{ } }}</ul>`,
     data: {
         todos: [{state:false,content:"早睡早起"}],
         inputText: "",
@@ -102,6 +102,11 @@ let app1 = Poi({
             this.todos[index].state = !this.todos[index].state
             // debuger
             // console.log(this.todos,index)
+        }
+    },
+    watch:{
+        todos(self){
+            console.log(self)
         }
     }
 })

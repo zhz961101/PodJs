@@ -11,6 +11,14 @@
     <link rel="stylesheet" href="assets/css/global.css">
     <link rel="stylesheet" href="assets/css/guide.css">
     <link rel="stylesheet" href="assets/css/ca.css">
+    <style>
+        a:hover{
+            text-decoration: none;
+        }
+        a{
+            text-decoration: underline;
+        }
+    </style>
 
 </head>
 
@@ -140,8 +148,9 @@ Poi({
 &lt;button type="button" name="button" on:click="add()" &gt;add&lt;/button&gt;
 &lt;ul&gt;
     {{ for(index in todos){ }}
-        &lt;li class= "{{ todos[index].state?"ok":"continue" }}" on:click="toggle({{ index }})"&gt;
+        &lt;li class= "{{ todos[index].state?"ok":"continue" }}" &gt;
             {{ todos[index].content }}
+            &lt;button on:click="toggle({{ todoi }})"&gt;toggle&lt;/button&gt;
         &lt;/li&gt;
     {{ } }}
 &lt;/ul&gt;</code>
@@ -159,6 +168,7 @@ Poi({
                 <p>（介于dom层性能的问题，如果使用canvas会是一个更好的选择，不过，那样的话Poi并不能发挥多大作用）</p>
                 <p>AC的规则有很多种，这里我们选择了经典的<span class="string">B3/S23</span>，当然通过适当的补充，我们的Poi实例能复现更多的规则。</p>
                 <p>B3/S23:周围有3个活细胞时<span class="string">born(重生)</span>,周围有2或3个活细胞时<span class="string">survive(保持原状态)</span>,其余情况均dead(消亡)。</p>
+                <p><a href="../example/ca/CAxx.html" title="CAxx.html">more dome</a></p>
                 <h5><span class="anchor" id="元胞-2">#</span>数据</h5>
                 <pre>
                     <span class="CodeTag">JS</span>
