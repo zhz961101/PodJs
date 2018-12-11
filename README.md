@@ -15,3 +15,6 @@ state                 | index | name    | content             | comment
 - hello world: [link](https://zhzluke96.github.io/PoiJs/example/hello world.html)
 - CA: [cellular automata 操作上百dom](https://zhzluke96.github.io/PoiJs/example/ca/CAxx.html)
 - router_lite: [HashRouter 也许是一个错误的示范](https://zhzluke96.github.io/PoiJs/example/Router/HashRouter.html)
+
+# code
+> https://raw.githubusercontent.com/zhzLuke96/PoiJs/gh-pages/dist/Poi.bundle.js

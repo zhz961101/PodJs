@@ -59,3 +59,7 @@ typings/
 
 # npm lock file
 package-lock.json
+
+# local
+local_test/
+local_test/*.*
