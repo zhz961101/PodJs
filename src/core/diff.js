@@ -81,10 +81,10 @@ let _lcsDomArr = async (newDomEle, oldDomEle, targetDom, INT_OBJ) => {
             continue;
         } else if (rv == bv) {
             // ta+1"_" tb+1cahr
-            
+
             // done  对于按相同tag的元素可以不用删了又加，添加一个新的动作patch
             //       用来改变原元素的属性，而不用重绘
-            if(oldDomEle[curB] && newDomEle[curA] &&  oldDomEle[curB].nodeName == newDomEle[curA].nodeName){
+            if (oldDomEle[curB] && newDomEle[curA] && oldDomEle[curB].nodeName == newDomEle[curA].nodeName) {
                 planArr.push({
                     option: "patch",
                     old: oldDomEle[curB],
@@ -136,7 +136,7 @@ let _lcsDomArr = async (newDomEle, oldDomEle, targetDom, INT_OBJ) => {
     return planArr
 }
 // #101 Time complexity: O(arr1.length * arr2.length)
-let lcsOnArr = function*(arr1, arr2, compareFn) {
+let lcsOnArr = function* (arr1, arr2, compareFn) {
     let lcsArr = [];
     for (let indexA in arr1) {
         let rowArr = [],
@@ -158,11 +158,18 @@ let lcsOnArr = function*(arr1, arr2, compareFn) {
     return lcsArr;
 }
 let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
-    let isSameTree = (ele1, ele2) => {
+    let isSameTree = (ele1, ele2, is_super) => {
+        console.log(ele1, ele2, is_super)
+        if (is_super && (!ele1 || !ele2)) return true;
         return (
-            ele1.nodeName == ele2.nodeName &&
-            ele1.id == ele2.id &&
-            ele1.className == ele2.className
+            ele1.nodeName == ele2.nodeName
+            && ele1.nodeType == ele2.nodeType
+            && (is_super ? true : ele1.id == ele2.id)
+            && (ele1.parentNode && ele2.parentNode ? isSameTree(ele1.parentNode, ele2.parentNode, true) : true)
+            // && ele1.children.length == ele2.children.length
+            // class并不作为对比关键
+            // *改这里真的要给我改吐了，必须拥抱typescript!!!
+            // && ele1.className == ele2.className
         )
     }
     let Nchi = [],
@@ -280,11 +287,11 @@ let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
     return planArr
 }
 
-let patch = function*(plan) {
-    function patch_on(oldDOM,newDOM){
+let patch = function* (plan) {
+    function patch_on(oldDOM, newDOM) {
         oldDOM.classList = newDOM.classList;
         domApi.attributesClone(oldDOM, newDOM);
-        if(oldDOM.innerHTML.trim() != newDOM.innerHTML.trim())oldDOM.innerHTML = newDOM.innerHTML;
+        if (oldDOM.innerHTML.trim() != newDOM.innerHTML.trim()) oldDOM.innerHTML = newDOM.innerHTML;
     }
     for (let ch of plan) {
         yield void 0;
@@ -308,7 +315,7 @@ let patch = function*(plan) {
                 domApi.attributesClone(ch.ele, ch.to)
                 break;
             case "patch":
-                patch_on(ch.old,ch.new)
+                patch_on(ch.old, ch.new)
                 break;
             default:
                 void 0;
