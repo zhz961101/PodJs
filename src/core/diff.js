@@ -262,31 +262,30 @@ let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
     return planArr
 }
 
-let patch = function(plan) {
+let patch = function*(plan) {
     for (let ch of plan) {
-        if (ch.option == "add") {
-            if (ch.after != undefined) {
-                domApi.insertBefore(ch.ele, ch.after)
-            } else if (ch.before != undefined) {
-                domApi.insertAfter(ch.ele, ch.before)
-            } else {
-                domApi.append(ch.ele, ch.upper)
-            }
-        }
-    }
-    for (let ch of plan) {
-        if (ch.option == "delete") {
-            domApi.remove(ch.ele)
-        }
-    }
-    for (let ch of plan) {
-        if (ch.option == "classChange") {
-            ch.ele.classList = ch.list
-        }
-    }
-    for (let ch of plan) {
-        if (ch.option == "attributesChange") {
-            domApi.attributesClone(ch.ele, ch.to)
+        yield void 0;
+        switch (ch.option) {
+            case "add":
+                if (ch.after != undefined) {
+                    domApi.insertBefore(ch.ele, ch.after)
+                } else if (ch.before != undefined) {
+                    domApi.insertAfter(ch.ele, ch.before)
+                } else {
+                    domApi.append(ch.ele, ch.upper)
+                }
+                break;
+            case "classChange":
+                ch.ele.classList = ch.list
+                break;
+            case "delete":
+                domApi.remove(ch.ele)
+                break;
+            case "attributesChange":
+                domApi.attributesClone(ch.ele, ch.to)
+                break;
+            default:
+                void 0;
         }
     }
 }
@@ -296,8 +295,8 @@ let diff = async (targetDom, newHtml, INT_OBJ) => {
     let patchArr = await lcsDomtree(newTreeChilds, targetDom, INT_OBJ)
     // dont int patch func
     if (INT_OBJ && INT_OBJ.wtever) return patchArr
-    // await frameify(patch(patchArr), void 0)
-    patch(patchArr)
+    await frameify(patch(patchArr), INT_OBJ)
+    // patch(patchArr)
     return patchArr
 }
 

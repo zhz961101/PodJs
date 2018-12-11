@@ -9,9 +9,7 @@ class EventObj {
     }
     on(channel, fn) {
         let old = this.subscribe[channel] ? this.subscribe[channel].func : undefined;
-        if (old == undefined) this.subscribe[channel] = {
-            locked: 0
-        }
+        if (old == undefined) this.subscribe[channel] = {}
         this.subscribe[channel].func = function(_args) {
             if (typeof old == "function") {
                 old(_args);
@@ -21,24 +19,10 @@ class EventObj {
     }
     emit(channel, _args) {
         if (this.subscribe[channel] !== undefined) {
-            if (this.subscribe[channel].locked > 0) return
-            else this.block(channel)
             if (typeof this.subscribe[channel].func == "function") {
                 this.subscribe[channel].func(_args);
             }
-            this.unblock(channel)
         }
-    }
-    isblcok(channel) {
-        return this.subscribe[channel].locked && this.subscribe[channel].locked > 0
-    }
-    block(channel) {
-        if (this.subscribe[channel] == undefined) return
-        this.subscribe[channel].locked += 1
-    }
-    unblock(channel) {
-        if (this.subscribe[channel] == undefined) return
-        this.subscribe[channel].locked -= 1
     }
     clear() {
         this.subscribe = {};
@@ -59,13 +43,6 @@ class EventObjForEle extends EventObj {
             })
         })
     }
-    // addEventListener(evName,ele,fn){
-    //     this.el.addEventListener(evName, e => {
-    //         if(e.target==ele){
-    //             fn()
-    //         }
-    //     })
-    // }
 }
 
 module.exports = EventObjForEle;

@@ -8,23 +8,26 @@ const {
     domApi
 } = require("../util/domApi.js");
 
+function new_INT_OBJ(){
+    return {
+        wtever: false, // async Interrupt flag
+        clear: null // Interrupt call
+    }
+}
+
 function async_render(__ctx__) {
     if (__ctx__.current_render_INT_OBJ) {
         // Interrupt check
         __ctx__.current_render_INT_OBJ.wtever = true;
         if (__ctx__.current_render_INT_OBJ.clear)
             __ctx__.current_render_INT_OBJ.clear()
-        __ctx__.Event.unblock("_rerender_");
-        __ctx__.current_render_INT_OBJ = {
-            wtever: false
-        }
+        // unblock async render task
+        __ctx__.current_render_INT_OBJ = new_INT_OBJ();
     }
     (async () => {
-        __ctx__.Event.block("_rerender_")
         // dirty checking maybe
         let patchArr = await diff(__ctx__.el, __ctx__.Po.assemble(), __ctx__.current_render_INT_OBJ);
         __ctx__.Po.$bind(patchArr)
-        __ctx__.Event.unblock("_rerender_")
     })();
 }
 
@@ -45,25 +48,15 @@ let _Poi = function(finder, template, data, watch, subPos, mixwith, mounts) {
             this.$on("_rerender_", () => {
                 that.rerender();
             })
-            this.Event.block("_rerender_")
             this.el.html("")
             let patchArr = await diff(this.el, this.Po.assemble());
             if (patchArr.length != 0) {
                 this.Po.$bind(patchArr)
             }
-            this.Event.unblock("_rerender_")
         })()
     }
-    this.current_render_INT_OBJ = {
-        wtever: false
-    };
+    this.current_render_INT_OBJ = new_INT_OBJ();
     this.rerender = () => {
-        // this.Event.block("_rerender_")
-        // // dirty checking maybe
-        // let patchArr = diff(this.el, this.Po.assemble());
-        // this.Po.bind(patchArr)
-        // // this.Po.bind();
-        // this.Event.unblock("_rerender_")
         async_render(this)
     }
     let subPoi = subPos ? generateSubPo(subPos, this.Event) : undefined

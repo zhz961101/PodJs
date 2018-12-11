@@ -64,13 +64,9 @@ let _init_DateValueProperty = (data, _ev) => {
                 continue
             data[variable] = function() {
                 let _resTemp = setVal.apply(data, arguments)
-                // _ev.emit("_rerender_");
                 return _resTemp
             }
             continue;
-            // option.get = ()=>{
-            //     return setVal(data)
-            // }
         } else {
             option.get = () => {
                 return source[variable];
@@ -169,9 +165,7 @@ let Po = function(template, data, watch, evManger, subPos, mixwith) {
         }
     }
     // data
-    // let dbg = new debugObj("_init_DateValueProperty")
     this.data = _init_DateValueProperty(data, evManger)
-    // dbg.log()
     //
     // subPo
     this.tpl = new TplEng(template, "{{", "}}"); //new Template(template,subPos);
@@ -180,13 +174,11 @@ let Po = function(template, data, watch, evManger, subPos, mixwith) {
     //
     this.$localPo = []
     this.assemble = function(data, _id) {
-        // evManger.block("_rerender_")
         if (data != undefined) {
             Object.assign(deepClone(data), this.data)
         } else {
             data = deepClone(this.data)
         }
-        // evManger.unblock("_rerender_")
         let res = this.tpl.joint(data, _id)
         if (subPos != undefined) {
             return replaceSubNode(res, subPos, this.data, this.$localPo)
@@ -196,11 +188,6 @@ let Po = function(template, data, watch, evManger, subPos, mixwith) {
     };
 
     this.$bind = patchs => {
-        // if (subPos) {
-        //     for (let subi in subPos) {
-        //         subPos[subi].bind()
-        //     }
-        // }
         if (patchs.length == 0) return
         let bindArr = [],
             onArr = [];
@@ -216,10 +203,10 @@ let Po = function(template, data, watch, evManger, subPos, mixwith) {
             let attrs = ele.attributes
             if (attrs.length == 0) return
             let isOn = node => {
-                return /on:/g.test(node.nodeName)
+                return /^on:/g.test(node.nodeName)
             }
             let isBind = node => {
-                return /bind:/g.test(node.nodeName)
+                return /^bind:/g.test(node.nodeName)
             }
             for (let attri in attrs) {
                 let attr = attrs[attri]

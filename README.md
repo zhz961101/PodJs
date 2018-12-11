@@ -9,8 +9,8 @@ https://zhzLuke96.github.io/PoiJs
 # Todo
 - [x] review
 - [x] time-slicing
-- [ ] gh-pages
-- [ ] diff-Refactoring
+- [x] gh-pages
+- [x] diff-Refactoring
 - [ ] slots on template
 - [ ] unit test
 - [ ] typescript
@@ -26,6 +26,7 @@ https://zhzLuke96.github.io/PoiJs
 (异步diff异步渲染VM)
 > 很明显，diff效率慢了一些，还吞了事件，不过确实解决了阻塞的问题，看上去和异步渲染无异(了吧...)
 > <br>无法高效的处理并发的问题，其实很多diff可以不用全部跑完，之后会尝试引入中断的方法来解决看看(没有Vdom真的写得头大)
+> <br>RIC会莫名被空闲阻塞(感觉机制上是在后台运行或者没有操作的页面都会被判别为非空闲状态)...现在换用RAF了
 
 # 其他
 - 其实一直想重构/写，又一直没动手，现在看了下，很多写的实在太奇怪了...
