@@ -74,16 +74,29 @@ function proxy_arr(arr, cb) {
             arr[i] = proxy_catch_set(arr[i], () => cb(arr));
         }
     }
+    // #u1 double callback.fixed
     return new Proxy(arr, {
         set(obj, prop, val) {
             var calling = false
-            if (prop == 'length')calling = true
+            if (prop == 'length'){
+                if(obj[prop] > val){
+                    // 仅改变长度不会修改特定prop
+                    // pop
+                    calling = true
+                }
+                // else {
+                //     // push: 分别需要设置新prop的值并设置length,只用calling一次
+                //     // push or add 
+                //     void 0;
+                // }
+            }
             else if (obj[prop] != val){
                 calling = true
             }
-            if(calling)cb(obj);
             if(!isNaN(prop))obj[prop] = proxy_catch_set(val, () => cb(obj))
             else obj[prop] = val
+            // render callback
+            if(calling)cb(obj);
             return true;
         }
     })

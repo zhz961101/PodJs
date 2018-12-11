@@ -81,9 +81,21 @@ let _lcsDomArr = async (newDomEle, oldDomEle, targetDom, INT_OBJ) => {
             continue;
         } else if (rv == bv) {
             // ta+1"_" tb+1cahr
-
-            // TODO: 对于按相同tag的元素可以不用删了又加，添加一个新的动作patch
+            
+            // done  对于按相同tag的元素可以不用删了又加，添加一个新的动作patch
             //       用来改变原元素的属性，而不用重绘
+            if(oldDomEle[curB] && newDomEle[curA] &&  oldDomEle[curB].nodeName == newDomEle[curA].nodeName){
+                planArr.push({
+                    option: "patch",
+                    old: oldDomEle[curB],
+                    new: newDomEle[curA]
+                })
+                curA += 1;
+                curB += 1;
+                continue;
+            }
+            // 下面的是比如向末尾添加
+
             // #201 Matrix boundary
             if (newDomEle[curA] != undefined)
                 planArr.push({
@@ -94,6 +106,7 @@ let _lcsDomArr = async (newDomEle, oldDomEle, targetDom, INT_OBJ) => {
                     upper: targetDom
                 })
             // *前后操作不能调换，对于末尾元素需要olddom来定位所以必须先add
+            // 一些特殊的情况，大部分ele是没有的
             planArr.push({
                 option: "delete",
                 ele: oldDomEle[curB]
@@ -268,6 +281,11 @@ let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
 }
 
 let patch = function*(plan) {
+    function patch_on(oldDOM,newDOM){
+        oldDOM.classList = newDOM.classList;
+        domApi.attributesClone(oldDOM, newDOM);
+        if(oldDOM.innerHTML.trim() != newDOM.innerHTML.trim())oldDOM.innerHTML = newDOM.innerHTML;
+    }
     for (let ch of plan) {
         yield void 0;
         switch (ch.option) {
@@ -288,6 +306,9 @@ let patch = function*(plan) {
                 break;
             case "attributesChange":
                 domApi.attributesClone(ch.ele, ch.to)
+                break;
+            case "patch":
+                patch_on(ch.old,ch.new)
                 break;
             default:
                 void 0;
