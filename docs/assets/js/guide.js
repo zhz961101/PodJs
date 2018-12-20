@@ -1,8 +1,8 @@
 'use strict';
-var maxX = 10,maxY = 10;
+const maxX = 10,maxY = 10;
 let app2 = Poi({
     el: "#app2",
-    tpl: `<button type="button" name="button" on:click="random(true)">random</button><button type="button" name="button" on:click="next()">Next step</button><hr><div class="container">{{ for(let i = 0;i<states.length ;i++){ }}{{ for(let j = 0;j<states[0].length ;j++){ }}<div class={{ (states[i][j]?'"item live"':'"item"')}}></div>{{ } }}{{ } }}</div><hr>`,
+    tpl: `<button type="button" name="button" on:click="random(true)">random</button><button type="button" name="button" on:click="next()">Next step</button><hr><div class="container">{{ for(let i = 0;i<states.length ;i++){ }}{{ for(let j = 0;j<states[0].length ;j++){ }}<div class={{= (states[i][j]?'"item live"':'"item"')}}></div>{{ } }}{{ } }}</div><hr>`,
     data: {
         states: [],
         next: function(){
@@ -85,13 +85,16 @@ let app2 = Poi({
 
 let app1 = Poi({
     el: "#app1",
-    tpl: `<input type="text" bind:value="inputText" on:keyup="inputText=self.value"><button type="button" name="button" on:click="add()" >add</button><ul>{{ for(let todoi in todos){ }}<li class= "{{ todos[todoi].state?"ok":"continue" }}">{{ todos[todoi].content }}<button on:click="toggle({{ todoi }})">toggle</button><button on:click="todos.splice({{ todoi }},1)">delete</button></li>{{ } }}</ul>`,
+    tpl: `<input type="text" bind:value="inputText" on:keyup="inputText=self.value"><button type="button" name="button" on:click="add()" >add</button><ul>{{ for(let todoi in todos){ }}<li class= "{{= todos[todoi].state?"ok":"continue" }}">{{= todos[todoi].content }}<button on:click="toggle({{= todoi }})">toggle</button><button on:click="todos.splice({{= todoi }},1)">delete</button></li>{{ } }}</ul>`,
     data: {
         todos: [{state:false,content:"早睡早起"}],
         inputText: "",
         add: function(){
             if(this.inputText=="")return
-            if(this.inputText==this.todos[this.todos.length-1].content){this.inputText="";return}
+            if(this.todos.length != 0 && this.inputText==this.todos[this.todos.length-1].content){
+                this.inputText="";
+                return
+            }
             this.todos.push({
                 state: false,
                 content: this.inputText

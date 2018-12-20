@@ -7,24 +7,24 @@ let poiApp = Poi({
     el: "#app",
     tpl: "#app-template",
     data: {
+        stepCount: 0,
         states: [],
-        timer: null,
+        isPlaying: false,
         play: function(msg){
             console.log(msg)
-            if(this.timer!=null)return
-            this.timer = setInterval(()=>{this.next.apply(this)},1000)
+            this.isPlaying = true;
+            this.next();
             // console.log(this.timer)
         },
         stop: function(){
-            if(this.timer==null)return
-            clearInterval(this.timer)
-            this.timer = null
+            this.isPlaying = false;
         },
         next: function(){
             if (this.states.length == 0) {
                 this.random(false)
                 return
             }
+            this.stepCount += 1
             let isSurvival = (state, Neighbours) => {
                 let saveCount = 0;
                 for (let cell_state of Neighbours) {
@@ -80,6 +80,7 @@ let poiApp = Poi({
             this.states = tempStates
         },
         random: function(clear){
+            this.stepCount = 0
             // if(this.states.length!=0)return
             if(clear)this.stop(this)
             let tempStates = []
@@ -99,8 +100,14 @@ let poiApp = Poi({
         // }
     },
     mounted: {
-        init: function() {
+        init() {
             this.random();
+        },
+        renderBefore(){
+            console.log("**render**")
+        },
+        renderAfter(){
+            if(this.isPlaying)setTimeout(()=>this.next(),500)
         }
     }
 })

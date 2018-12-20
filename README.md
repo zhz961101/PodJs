@@ -18,4 +18,5 @@ state | index | name    | content             | comment
 - router_lite: [HashRouter 也许是一个错误的示范](https://zhzluke96.github.io/PoiJs/example/Router/HashRouter.html)
 
 # code
-> https://raw.githubusercontent.com/zhzLuke96/PoiJs/gh-pages/dist/Poi.bundle.js
+> https://zhzluke96.github.io/PoiJs/dist/Poi.bundle.js
+> https://zhzluke96.github.io/PoiJs/dist/Poi.js
