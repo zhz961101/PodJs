@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Tree Viewer - poi</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div id="app"></div>
+        <script type="text/x-template" id="nodetpl">
+            <li>
+                <div>{{= name }}
+                {{ if(typeof children != "undefined"){ }}
+                    <button on:click="TreeData.opened=!TreeData.opened">
+                        {{ if(opened){ }}
+                            [ - ]</button>
+                            <ul>
+                        {{ }else{ }}
+                            [ + ]</button>
+                            <ul style="display:none">
+                        {{ } }}
+                        {{ for( i of children){ }}
+                            {{* i }}
+                        {{ } }}
+                        </ul>
+                {{ } }}
+                </div>
+            </li>
+        </script>
+        <script src="../../dist/Poi.js" charset="utf-8"></script>
+        <script src="./index.js"></script>
+    </body>
+</html>
