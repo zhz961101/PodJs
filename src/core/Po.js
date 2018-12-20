@@ -4,9 +4,11 @@ const {
     GetAttrElement,
     proxyArr
 } = require("../util/util");
-const TplEng = require("./template");
+// const TplEng = require("./template");
+const {
+    JxTpl
+} = require("./jx")
 const Jsvm = require("../util/JsVm");
-
 
 let replaceSubNode = (html, subPos, supper, localPo) => {
     let resloveData = attrs => {
@@ -48,29 +50,25 @@ let replaceSubNode = (html, subPos, supper, localPo) => {
 let _init_DateValueProperty = (data, _ev) => {
     let source = deepClone(data)
     for (let variable in data) {
-        let setVal = data[variable];
+        let srcVal = data[variable];
         let option = {}
-        if (Object.prototype.toString.call(setVal) == "[object Array]") {
+        if (Object.prototype.toString.call(srcVal) == "[object Array]") {
             // #101 length problem
-            setVal = proxyArr(setVal, newVal => {
+            srcVal = proxyArr(srcVal, newVal => {
                 _ev.emit("SET_" + variable, newVal);
                 _ev.emit("_rerender_");
                 if (source[variable].length == newVal.length) return
                 source[variable] = newVal;
             })
         }
-        if (typeof setVal === "function") {
-            if (/_ev.emit/g.test(setVal.toString()))
+        if (typeof srcVal === "function") {
+            if (/_ev.emit/g.test(srcVal.toString()))
                 continue
-            data[variable] = function() {
-                let _resTemp = setVal.apply(data, arguments)
-                return _resTemp
-            }
+            // function in data
+            data[variable] = (...args) => srcVal.apply(data, args)
             continue;
         } else {
-            option.get = () => {
-                return source[variable];
-            }
+            option.get = () => source[variable];
         }
         option.set = newVal => {
             if (source[variable] == newVal) return
@@ -79,7 +77,7 @@ let _init_DateValueProperty = (data, _ev) => {
             _ev.emit("_rerender_");
         }
         Object.defineProperty(data, variable, option)
-        data[variable] = setVal;
+        data[variable] = srcVal;
     }
     return data;
 }
@@ -148,10 +146,10 @@ let hitchWath = (watch, _ev) => {
     }
 }
 
-let Po = function(template, data, watch, evManger, subPos, mixwith) {
-    if (mixwith) {
-        extend(data, deepClone(mixwith.$pureData));
-    }
+function Po(template, data, watch, evManger, subPos, mixwith, Jx) {
+    // mixwith
+    if (mixwith) extend(data, deepClone(mixwith.$pureData));
+
     this.$pureData = deepClone(data)
     // tpl
     this.Clone = _data => {
@@ -168,7 +166,7 @@ let Po = function(template, data, watch, evManger, subPos, mixwith) {
     this.data = _init_DateValueProperty(data, evManger)
     //
     // subPo
-    this.tpl = new TplEng(template, "{{", "}}"); //new Template(template,subPos);
+    this.tpl = new JxTpl(template, Jx); //new Template(template,subPos);
     if (watch) hitchWath(watch, evManger);
     // error everyday
     //
@@ -202,12 +200,9 @@ let Po = function(template, data, watch, evManger, subPos, mixwith) {
             }
             let attrs = ele.attributes
             if (attrs.length == 0) return
-            let isOn = node => {
-                return /on:/g.test(node.nodeName)
-            }
-            let isBind = node => {
-                return /bind:/g.test(node.nodeName)
-            }
+            const isOn = node => /on:/g.test(node.nodeName);
+            const isBind = node => /bind:/g.test(node.nodeName);
+
             for (let attri in attrs) {
                 let attr = attrs[attri]
                 if (isOn(attr)) {

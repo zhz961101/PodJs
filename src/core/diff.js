@@ -190,7 +190,9 @@ let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
             Nchi.push(child)
         } else {
             NsubTree.push({
-                ele: child
+                before: newChildren[index-1],
+                ele: child,
+                after: newChildren[index+1],
             })
         }
     }
@@ -337,7 +339,7 @@ let diff = async (targetDom, newHtml, INT_OBJ) => {
     let newTreeChilds = domApi.createDomTree(newHtml)
     let patchArr = await lcsDomtree(newTreeChilds, targetDom, INT_OBJ)
     // dont int patch func
-    if (INT_OBJ && INT_OBJ.wtever) return patchArr
+    if (INT_OBJ && INT_OBJ.wtever) return []
     await frameify(patch(patchArr), INT_OBJ)
     // patch(patchArr)
     return patchArr

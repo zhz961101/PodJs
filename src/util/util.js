@@ -102,12 +102,27 @@ function proxy_arr(arr, cb) {
     })
 }
 
+const $ = (...args) => document.querySelector.apply(document,args)
+const $$ = (...args) => document.querySelectorAll.apply(document,args)
+
+// &gt; => >
+// &lt; => <
+// ...
+const escape2Html = s => s.replace(/&(lt|gt|nbsp|amp|quot);/ig,(all,t)=>({'lt':'<','gt':'>','nbsp':' ','amp':'&','quot':'"'})[t]);
+// trim and merge \r\n
+const trimBr = s => s.replace(/((\s| )*\r?\n){3,}/g,"\r\n\r\n").replace(/^((\s| )*\r?\n)+/g,'').replace(/((\s| )*\r?\n)+$/g,'');
+const mergeSpace = s => s.replace(/(\s| )+/g,' ');
+function HTMLClean(text){
+    return escape2Html(mergeSpace(trimBr(text)))
+}
 
 module.exports = {
-    deepClone: deepClone,
-    extend: extend,
-    arrMerge: arrMerge,
+    deepClone,
+    extend,
+    arrMerge,
     ev_supList: support_list,
-    GetAttrElement: GetAttrElement,
-    proxyArr: proxy_arr
+    GetAttrElement,
+    proxyArr: proxy_arr,
+    $,$$,
+    HTMLClean
 };
