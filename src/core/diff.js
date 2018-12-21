@@ -157,6 +157,26 @@ let lcsOnArr = function* (arr1, arr2, compareFn) {
     }
     return lcsArr;
 }
+
+
+function childClean(chs){
+    const re = /^\s+$/
+    let res = []
+    for (const c of chs) {
+        if(c.nodeType == 3 && re.test(c.data))continue
+        else res.push(c)
+    }
+    return res
+}
+
+function nodeForTree(node,tree){
+    if(!node)return undefined
+    for (const c of tree.children) {
+        if(domApi.isSame(c,node))return c
+    }
+    return node
+}
+
 let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
     const toarr = o => Array.prototype.slice.call(o)
     const layer_num = ele => ele.parentNode?toarr(ele.parentNode.children).indexOf(ele):0
@@ -176,6 +196,9 @@ let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
             // && ele1.className == ele2.className
         )
     }
+
+    newChildren = childClean(newChildren)
+    // ----
     let Nchi = [],
         Ochi = [],
         planArr = [],
@@ -276,8 +299,8 @@ let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
             if (NsubTree[ni].ele.nodeType == 3 && NsubTree[ni].ele.textContent.trim().replace(/\n/g, "") == "") continue;
             planArr.push({
                 option: "add",
-                before: NsubTree[ni].before,
-                after: NsubTree[ni].after,
+                before: nodeForTree(NsubTree[ni].before,oldTree),
+                after: nodeForTree(NsubTree[ni].after,oldTree),
                 ele: NsubTree[ni].ele,
                 upper: oldTree
             })
@@ -295,6 +318,62 @@ let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
     return planArr
 }
 
+function reload_pplan(plan){
+    function mergePlans(ps,prop){
+        let prev = null,ret = [];
+        for (const p of ps) {
+            if(prev && p[prop] == prev[prop]){
+                // concat each ,if target is same dom
+                let o = {
+                    option:p.option,
+                    ele:p.ele
+                }
+                o[prop] = prev.ele
+                ret.push(o)
+            }else{
+                ret.push(p)
+            }
+            prev = p
+        }
+        return ret;
+    }
+    let ret = [], dels = [],af =[], bf = [],ap = []
+    for (const p of plan) {
+        switch(p.option){
+            case "add":
+                if (p.after != undefined) {
+                    af.push({
+                        option: "after",
+                        ele: p.ele,
+                        after: p.after
+                    })
+                } else if (p.before != undefined) {
+                    bf.push({
+                        option: "before",
+                        ele: p.ele,
+                        before: p.before
+                    })
+                } else {
+                    ap.push({
+                        option:"append",
+                        ele:p.ele,
+                        upper: p.upper
+                    })
+                }
+                break;
+            case "delete":
+                dels.push(p)
+                break;
+            default:
+                ret.push(p)
+                break;
+        }
+    }
+    af = mergePlans(af.reverse(),"after")
+    bf = mergePlans(bf,"before")
+    return [].concat(ap,af,bf,ret,dels)
+}
+
 let patch = function* (plan) {
     function patch_on(oldDOM, newDOM) {
         if(oldDOM.nodeType == 3){
@@ -305,17 +384,18 @@ let patch = function* (plan) {
             if (oldDOM.innerHTML.trim() != newDOM.innerHTML.trim()) oldDOM.innerHTML = newDOM.innerHTML;
         }
     }
+    plan = reload_pplan(plan)
     for (let ch of plan) {
         yield void 0;
         switch (ch.option) {
-            case "add":
-                if (ch.after != undefined) {
-                    domApi.insertBefore(ch.ele, ch.after)
-                } else if (ch.before != undefined) {
-                    domApi.insertAfter(ch.ele, ch.before)
-                } else {
-                    domApi.append(ch.ele, ch.upper)
-                }
+            case "after":
+                domApi.insertBefore(ch.ele, ch.after)
+                break;
+            case "before":
+                domApi.insertAfter(ch.ele, ch.before)
+                break;
+            case "append":
+                domApi.append(ch.ele, ch.upper)
                 break;
             case "classChange":
                 ch.ele.classList = ch.list

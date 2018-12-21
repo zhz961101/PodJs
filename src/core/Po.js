@@ -4,6 +4,7 @@ const {
     GetAttrElement,
     proxyArr
 } = require("../util/util");
+const attrRoster = require("../util/attrRoster");
 // const TplEng = require("./template");
 const {
     JxTpl
@@ -103,6 +104,8 @@ let hitchOnEv = (_evManger, _on, data, localArr) => {
                     }, withData)
                     // require("../util/JsVm.js").micVm(coStr, that_data);
                     Jsvm.safe(coStr, that_data);
+                    
+                    _evManger.emit("_rerender_");
                 }
             })
         }
@@ -213,9 +216,11 @@ function Po(template, data, watch, evManger, subPos, mixwith, Jx) {
                     })
                 }
                 if (isBind(attr)) {
+                    let evName = attr.nodeName.split(":")[1]
+                    if(evName in attrRoster)evName = attrRoster[evName]
                     bindArr.push({
                         ele: ele,
-                        eventName: attr.nodeName.split(":")[1],
+                        eventName: evName,
                         codeStr: attr.nodeValue
                     })
                 }
