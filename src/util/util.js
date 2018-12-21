@@ -36,7 +36,7 @@ let arrMerge = (a, b) => {
     a.push.apply(a, b);
 };
 
-let support_list = ["resize", "load", "click", "dblclick", "change", "blur", "focus", "keydown", "keyup", "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", "select", "keypress"];
+let support_list = ["resize", "load", "click", "dblclick", "change", "input", "blur", "focus", "keydown", "keyup", "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", "select", "keypress","mousewheel","scroll"];
 
 let GetAttrElement = (attr, val) => {
     let e = document.all;
@@ -112,8 +112,9 @@ const escape2Html = s => s.replace(/&(lt|gt|nbsp|amp|quot);/ig,(all,t)=>({'lt':'
 // trim and merge \r\n
 const trimBr = s => s.replace(/((\s| )*\r?\n){3,}/g,"\r\n\r\n").replace(/^((\s| )*\r?\n)+/g,'').replace(/((\s| )*\r?\n)+$/g,'');
 const mergeSpace = s => s.replace(/(\s| )+/g,' ');
+const cleanSriptTag = s => s.replace(/<\s*script.*?>([\S\s]*?)<\/\s*?script[^>\w]*?>/gi,"");
 function HTMLClean(text){
-    return escape2Html(mergeSpace(trimBr(text)))
+    return escape2Html(mergeSpace(trimBr(cleanSriptTag(text))))
 }
 
 module.exports = {

@@ -22,6 +22,10 @@ const arrDiffer = (a, b) => {
     }
     return isIn(a, b) && isIn(b, a)
 }
+const toArr = o => Array.prototype.slice.call(o)
+function childIndex(ele){
+    return toArr(ele.parentNode.children).indexOf(ele)
+}
 
 export const domApi = {
     $: _selector => {
@@ -83,7 +87,8 @@ export const domApi = {
             return (
                 ele1.nodeName == ele2.nodeName &&
                 ele1.id == ele2.id &&
-                ele1.innerText.trim() == ele2.innerText.trim()
+                ele1.innerHTML.trim() == ele2.innerHTML.trim() &&
+                childIndex(ele1) == childIndex(ele2)
                 // && ele1.className == ele2.className
             )
         }

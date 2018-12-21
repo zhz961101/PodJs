@@ -2,7 +2,6 @@ const {
     ev_supList
 } = require("../util/util");
 
-
 class EventObj {
     constructor() {
         this.subscribe = {}
@@ -36,11 +35,8 @@ class EventObjForEle extends EventObj {
     }
     __init_nativeEv() {
         ev_supList.forEach(evName => {
-            this.el.addEventListener(evName, e => {
-                // window.requestIdleCallback(() => this.emit(evName, e))
-                // setTimeout(() => this.emit(evName, e), 1);
-                this.emit(evName, e)
-            })
+            let fn_body = e => this.emit(evName, e)
+            this.el.addEventListener(evName, fn_body, true)
         })
     }
 }
