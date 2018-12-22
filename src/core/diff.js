@@ -54,7 +54,7 @@ let _lcsDomArr = async (newDomEle, oldDomEle, targetDom, INT_OBJ) => {
                     planArr.push({
                         option: "classChange",
                         ele: oldDomEle[curB],
-                        list: newDomEle[curA].classList
+                        target: newDomEle[curA]
                     })
             }
             // attributesDiff
@@ -63,7 +63,7 @@ let _lcsDomArr = async (newDomEle, oldDomEle, targetDom, INT_OBJ) => {
                     planArr.push({
                         option: "attributesChange",
                         ele: oldDomEle[curB],
-                        to: newDomEle[curA]
+                        target: newDomEle[curA]
                     })
             }
             curA += 1;
@@ -171,10 +171,11 @@ function childClean(chs){
 
 function nodeForTree(node,tree){
     if(!node)return undefined
-    for (const c of tree.children) {
+    for (const c of tree) {
         if(domApi.isSameLayerNode(c,node))return c
     }
-    return node
+    // return node
+    return undefined
 }
 
 let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
@@ -268,7 +269,7 @@ let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
                         planArr.push({
                             option: "classChange",
                             ele: otree,
-                            list: ntree.classList
+                            target: ntree
                         })
                 }
                 // attributesDiff
@@ -277,7 +278,7 @@ let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
                         planArr.push({
                             option: "attributesChange",
                             ele: otree,
-                            to: ntree
+                            target: ntree
                         })
                 }
                 // diff ending
@@ -299,8 +300,8 @@ let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
             if (NsubTree[ni].ele.nodeType == 3 && NsubTree[ni].ele.textContent.trim().replace(/\n/g, "") == "") continue;
             planArr.push({
                 option: "add",
-                before: nodeForTree(NsubTree[ni].before,oldTree),
-                after: nodeForTree(NsubTree[ni].after,oldTree),
+                before: nodeForTree(NsubTree[ni].before,OsubTree),
+                after: nodeForTree(NsubTree[ni].after,OsubTree),
                 ele: NsubTree[ni].ele,
                 upper: oldTree
             })
@@ -338,6 +339,22 @@ function reload_pplan(plan){
         }
         return ret;
     }
+    let targetHost = new WeakMap()
+    for (const p of plan) {
+        switch(p.option){
+            case "classChange":
+            case "attributesChange":
+                targetHost.set(p.target,p.ele)
+                break;
+            case "patch":
+                targetHost.set(p.new,p.old)
+                break;
+            default:
+                break;
+        }
+    }
+
+
     let ret = [], dels = [],af =[], bf = [],ap = []
     for (const p of plan) {
         switch(p.option){
@@ -346,21 +363,21 @@ function reload_pplan(plan){
                     bf.push({
                         option: "before",
                         ele: p.ele,
-                        before: p.before,
+                        before: targetHost.get(p.before) || p.before,
                         upper: p.upper
                     })
                 } else if (p.after != undefined) {
                     af.push({
                         option: "after",
                         ele: p.ele,
-                        after: p.after,
+                        after: targetHost.get(p.after) ||  p.after,
                         upper: p.upper
                     })
                 } else {
                     ap.push({
                         option:"append",
                         ele:p.ele,
-                        upper: p.upper
+                        upper: targetHost.get(p.upper) || p.upper
                     })
                 }
                 break;
@@ -407,10 +424,10 @@ let patch = function* (plan) {
                 domApi.remove(ch.ele)
                 break;
             case "classChange":
-                ch.ele.classList = ch.list
+                ch.ele.classList = ch.target.classList
                 break;
             case "attributesChange":
-                domApi.attributesClone(ch.ele, ch.to)
+                domApi.attributesClone(ch.ele, ch.target)
                 break;
             case "patch":
                 patch_on(ch.old, ch.new)
