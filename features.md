@@ -11,6 +11,11 @@
 - [ ] unit test
 - [ ] typescript
 
+# template
+template callee
+
+...
+
 # time slice
 ![before](/docs/bad_slice.png)
 

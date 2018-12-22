@@ -213,9 +213,9 @@ let lcsDomtree = async (newChildren, oldTree, INT_OBJ) => {
             Nchi.push(child)
         } else {
             NsubTree.push({
-                before: newChildren[index-1],
+                before: newChildren[Number(index)-1],
                 ele: child,
-                after: newChildren[index+1],
+                after: newChildren[Number(index)+1],
             })
         }
     }
@@ -341,17 +341,17 @@ function reload_pplan(plan){
     for (const p of plan) {
         switch(p.option){
             case "add":
-                if (p.after != undefined) {
-                    af.push({
-                        option: "after",
-                        ele: p.ele,
-                        after: p.after
-                    })
-                } else if (p.before != undefined) {
+                if (p.before != undefined) {
                     bf.push({
                         option: "before",
                         ele: p.ele,
                         before: p.before
+                    })
+                } else if (p.after != undefined) {
+                    af.push({
+                        option: "after",
+                        ele: p.ele,
+                        after: p.after
                     })
                 } else {
                     ap.push({
@@ -371,7 +371,7 @@ function reload_pplan(plan){
     }
     af = mergePlans(af.reverse(),"after")
     bf = mergePlans(bf,"before")
-    return [].concat(ap,af,bf,ret,dels)
+    return [].concat(ap,bf,af,ret,dels)
 }
 
 let patch = function* (plan) {

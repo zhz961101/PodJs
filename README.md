@@ -1,7 +1,7 @@
 # PodJs
 web MVVM framework
 
-<a href="https://zhzLuke96.github.io/PoiJs"> read more...</a>
+[read more...](https://zhzLuke96.github.io/PoiJs)
 
 # Usage
 come soon...
