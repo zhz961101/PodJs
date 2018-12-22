@@ -22,9 +22,39 @@ const arrDiffer = (a, b) => {
     }
     return isIn(a, b) && isIn(b, a)
 }
-const toArr = o => Array.prototype.slice.call(o)
+
 function childIndex(ele){
-    return toArr(ele.parentNode.children).indexOf(ele)
+    if(ele.cellIndex)return ele.cellIndex
+    if(ele.rowIndex)return ele.rowIndex
+    // if(ele.sourceIndex)return ele.sourceIndex
+
+    // const toArr = o => Array.prototype.slice.call(o)
+    // return toArr(ele.parentNode.children).indexOf(ele)
+    
+    // LoseIndex => diff.js(patch)
+    if(!ele.parentNode.loseIndex){
+        if(ele.previousElementSibling && ele.previousElementSibling.childIndex){
+            ele.childIndex = ele.previousElementSibling.childIndex + 1
+            return ele.childIndex
+        }
+        if(ele.nextElementSibling && ele.nextElementSibling.childIndex){
+            ele.childIndex = ele.nextElementSibling.childIndex - 1
+            return ele.childIndex
+        }
+        if(ele.childIndex)return ele.childIndex
+    }
+    //*** Performance killer
+    let count = 0,
+    node = ele.parentNode.children[0],
+    ret = 0
+    if(node == ele)return count
+    while(node = node.nextElementSibling){
+        node.childIndex = count
+        if(node == ele)ret = count
+        count += 1
+    }
+    ele.parentNode.loseIndex = true
+    return ret
 }
 
 export const domApi = {
@@ -87,8 +117,7 @@ export const domApi = {
             return (
                 ele1.nodeName == ele2.nodeName &&
                 ele1.id == ele2.id &&
-                ele1.innerHTML.trim() == ele2.innerHTML.trim() &&
-                childIndex(ele1) == childIndex(ele2)
+                ele1.innerHTML.trim() == ele2.innerHTML.trim()
                 // && ele1.className == ele2.className
             )
         }
@@ -99,6 +128,12 @@ export const domApi = {
                 ele1.textContent == ele2.textContent
             )
         }
+    },
+    isSameLayerNode(ele1, ele2){
+        return this.isSame(ele1, ele2)
+                && (ele1.childIndex && ele2.childIndex  && !ele1.parentNode.loseIndex?
+                    ele1.childIndex == ele2.childIndex :
+                    childIndex(ele1) == childIndex(ele2))
     },
     classListDiff: (ele1, ele2) => {
         if (ele1.classList.length != ele2.classList.length) {

@@ -172,7 +172,7 @@ function childClean(chs){
 function nodeForTree(node,tree){
     if(!node)return undefined
     for (const c of tree.children) {
-        if(domApi.isSame(c,node))return c
+        if(domApi.isSameLayerNode(c,node))return c
     }
     return node
 }
@@ -326,7 +326,8 @@ function reload_pplan(plan){
                 // concat each ,if target is same dom
                 let o = {
                     option:p.option,
-                    ele:p.ele
+                    ele:p.ele,
+                    upper:p.upper
                 }
                 o[prop] = prev.ele
                 ret.push(o)
@@ -345,13 +346,15 @@ function reload_pplan(plan){
                     bf.push({
                         option: "before",
                         ele: p.ele,
-                        before: p.before
+                        before: p.before,
+                        upper: p.upper
                     })
                 } else if (p.after != undefined) {
                     af.push({
                         option: "after",
                         ele: p.ele,
-                        after: p.after
+                        after: p.after,
+                        upper: p.upper
                     })
                 } else {
                     ap.push({
@@ -390,18 +393,21 @@ let patch = function* (plan) {
         switch (ch.option) {
             case "after":
                 domApi.insertBefore(ch.ele, ch.after)
+                ch.upper.loseIndex = true
                 break;
             case "before":
                 domApi.insertAfter(ch.ele, ch.before)
+                ch.upper.loseIndex = true
                 break;
             case "append":
                 domApi.append(ch.ele, ch.upper)
-                break;
-            case "classChange":
-                ch.ele.classList = ch.list
+                ch.upper.loseIndex = true
                 break;
             case "delete":
                 domApi.remove(ch.ele)
+                break;
+            case "classChange":
+                ch.ele.classList = ch.list
                 break;
             case "attributesChange":
                 domApi.attributesClone(ch.ele, ch.to)
