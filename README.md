@@ -15,8 +15,10 @@ state | index | name    | content             | comment
 # some demo
 - hello world: [link](https://zhzluke96.github.io/PoiJs/example/hello%20world.html)
 - CA: [cellular automata 操作上百dom](https://zhzluke96.github.io/PoiJs/example/ca/CAxx.html)
-- router_lite: [HashRouter 也许是一个错误的示范](https://zhzluke96.github.io/PoiJs/example/Router/HashRouter.html)
+- MarkDown Editor: [高亮 同步滚动 实时更新]
+- TreeView: [template callee](https://zhzluke96.github.io/PoiJs/example/treeView/index.html)
+- ~~router_lite: [HashRouter 暂时break](https://zhzluke96.github.io/PoiJs/example/Router/HashRouter.html)~~
 
 # code
-> https://zhzluke96.github.io/PoiJs/dist/Poi.bundle.js
-> https://zhzluke96.github.io/PoiJs/dist/Poi.js
+- minify:https://zhzluke96.github.io/PoiJs/dist/Poi.bundle.js
+- dev-es6-nonBabel:https://zhzluke96.github.io/PoiJs/dist/Poi.js

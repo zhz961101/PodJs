@@ -46,36 +46,8 @@
                 font-size: 14px;
                 font-family: 'Monaco', courier, monospace;
             }
-            .hljs{
-                border-radius: .25em;
-            }
-            pre,.langflag{
-                position: absolute;
-            }
-            code{
-                padding: 1.5em !important;
-            }
-            .langflag{
-                opacity: .8;
-                text-transform: uppercase;
-                color: azure;
-                font-weight: bold;
-                font-size: 1em;
-                z-index: 99;
-                top: .2em;
-                right: .2em;
-            }
         </style>
-        <style>
-        td,th{
-            border: 1px solid #dfe2e5;
-            padding: 6px 13px;
-        }
-        table{
-            border-collapse: collapse;
-    border-spacing: 0;
-        }
-        </style>
+        <link rel="stylesheet" href="./mark.css">
     </head>
     <body>
         <!--[if lt IE 7]>
@@ -85,7 +57,9 @@
 
         </div>
         <script type="text/x-template" id="appTpl">
-            <textarea class="fill" bind:value="text" on:keyup="text=self.value"></textarea>
+            <textarea class="fill"
+            bind:value="text"
+            on:input="text=self.value"></textarea>
             <div id="preview">
                 {{= compiledMarkdown() }}
             </div>
@@ -93,7 +67,8 @@
         <script src="https://cdn.bootcss.com/marked/0.5.2/marked.min.js"></script>
         
         <script src="https://cdn.bootcss.com/highlight.js/9.13.1/highlight.min.js"></script>
-        <script src="../../dist/Poi.js" charset="utf-8"></script>
+        <script src="../../dist/Poi.bundle.js" charset="utf-8"></script>
+        <script src="./async_scroll.js"></script>
         <script src="./index.js"></script>
     </body>
 </html>

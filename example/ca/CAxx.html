@@ -74,25 +74,29 @@
 <body>
     <div id="app" class="stageBox"></div>
     <script type="text/x-template" id="app-template" charset="utf-8">
+        Step:<span>{{=stepCount}}</span>
+        <br>
         <button type="button" name="button" on:click="random(true)">random</button>
         <button type="button" name="button" on:click="next()">Next step</button>
-        <button type="button" name="button" on:click="play('poi!play!')">play</button>
+        <button type="button" name="button" on:click="play('poi!play!')" title="reader mount">play</button>
         <button type="button" name="button" on:click="stop()">stop</button>
-        <input type="text" placeholder="交互测试">
+        <br>
+        <input type="text" placeholder="Non-blocking UI">
         <button>none call</button>
+        
         <hr>
         <div class="container">
             {{ for(let i = 0;i<states.length ;i++){ }}
                 {{ for(let j = 0;j<states[0].length ;j++){ }}
                     <div class=
-                    {{ (states[i][j]?'"item live"':'"item"')}}
+                    {{= (states[i][j]?'"item live"':'"item"')}}
                     ></div>
                 {{ } }}
             {{ } }}
         </div>
         <hr>
     </script>
-    <script src="../../dist/Poi.bundle.js" charset="utf-8"></script>
+    <script src="../../dist/Poi.js" charset="utf-8"></script>
     <script src="./CAxx.js" charset="utf-8"></script>
 </body>
 

@@ -6,6 +6,14 @@ renderer.code = (code, language) => {
 };
 
 marked.setOptions({renderer});
+
+const $$ = (...args) => document.querySelectorAll.apply(document,args)
+function task_li() {
+    for (const tl of $$("li input[type=checkbox]")) {
+        tl.parentNode.classList.add("task")
+    }
+}
+
 const app = new Poi({
     el: "#app",
     tpl: "#appTpl",
@@ -20,10 +28,16 @@ const $ = q => document.querySelector(q)
                 tables: true,
                 breaks: false,
                 pedantic: false,
-                sanitize: true,
+                sanitize: false,
                 smartLists: true,
                 smartypants: false
             })
+        }
+    },
+    mount:{
+        renderAfter(dom){
+            aScroll(dom.children[0],dom.children[1])
+            task_li()
         }
     }
 })
