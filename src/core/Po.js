@@ -181,11 +181,11 @@ function Po(template, data, watch, evManger, subPos, mixwith, Jx) {
             data = deepClone(this.data)
         }
         let res = this.tpl.joint(data, _id)
-        if (subPos != undefined) {
-            return replaceSubNode(res, subPos, this.data, this.$localPo)
-        } else {
-            return res
-        }
+        // if (subPos != undefined) {
+        //     return replaceSubNode(res, subPos, this.data, this.$localPo)
+        // } else {
+        return res
+        // }
     };
 
     this.$bind = patchs => {
@@ -240,18 +240,20 @@ function Po(template, data, watch, evManger, subPos, mixwith, Jx) {
 }
 
 let generateSubPo = function(poList, evManger) {
-    let res = {}
-    for (let poName in poList) {
-        let sub = poList[poName],
-            tplText
-        if (sub.tpl[0] == "#") {
-            tplText = document.querySelector(sub.tpl).innerHTML;
-        } else {
-            tplText = sub.tpl
-        }
-        res[poName] = new Po(tplText, deepClone(sub.data), {}, evManger)
-    }
-    return res
+    // banned
+    // =========================================
+    // let res = {}
+    // for (let poName in poList) {
+    //     let sub = poList[poName],
+    //         tplText
+    //     if (sub.tpl[0] == "#") {
+    //         tplText = document.querySelector(sub.tpl).innerHTML;
+    //     } else {
+    //         tplText = sub.tpl
+    //     }
+    //     res[poName] = new Po(tplText, deepClone(sub.data), {}, evManger)
+    // }
+    // return res
 }
 
 module.exports = {

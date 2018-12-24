@@ -1,33 +1,23 @@
 import "regenerator-runtime";
 
-const Poi = require("./core/Poi");
-// const EventObj = require("./core/event");
-// const TplEng = require("./core/template");
-// const Jsvm = require("./util/JsVm");
+const req_ele_init = require("./component/req.comp")
+const Poi = require("./Poi");
 
-// Poi.__TEST__ = {
-//     ev: (() => {
-//         let evobj = new EventObj(document);
-//         evobj.on("__TEST__", () => {
-//             console.log("event manger is working!")
-//         })
-//         return evobj;
-//     })(),
-//     tpl: (_t, _d) => {
-//         return new TplEng(_t).joint(_d || {});
-//     },
-//     vm: Jsvm
-// };
-if(typeof window != 'undefined')window.Poi = Poi
-
-let usage = () => {
+function poi_init(){
+    if(typeof window != 'undefined')window.Poi = Poi
+    try {
+        req_ele_init()
+    } catch (err) {
+        console.warn(err)
+    }
     if (console) {
-        let msg = `
-        thx for u using!!!!poi~
-
-        now,poi is working!have fun.
-        `;
-        console.log(msg);
+        console.log(`
+        poi~
+        thx for u using!!!!
+        PoiJs is working!have fun.
+    
+        gitpage: https://zhzluke96.github.io/PoiJs/`);
     }
 }
-usage();
+
+poi_init()

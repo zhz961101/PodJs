@@ -12,9 +12,36 @@
 - [ ] typescript
 
 # template
-template callee
+> 如果对这个感兴趣的话，可以看看之前的一些版本里，最开始的设计是来自一个(忘记哪了...)blog的开发报告，开始几乎没有改动什么，只后尝试在template里越级的去解析html，得不偿失，浪费了很多时间...
 
-...
+基本的，被`{{`和`}}`标记的部分是js代码块，它将直接执行，也是最常用的地方。除此之外，代码块还可以标记为不同的行为(三种)
+
+- `=`: get value 表示将值作为html的一部分
+- `$`: 模板调用，在一个模板中调用其他已经注册的模板，实现模板模块化
+- `*`: 模板callee，模板调用自身，实现递归渲染
+
+相对来说，`callee`不常用，但是一些场景中是必须的
+
+> `jx.js`，内部实现其实很简单，所有被编译出来的模板函数都是`generator`(`async-diff`也是基于它做的`co`)，而模板调用就是`yeild form`调用，`callee`调用就是原生调用。最终效果将使得模板函数异常的灵活，且对外表现的和`Array`又没有区别
+
+# component (polyfill-friendly)
+Shadow DOM v1
+
+> [link](https://developers.google.cn/web/fundamentals/web-components/shadowdom#events)
+
+customElements
+
+> [link](https://developers.google.cn/web/fundamentals/web-components/customelements)
+
+只是简单的封装了这两个新特性的调用，其外和core库暂时无联系，下个版本或许会探寻两者结合的尝试(其实也没有必要，毕竟shadow dom本来初衷就是限定css保持html模块化，和poi从性能出发没有什么冲突)
+
+
+# proxy 元编程
+
+> 代理array 代理object
+
+现在还没处理完性能问题，也许还是不折腾最好，交给用户解决...
+
 
 # time slice
 ![before](/docs/bad_slice.png)

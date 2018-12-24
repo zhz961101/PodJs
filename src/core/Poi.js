@@ -4,16 +4,8 @@ const {
     Po,
     generateSubPo
 } = require("./Po");
-const{
-    $,
-    HTMLClean
-} = require("../util/util")
-const {
-    Jx
-} = require("./jx")
-const GlobalJxEnviron = new Jx()
 
-function new_INT_OBJ(){
+function INT_OBJ(){
     return {
         wtever: false, // async Interrupt flag
         clear: null // Interrupt call
@@ -27,7 +19,7 @@ function async_diff(ctx) {
         if (ctx.current_render_INT_OBJ.clear)
             ctx.current_render_INT_OBJ.clear()
         // unblock async render task
-        ctx.current_render_INT_OBJ = new_INT_OBJ();
+        ctx.current_render_INT_OBJ = new INT_OBJ();
     }
     (async () => {
         // render mount before
@@ -69,7 +61,7 @@ function polyOptions(options){
     }
 }
 
-function _Poi(options) {
+function Poi(options) {
     // options
     let {
         el:ele,
@@ -88,11 +80,12 @@ function _Poi(options) {
     // #401 babel es5 leads to mistakes
     
     // async diff render
-    this.current_render_INT_OBJ = new_INT_OBJ();
+    this.current_render_INT_OBJ = new INT_OBJ();
     this.render = () => async_diff(this);
     
     // sub components ====\\
-    let subPoi = subPos ? generateSubPo(subPos, this.Event) : undefined
+    // let subPoi = subPos ? generateSubPo(subPos, this.Event) : undefined
+    // sub components ====\\
     // #402 mounted init function
     if (mixwith && mixwith.mounts){
         for (let key in mixwith.mounts) {
@@ -105,7 +98,6 @@ function _Poi(options) {
         }
     }
     this.mounts = mounts
-    // sub components ====\\
     // instance
     this.Po = new Po(template, data, watch, this.Event, subPoi, mixwith, GlobalJxEnviron);
     
@@ -132,34 +124,4 @@ function _Poi(options) {
     };
 }
 
-function optionsWapper(options){
-    // ele option
-    if(!(options.el instanceof Element)){
-        let s = options.el[0];
-        if(s == "#")options.el = $(options.el)
-        else options.el = $("#" + options.el)
-    }
-    // tpl option
-    if(options.tpl){
-        let s = options.tpl[0];
-        if(s == "#"){
-            // tpl selector
-            options.tpl = HTMLClean($(options.tpl).innerHTML);
-        }
-    }else{
-        options.tpl = HTMLClean(options.el.innerHTML)
-    }
-
-    // other ...
-    return options
-}
-
-function Poi_constructor(options) {
-    options = optionsWapper(options)
-    let that = Object.create(null);
-    that = _Poi.call(that, options);
-    return that;
-}
-Poi_constructor.prototype.mod = (...args) => GlobalJxEnviron.mod.apply(GlobalJxEnviron,args)
-
-module.exports = Poi_constructor
+module.exports = Poi
