@@ -61,7 +61,7 @@ function polyOptions(options){
     }
 }
 
-function Poi(options) {
+function Poi(options, GlobalJxEnviron) {
     // options
     let {
         el:ele,
@@ -99,7 +99,7 @@ function Poi(options) {
     }
     this.mounts = mounts
     // instance
-    this.Po = new Po(template, data, watch, this.Event, subPoi, mixwith, GlobalJxEnviron);
+    this.Po = new Po(template, data, watch, this.Event, mixwith, GlobalJxEnviron);
     
     // init hook
     if (mounts && mounts.init) mounts.init.apply(this.Po.data);

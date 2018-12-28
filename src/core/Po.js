@@ -149,7 +149,7 @@ let hitchWath = (watch, _ev) => {
     }
 }
 
-function Po(template, data, watch, evManger, subPos, mixwith, Jx) {
+function Po(template, data, watch, evManger, mixwith, Jx) {
     // mixwith
     if (mixwith) extend(data, deepClone(mixwith.$pureData));
 

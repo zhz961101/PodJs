@@ -1,4 +1,6 @@
-const {callable} = require("../util/util")
+const {
+    callable
+} = require("../util/util")
 
 module.exports = {
     creatCustomEle,
@@ -12,7 +14,7 @@ module.exports = {
  * @param {Object} option Ele option{init,get xx,set xx...}
  * @param {Class} base defautl is HTMLElement
  */
-function creatCustomEle(tagName, shadowHtml="", option, base=HTMLElement) {
+function creatCustomEle(tagName, shadowHtml = "", option, base = HTMLElement) {
     function thatEle(...args) {
         return Reflect.construct(base, [], this.constructor);
     }
@@ -20,13 +22,13 @@ function creatCustomEle(tagName, shadowHtml="", option, base=HTMLElement) {
     thatEle.prototype.constructor = thatEle;
     Object.setPrototypeOf(thatEle, base);
     thatEle.prototype.connectedCallback = function () {
-        if(callable(option.init)){
-            option.init.call(this)
-        }
         this.shadowRoot = this.attachShadow({
             mode: 'open' // self-closing is hard to control
         });
         this.shadowRoot.innerHTML = shadowHtml
+        if (callable(option.init)) {
+            option.init.call(this)
+        }
     }
     thatEle.prototype = Object.assign(thatEle.prototype, option)
     // registered

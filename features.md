@@ -35,6 +35,13 @@ customElements
 
 只是简单的封装了这两个新特性的调用，其外和core库暂时无联系，下个版本或许会探寻两者结合的尝试(其实也没有必要，毕竟shadow dom本来初衷就是限定css保持html模块化，和poi从性能出发没有什么冲突)
 
+# state manager
+
+> [FSM](https://en.wikipedia.org/wiki/Finite-state_machine)
+
+前端组件本质上就是处理并管理各种状态，这里用了一个简单的方法来解决状态管理问题
+
+还差一点，和整体不太协调，还需要修改一些
 
 # proxy 元编程
 
@@ -56,6 +63,14 @@ customElements
 > <br>无法高效的处理并发的问题，其实很多diff可以不用全部跑完，之后会尝试引入中断的方法来解决看看(没有Vdom真的写得头大)
 > <br>RIC会莫名被空闲阻塞(感觉机制上是在后台运行或者没有操作的页面都会被判别为非空闲状态)...现在换用RAF了
 
+> **一个奇怪的bug**<br>
+> requestidlecallback是个很好的api，但是内部实现很诡异
+> <br>本来这是作为空闲调用的主要驱动接口，能最大限度提高ui响应永不阻塞
+> <br>但是，idleframe的定义太模糊了，不管是什么文档都没有详细定义(没找到)
+> <br>单就chrome而言，鼠标悬停(hit testing 2(or more)times no-response)整个LOOP都会被标记为非空闲，并继而阻塞微任务
+> <br>虽然不难理解是一种优化策略，但是这idle又idle啥了呢...我不就是想没操作的时候把次级任务队列跑完吗...
+> <br>chrome版本 70.0.3538.110 bit64
+
 # async render
 对于diff比较慢的树，在diff过程中可能会面临还没diff完下一次的diff就进入协程队列中，我用了一种简单的中断控制来优化这个过程
 
@@ -76,11 +91,3 @@ customElements
 - 模板引擎会改造成类似ECS的一套系统，从减少工作量出发，下一个修改将把所有attr功能下放到core之外
 - typescript其实不是特别必要，毕竟就是自己玩玩，工程化就靠注释就行了嘛
 - have fun
-
-> 一个奇怪的bug<br>
-> requestidlecallback是个很好的api，但是内部实现很诡异
-> <br>本来这是作为空闲调用的主要驱动接口，能最大限度提高ui响应永不阻塞
-> <br>但是，idleframe的定义太模糊了，不管是什么文档都没有详细定义(没找到)
-> <br>单就chrome而言，鼠标悬停(hit testing 2(or more)times no-response)整个LOOP都会被标记为非空闲，并继而阻塞微任务
-> <br>虽然不难理解是一种优化策略，但是这idle又idle啥了呢...我不就是想没操作的时候把次级任务队列跑完吗...
-> <br>chrome版本 70.0.3538.110 bit64
