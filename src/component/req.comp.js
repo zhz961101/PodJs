@@ -2,6 +2,9 @@ const {
     creatCustomEle,
     tplLoader
 } = require("./component")
+const {
+    domApi
+} = require("../util/domapi.js");
 
 const eleTagName = "p-require"
 
@@ -30,10 +33,23 @@ module.exports = function requireEleInit(){
             }
         })
     }
+    function appendReqEle(from){
+        let $body = domApi.$("body")
+        let dom = domApi.createDom(`<${eleTagName} from="${from}"></${eleTagName}>`)
+        domApi.append(dom,$body)
+    }
     creatCustomEle(eleTagName,"<style>:host{display:none;}</style>",{
         init() {
-            readText(this.getAttribute("from"))
+            if(this.getAttribute("from")){
+                readText(this.getAttribute("from"))
                 .then(text=>tplLoader(text))
+            }else if(this.getAttribute("fromOf")){
+                let reqLs = this.getAttribute("fromOf").trim().split(";").map(v=>v.trim())
+                for (const from of reqLs) {
+                    if(from == "")continue
+                    appendReqEle(from)
+                }
+            }
         }
     })
 }

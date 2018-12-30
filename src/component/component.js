@@ -14,7 +14,7 @@ module.exports = {
  * @param {Object} option Ele option{init,get xx,set xx...}
  * @param {Class} base defautl is HTMLElement
  */
-function creatCustomEle(tagName, shadowHtml = "", option, base = HTMLElement) {
+function creatCustomEle(tagName, shadowHtml = "", option, onShadow = true, base = HTMLElement) {
     function thatEle(...args) {
         return Reflect.construct(base, [], this.constructor);
     }
@@ -22,10 +22,12 @@ function creatCustomEle(tagName, shadowHtml = "", option, base = HTMLElement) {
     thatEle.prototype.constructor = thatEle;
     Object.setPrototypeOf(thatEle, base);
     thatEle.prototype.connectedCallback = function () {
-        this.shadowRoot = this.attachShadow({
-            mode: 'open' // self-closing is hard to control
-        });
-        this.shadowRoot.innerHTML = shadowHtml
+        if(onShadow){
+            this.shadowRoot = this.attachShadow({
+                mode: 'open' // self-closing is hard to control
+            });
+            this.shadowRoot.innerHTML = shadowHtml
+        }
         if (callable(option.init)) {
             option.init.call(this)
         }

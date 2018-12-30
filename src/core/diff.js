@@ -1,6 +1,6 @@
 const {
     domApi
-} = require("../util/domApi.js");
+} = require("../util/domapi.js");
 
 const {
     frameify
