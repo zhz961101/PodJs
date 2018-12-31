@@ -43,12 +43,75 @@ customElements
 
 还差一点，和整体不太协调，还需要修改一些
 
+eg (Traffic lights):
+```js
+const app = new Poi({
+    el : "#app",
+    tpl: "#tpl",
+    data:{
+        red:false,
+        yellow:false,
+        green:true
+    },
+    initState: "green",
+    states: {
+        green: {
+            warn(type, ev) {
+                console.log("warn!")
+                this.data.yellow = true
+                this.data.green = false
+                return "yellow"
+            }
+        },
+        red: {
+            ready(type, ev) {
+                console.log("ready to go!")
+                this.data.red = false
+                this.data.yellow = true
+                return "yellow"
+            }
+        },
+        yellow: {
+            go(type, ev) {
+                console.log("go!go!go!")
+                this.data.green = true
+                this.data.yellow = false
+                return "green"
+            },
+            stop(type, ev) {
+                console.log("stop!now!")
+                this.data.red = true
+                this.data.yellow = false
+                return "red"
+            }
+        }
+    },
+    error(to, ev) {
+        console.log(`${this.currentState} =/=> ${to} !`)
+    }
+})
+
+```
+
+隐藏状态将会表现在事件流中，且遵循设计路径
+
+(目前状态机中的事件调度是脱离核心部件的，这样没什么好也没什么不好...)
+
+接下来还是会将它更易用一点，比如把当前状态放到data中？
+
 # proxy 元编程
 
 > 代理array 代理object
 
 现在还没处理完性能问题，也许还是不折腾最好，交给用户解决...
 
+# diff (NCDS algorithm)
+
+> DynamicProgramming
+
+> LCS => NCDS
+
+> Maybe Smith-Waterman?
 
 # time slice
 ![before](/docs/bad_slice.png)
