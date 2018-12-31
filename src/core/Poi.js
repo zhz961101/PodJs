@@ -1,5 +1,5 @@
 const EventObj = require("./event");
-const diff = require("./diff");
+const diff = require("./diff/diff");
 const {
     Po,
     generateSubPo

@@ -32,6 +32,7 @@ function childIndex(ele){
     // return toArr(ele.parentNode.children).indexOf(ele)
     
     // LoseIndex => diff.js(patch)
+    // index cache
     if(!ele.parentNode.loseIndex){
         if(ele.previousElementSibling && ele.previousElementSibling.childIndex){
             ele.childIndex = ele.previousElementSibling.childIndex + 1
@@ -57,7 +58,7 @@ function childIndex(ele){
     return ret
 }
 
-export const domApi = {
+const domApi = {
     $: _selector => {
         let ele = document.querySelector(_selector)
         ele.html = function(_newHtml) {
@@ -115,9 +116,10 @@ export const domApi = {
         if (ele1.nodeType == 1) {
             // node
             return (
-                ele1.nodeName == ele2.nodeName &&
-                ele1.id == ele2.id &&
-                ele1.innerHTML.trim() == ele2.innerHTML.trim()
+                ele1.nodeName == ele2.nodeName
+                && ele1.id == ele2.id
+                && ele1.innerHTML.trim() == ele2.innerHTML.trim()
+                && ele1.children.length == ele2.children.length
                 // && ele1.className == ele2.className
             )
         }
@@ -130,7 +132,7 @@ export const domApi = {
         }
     },
     isSameLayerNode(ele1, ele2){
-        return this.isSame(ele1, ele2)
+        return domApi.isSame(ele1, ele2)
                 && (ele1.childIndex && ele2.childIndex  && !ele1.parentNode.loseIndex?
                     ele1.childIndex == ele2.childIndex :
                     childIndex(ele1) == childIndex(ele2))
@@ -203,4 +205,8 @@ export const domApi = {
             ele1.className == ele2.className
         )
     }
+}
+
+module.exports = {
+    domApi
 }
