@@ -4,16 +4,16 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "build": "webpack --config ./webpack.config.js --mode production",
-        "dev": "webpack --config ./webpack.config.js --mode development",
-        "quick": "webpack --config ./webpack.quick.config.js --mode development",
-        "quick:w": "webpack --config ./webpack.quick.config.js --mode development --watch",
-        "dev:w": "webpack --watch --mode development --config ./webpack.config.js",
+        "build": "webpack --config ./conf/webpack.config.js --mode production",
+        "dev": "webpack --config ./conf/webpack.config.js --mode development",
+        "quick": "webpack --config ./conf/webpack.quick.config.js --mode development",
+        "quick:w": "webpack --config ./conf/webpack.quick.config.js --mode development --watch",
+        "dev:w": "webpack --watch --mode development --config ./conf/webpack.config.js",
         "init_object": "snpm install --only=dev && snpm install"
     },
     "keywords": [],
     "author": "",
-    "license": "ISC",
+    "license": "GPL3.0",
     "devDependencies": {
         "babel-core": "^6.26.3",
         "babel-loader": "^7.1.4",

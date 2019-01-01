@@ -6,12 +6,12 @@ const {
 
 module.exports = {
     entry: {
-        Poi: resolve(__dirname, "./src/index.js"),
-        "Poi.core": resolve(__dirname, "./src/core/Poi.js"),
-        Comp: resolve(__dirname, "./src/component/index.js")
+        Poi: resolve(__dirname, "../src/index.js"),
+        "Poi.core": resolve(__dirname, "../src/core/Poi.js"),
+        Comp: resolve(__dirname, "../src/component/index.js")
     },
     output: {
-        path: resolve(__dirname, "./dist"),
+        path: resolve(__dirname, "../dist"),
         filename: "./[name].bundle.js"
     },
     module: {
@@ -27,7 +27,7 @@ module.exports = {
         new webpack.BannerPlugin(" 版权所有，翻版算球"),
         new CleanWebpackPlugin(
             ['./dist/*.*'], {
-                root: resolve(__dirname, "./"),
+                root: resolve(__dirname, "../"),
                 verbose: true,
                 dry: false
             }),
