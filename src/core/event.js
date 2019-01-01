@@ -1,8 +1,8 @@
-const {
-    ev_supList
-} = require("./util/util");
+// const {
+//     ev_supList
+// } = require("./util/util");
 
-class EventObj {
+class Event {
     constructor() {
         this.subscribe = {}
     }
@@ -27,18 +27,25 @@ class EventObj {
         this.subscribe = {};
     }
 }
-class EventObjForEle extends EventObj {
+class EventOnEle extends Event {
     constructor(ele) {
         super();
         this.el = ele;
-        this.__init_nativeEv();
+        // this.__init_nativeEv();
+        this.loopUp = []
     }
-    __init_nativeEv() {
-        ev_supList.forEach(evName => {
-            let fn_body = e => this.emit(evName, e)
-            this.el.addEventListener(evName, fn_body, true)
-        })
+    // __init_nativeEv() {
+    //     ev_supList.forEach(evName => {
+    //         let fn_body = e => this.emit(evName, e)
+    //         this.el.addEventListener(evName, fn_body, true)
+    //     })
+    // }
+    addEventLookUp(evName){
+        if(this.loopUp.indexOf(evName) == -1){
+            this.el.addEventListener(evName, e => this.emit(evName, e), true)
+            this.loopUp.push(evName)
+        }
     }
 }
 
-module.exports = EventObjForEle;
+module.exports = EventOnEle;

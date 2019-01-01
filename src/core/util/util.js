@@ -36,7 +36,8 @@ let arrMerge = (a, b) => {
     a.push.apply(a, b);
 };
 
-let support_list = ["resize", "load", "click", "dblclick", "change", "input", "blur", "focus", "keydown", "keyup", "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", "select", "keypress","mousewheel","scroll"];
+// 已经不用了，现在是根据代码然后绑定内容
+let support_list = ["resize", "load", "click", "dblclick", "change", "input", "blur", "focus", "keydown", "keyup", "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", "select", "keypress", "mousewheel", "scroll"];
 
 let GetAttrElement = (attr, val) => {
     let e = document.all;
@@ -50,10 +51,10 @@ let GetAttrElement = (attr, val) => {
 }
 
 function proxy_catch_set(that, cb) {
-    if ( getType(that) == "array" ) {
+    if (getType(that) == "array") {
         return proxy_arr(that, cb);
     }
-    if ( getType(that) == "object"){
+    if (getType(that) == "object") {
         return new Proxy(that, {
             set(obj, prop, val) {
                 if (obj[prop] != val) {
@@ -78,8 +79,8 @@ function proxy_arr(arr, cb) {
     return new Proxy(arr, {
         set(obj, prop, val) {
             var calling = false
-            if (prop == 'length'){
-                if(obj[prop] > val){
+            if (prop == 'length') {
+                if (obj[prop] > val) {
                     // 仅改变长度不会修改特定prop
                     // pop
                     calling = true
@@ -89,29 +90,35 @@ function proxy_arr(arr, cb) {
                 //     // push or add 
                 //     void 0;
                 // }
-            }
-            else if (obj[prop] != val){
+            } else if (obj[prop] != val) {
                 calling = true
             }
-            if(!isNaN(prop))obj[prop] = proxy_catch_set(val, () => cb(obj))
+            if (!isNaN(prop)) obj[prop] = proxy_catch_set(val, () => cb(obj))
             else obj[prop] = val
             // render callback
-            if(calling)cb(obj);
+            if (calling) cb(obj);
             return true;
         }
     })
 }
 
-const $ = (...args) => document.querySelector.apply(document,args)
-const $$ = (...args) => document.querySelectorAll.apply(document,args)
+const $ = (...args) => document.querySelector.apply(document, args)
+const $$ = (...args) => document.querySelectorAll.apply(document, args)
 
 // &gt; => >
 // &lt; => <
 // ...
-const escape2Html = s => s.replace(/&(lt|gt|nbsp|amp|quot);/ig,(all,t)=>({'lt':'<','gt':'>','nbsp':' ','amp':'&','quot':'"'})[t]);
-const mergeSpace = s => s.replace(/(?:\s)\s/g,' ');
-const cleanSriptTag = s => s.replace(/<\s*?script.*?>([\S\s]*?)<\/\s*?script[^>\w]*?>/gi,"");
-function HTMLClean(text){
+const escape2Html = s => s.replace(/&(lt|gt|nbsp|amp|quot);/ig, (all, t) => ({
+    'lt': '<',
+    'gt': '>',
+    'nbsp': ' ',
+    'amp': '&',
+    'quot': '"'
+})[t]);
+const mergeSpace = s => s.replace(/(?:\s)\s/g, ' ');
+const cleanSriptTag = s => s.replace(/<\s*?script.*?>([\S\s]*?)<\/\s*?script[^>\w]*?>/gi, "");
+
+function HTMLClean(text) {
     // return escape2Html(mergeSpace(cleanSriptTag(text)))
     return mergeSpace(cleanSriptTag(text))
 }
@@ -123,6 +130,7 @@ module.exports = {
     ev_supList: support_list,
     GetAttrElement,
     proxyArr: proxy_arr,
-    $,$$,
+    $,
+    $$,
     HTMLClean
 };

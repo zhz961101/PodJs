@@ -46,11 +46,11 @@ function compile(stack) {
     return eval(`(function*(obj){with(obj){\n${code}\n}})`)
 }
 
-function compileJx(jx_text){
+function compileJx(jx_text) {
     return compile(loadJx(jx_text))
 }
 
-function tplLoader(tpl,data){
+function tplLoader(tpl, data) {
     return [...tpl(data)].join("")
 }
 
@@ -59,47 +59,47 @@ function __Jx(jx_text, data) {
     return tplLoader(tpl, data)
 }
 
-class Jx{
-    constructor(){
+class Jx {
+    constructor() {
         this.mods = {}
     }
-    mod(name,jx_text){
-        this.mods[name] = d => tplLoader(compileJx(jx_text),d)
+    mod(name, jx_text) {
+        this.mods[name] = d => tplLoader(compileJx(jx_text), d)
     }
-    __prx$(o){
+    __prx$(o) {
         let that = this
-        return new Proxy(o,{
-            get(o,prop){
-                if(prop == Symbol.unscopables)return undefined
-                if(prop[0] == "$" && prop.slice(1) in that.mods)
+        return new Proxy(o, {
+            get(o, prop) {
+                if (prop == Symbol.unscopables) return undefined
+                if (prop[0] == "$" && prop.slice(1) in that.mods)
                     return d => that.mods[prop.slice(1)](that.__prx$(d))
-                return  o[prop]
+                return o[prop]
             },
-            has(o,prop){
-                if(prop.slice(1) in that.mods || prop in o)return true
+            has(o, prop) {
+                if (prop.slice(1) in that.mods || prop in o) return true
                 return false
             }
         })
     }
-    compile(jx_text,data){
+    compile(jx_text, data) {
         return __Jx(jx_text, this.__prx$(data))
     }
-    dumpTpl(tpl,data){
+    dumpTpl(tpl, data) {
         return tplLoader(tpl, this.__prx$(data))
     }
 }
 
-class JxTpl{
-    constructor(jx_text, JxGlobal){
+class JxTpl {
+    constructor(jx_text, JxGlobal) {
         this.tpl = compileJx(jx_text)
         this._jx = JxGlobal
     }
-    joint(data){
-        return this._jx.dumpTpl(this.tpl,data)
+    joint(data) {
+        return this._jx.dumpTpl(this.tpl, data)
     }
 }
 
-module.exports =  {
+module.exports = {
     Jx,
     JxTpl
 }

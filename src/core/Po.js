@@ -11,44 +11,44 @@ const {
 } = require("./jx")
 const Jsvm = require("./util/JsVm");
 
-let replaceSubNode = (html, subPos, supper, localPo) => {
-    let resloveData = attrs => {
-        let res = {}
-        if (attrs == undefined || attrs.length == 0) return res
-        let arr = attrs.split(" ")
-        let re = new RegExp(`(.+?)=(["'])(.+?)\\2`)
-        for (let attr of arr) {
-            if (attr.trim() == "") continue
-            let reg$arr = re.exec(attr)
-            res[reg$arr[1]] = reg$arr[3]
-        }
-        return res
-    }
-    let reslove = html
-    let localCur = 0
-    for (let subName in subPos) {
-        let sub = subPos[subName]
-        let re = new RegExp("<(" + subName + ")(( [^<> ]*)*)>([^<>]*)<\/" + subName + ">", "gi")
-        let subArr = html.match(re)
-        if (!subArr) continue
-        for (let _si in subArr) {
-            let _s = subArr[_si]
-            re = new RegExp("<(" + subName + ")(( [^<> ]*)*)>([^<>]*)<\/" + subName + ">", "gi")
-            let reg$arr = re.exec(_s)
-            let tempData = resloveData(reg$arr[2])
-            tempData._content = reg$arr[4]
-            if (localPo[localCur] == undefined) {
-                localPo.push(sub.Clone(tempData))
-            }
-            let temp = localPo[localCur].assemble(supper, localCur)
-            reslove = reslove.replace(_s, temp)
-            localCur += 1
-        }
-    }
-    return reslove
-}
+// let replaceSubNode = (html, subPos, supper, localPo) => {
+//     let resloveData = attrs => {
+//         let res = {}
+//         if (attrs == undefined || attrs.length == 0) return res
+//         let arr = attrs.split(" ")
+//         let re = new RegExp(`(.+?)=(["'])(.+?)\\2`)
+//         for (let attr of arr) {
+//             if (attr.trim() == "") continue
+//             let reg$arr = re.exec(attr)
+//             res[reg$arr[1]] = reg$arr[3]
+//         }
+//         return res
+//     }
+//     let reslove = html
+//     let localCur = 0
+//     for (let subName in subPos) {
+//         let sub = subPos[subName]
+//         let re = new RegExp("<(" + subName + ")(( [^<> ]*)*)>([^<>]*)<\/" + subName + ">", "gi")
+//         let subArr = html.match(re)
+//         if (!subArr) continue
+//         for (let _si in subArr) {
+//             let _s = subArr[_si]
+//             re = new RegExp("<(" + subName + ")(( [^<> ]*)*)>([^<>]*)<\/" + subName + ">", "gi")
+//             let reg$arr = re.exec(_s)
+//             let tempData = resloveData(reg$arr[2])
+//             tempData._content = reg$arr[4]
+//             if (localPo[localCur] == undefined) {
+//                 localPo.push(sub.Clone(tempData))
+//             }
+//             let temp = localPo[localCur].assemble(supper, localCur)
+//             reslove = reslove.replace(_s, temp)
+//             localCur += 1
+//         }
+//     }
+//     return reslove
+// }
 
-let _init_DateValueProperty = (data, _ev) => {
+let _init_DateValueProperty = (data, EventManager) => {
     let source = deepClone(data)
     for (let variable in data) {
         let srcVal = data[variable];
@@ -56,14 +56,14 @@ let _init_DateValueProperty = (data, _ev) => {
         if (Object.prototype.toString.call(srcVal) == "[object Array]") {
             // #101 length problem
             srcVal = proxyArr(srcVal, newVal => {
-                _ev.emit("SET_" + variable, newVal);
-                _ev.emit("_rerender_");
+                EventManager.emit("SET_" + variable, newVal);
+                EventManager.emit("_rerender_");
                 if (source[variable].length == newVal.length) return
                 source[variable] = newVal;
             })
         }
         if (typeof srcVal === "function") {
-            if (/_ev.emit/g.test(srcVal.toString()))
+            if (/EventManager.emit/g.test(srcVal.toString()))
                 continue
             // function in data
             data[variable] = (...args) => srcVal.apply(data, args)
@@ -74,8 +74,8 @@ let _init_DateValueProperty = (data, _ev) => {
         option.set = newVal => {
             if (source[variable] == newVal) return
             source[variable] = newVal;
-            _ev.emit("SET_" + variable, newVal);
-            _ev.emit("_rerender_");
+            EventManager.emit("SET_" + variable, newVal);
+            EventManager.emit("_rerender_");
         }
         Object.defineProperty(data, variable, option)
         data[variable] = srcVal;
@@ -83,41 +83,41 @@ let _init_DateValueProperty = (data, _ev) => {
     return data;
 }
 
-let hitchOnEv = (_evManger, _on, data, localArr) => {
-    for (var event_ in _on) {
-        if (_on.hasOwnProperty(event_)) {
-            let thisOption = _on[event_],
+let hitchOnEv = (EventManager, onTypeEventArr, data, localArr) => {
+    for (var event_ in onTypeEventArr) {
+        if (onTypeEventArr.hasOwnProperty(event_)) {
+            let thisOption = onTypeEventArr[event_],
                 evName = thisOption.eventName,
                 coStr = thisOption.codeStr,
                 that_data = data,
                 ele = thisOption.ele,
                 withData = {};
+            EventManager.addEventLookUp(evName)
             if (ele.attributes["PoiId"] != undefined) {
                 let _index = ele.attributes["PoiId"].nodeValue
                 withData = localArr[_index].data
             }
-            _evManger.on(evName, e => {
+            EventManager.on(evName, e => {
                 if (e.target === ele) {
                     let dataobj = Object.assign(that_data, {
                         e: e,
                         self: e.target
                     }, withData)
-                    // require("../util/JsVm.js").micVm(coStr, that_data);
                     Jsvm.safe(coStr, that_data);
-                    
-                    _evManger.emit("_rerender_");
+
+                    EventManager.emit("_rerender_");
                 }
             })
         }
     }
     // on_ev end
 }
-let hitchBindEv = (_evManger, _bind, data, localArr) => {
-    for (var _ev in _bind) {
-        if (_bind.hasOwnProperty(_ev)) {
-            let thisOption = _bind[_ev],
-                evName = thisOption.eventName,
-                coStr = thisOption.codeStr,
+let hitchBindEv = (EventManager, bindTypeEventArr, data, localArr) => {
+    for (var EventConf in bindTypeEventArr) {
+        if (bindTypeEventArr.hasOwnProperty(EventConf)) {
+            let thisOption = bindTypeEventArr[EventConf],
+                eventName = thisOption.eventName,
+                innerCODE = thisOption.codeStr,
                 that_data = data,
                 ele = thisOption.ele,
                 withData = {};
@@ -125,31 +125,31 @@ let hitchBindEv = (_evManger, _bind, data, localArr) => {
                 let _index = ele.attributes["PoiId"].nodeValue
                 withData = localArr[_index].data
             }
-            if (evName == "class")
-                evName = "className"
-            ele[evName] = Jsvm.safe("return(" + coStr + ")", Object.assign(deepClone(withData), that_data));
+            if (eventName == "class")
+                eventName = "className"
+            ele[eventName] = Jsvm.safe("return(" + innerCODE + ")", Object.assign(deepClone(withData), that_data));
             // init value
-            _evManger.on("_rerender_", () => {
+            EventManager.on("_rerender_", () => {
                 if (ele && ele.parentNode != null) {
-                    // require("../util/JsVm.js").micVm(coStr, that_data);
-                    ele[evName] = Jsvm.safe("return(" + coStr + ")", Object.assign(deepClone(withData), that_data))
+                    // require("../util/JsVm.js").micVm(innerCODE, that_data);
+                    ele[eventName] = Jsvm.safe("return(" + innerCODE + ")", Object.assign(deepClone(withData), that_data))
                 }
             })
         }
     }
 };
 
-let hitchWath = (watch, _ev) => {
-    for (let variable in watch) {
-        if (typeof watch[variable] === "function") {
-            _ev.on("SET_" + variable, (newVal) => {
-                watch[variable](newVal);
+let hitchWath = (watchTypeEventArr, EventManager) => {
+    for (let wathValueOfKey in watchTypeEventArr) {
+        if (typeof watchTypeEventArr[wathValueOfKey] === "function") {
+            EventManager.on("SET_" + wathValueOfKey, (newVal) => {
+                watchTypeEventArr[wathValueOfKey](newVal);
             })
         }
     }
 }
 
-function Po(template, data, watch, evManger, mixwith, Jx) {
+function Po(JxTplText, data, watch, evManger, mixwith, Jx) {
     // mixwith
     if (mixwith) extend(data, deepClone(mixwith.$pureData));
 
@@ -169,7 +169,7 @@ function Po(template, data, watch, evManger, mixwith, Jx) {
     this.data = _init_DateValueProperty(data, evManger)
     //
     // subPo
-    this.tpl = new JxTpl(template, Jx); //new Template(template,subPos);
+    this.tpl = new JxTpl(JxTplText, Jx); //new Template(template,subPos);
     if (watch) hitchWath(watch, evManger);
     // error everyday
     //

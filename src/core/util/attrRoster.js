@@ -1,3 +1,14 @@
+
+// 因为浏览器环境中属性名是大小写不敏感的，
+// 如果要绑定带有大写的属性或者事件时，将找不到
+// 这里用了最暴力的方法（因为这个问题确实莫名其妙，也从来没人谈论它...）直接用了一个转换表
+
+// Because DOM-attr-property names in the browser environment are case insensitive,
+// If you want to bind an attribute or event with any uppercase, it will not be able to find it
+// The most violent method used here (because this problem is really inexplicable, and no one has ever talked about it...) directly used a conversion table
+
+// 获取浏览器环境里dom中带有大写且非函数的键名
+// Get the uppercase and non-function key names in the DOM in the browser environment
 function Roster() {
     let div = document.createElement("div"),
         text = document.createTextNode(""),
@@ -14,11 +25,12 @@ function Roster() {
 }
 
 // Roster (chrome) ==>
-
+// Removed some parameters for internal implementation
+// For example, the parameters that are all uppercase are generally invalid.
 module.exports = {
     accesskey: "accessKey",
     assignedslot: "assignedSlot",
-    attribute_node: "ATTRIBUTE_NODE",
+    // attribute_node: "ATTRIBUTE_NODE",
     attributestylemap: "attributeStyleMap",
     baseuri: "baseURI",
     // cdata_section_node: "CDATA_SECTION_NODE",
@@ -60,7 +72,7 @@ module.exports = {
     nodename: "nodeName",
     nodetype: "nodeType",
     nodevalue: "nodeValue",
-    notation_node: "NOTATION_NODE",
+    // notation_node: "NOTATION_NODE",
     offsetheight: "offsetHeight",
     offsetleft: "offsetLeft",
     offsetparent: "offsetParent",

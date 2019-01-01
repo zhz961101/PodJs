@@ -1,4 +1,4 @@
-const EventObj = require("./event");
+const EventOnEle = require("./event");
 const diff = require("./diff/diff");
 const {
     Po,
@@ -75,7 +75,7 @@ function Poi(options, GlobalJxEnviron) {
     this.el = ele;
     // on,emit
     // bind evlisenter
-    this.Event = new EventObj(this.el);
+    this.Event = new EventOnEle(this.el);
 
     // #401 babel es5 leads to mistakes
     

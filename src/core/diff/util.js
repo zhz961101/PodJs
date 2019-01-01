@@ -1,4 +1,3 @@
-
 module.exports = {
     childClean,
     isSameTree,
@@ -39,8 +38,9 @@ function mergePlans(ps, prop) {
 
 const toarr = o => Array.prototype.slice.call(o)
 const layer_num = ele => ele.parentNode ? toarr(ele.parentNode.children).indexOf(ele) : 0
-function isSameTree(ele1, ele2){
-    if(ele1.children.length == 0)return false
+
+function isSameTree(ele1, ele2) {
+    if (ele1.nodeType == 1 && ele1.children.length == 0) return false
     return (
         ele1.nodeName == ele2.nodeName &&
         ele1.nodeType == ele2.nodeType &&
