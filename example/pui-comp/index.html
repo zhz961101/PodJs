@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Pui -> Poi</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        *{
+            box-sizing: inherit;
+        }
+        html,body{
+            height: 100%;
+            box-sizing: border-box
+        }
+        body {
+            padding: 0;
+            margin: 0;
+            /* padding-top: 5rem; */
+        }
+        h1{
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+    <h1>*chrome only</h1>
+    <p-row>
+        <div slot="1">
+            some thing
+        </div>
+        <div slot="2">
+            <p-card>
+                <span slot="head">this is a card</span>
+                <p slot="body">
+                    easy to use
+                </p>
+                <div slot="footer">
+                    <p-btn>pui button</p-btn>
+                </div>
+            </p-card>
+        </div>
+    </p-row>
+    <div>
+    </div>
+    <!-- <p-require from="./card.tpl.html"></p-require>
+    <p-require from="./btn.tpl.html"></p-require>
+    <p-require from="./row.tpl.html"></p-require>
+    <p-require from="./col.tpl.html"></p-require> -->
+    <p-require fromOf="./card.tpl.html;./btn.tpl.html;./row.tpl.html;./col.tpl.html"></p-require>
+    <script src="../../dist/Comp.bundle.js" charset="utf-8"></script>
+</body>
+
+</html>

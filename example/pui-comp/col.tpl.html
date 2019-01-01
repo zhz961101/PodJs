@@ -1,0 +1,19 @@
+<link rel="stylesheet" href="https://zhzluke96.github.io/Pui/dist/core.min.css">
+<link rel="stylesheet" href="https://zhzluke96.github.io/Pui/dist/util.min.css">
+<style>
+    :host{
+        padding: 1rem 0 0 1rem;
+        flex: 1 1 0;
+    }
+</style>
+
+<slot class="col"></slot>
+
+<script>
+    options = {
+        name: "p-col",
+        init(){
+            console.log(this.shadowRoot)
+        }
+    }
+</script>

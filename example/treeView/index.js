@@ -1,5 +1,5 @@
 const $ = q => document.querySelector.call(document,q)
-Poi.prototype.mod("node",$("#nodetpl").innerHTML)
+Poi.mod("node",$("#nodetpl").innerHTML)
 
 let data = {
     name: 'My Tree',

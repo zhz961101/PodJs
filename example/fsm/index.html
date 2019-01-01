@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>FSM</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body{
+                text-align: center;
+            }
+            .light{
+                margin: 0 auto;
+                width: 2rem;
+                height: 2rem;
+                border-radius: 10rem;
+                display: inline-block;
+                text-align: center;
+                background-color: gainsboro;
+                margin: 1rem;
+            }
+        </style>
+</head>
+
+<body>
+    <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+    <div id="app"></div>
+    <script id="tpl" type="text/x-template">
+        <div class="light" style="{{= red?'
+        background-color:red':''}}"></div>
+        <div class="light" style="{{= yellow?'
+        background-color:yellow':''}}"></div>
+        <div class="light" style="{{= green?'
+        background-color:green':''}}"></div>
+        <hr>
+        <button on:click="warn()">warn</button>
+        <button on:click="stop()">stop</button>
+        <button on:click="ready()">ready</button>
+        <button on:click="go()">go</button>
+    </script>
+    <script src="../../dist/Poi.bundle.js"></script>
+    <script src="./index.js"></script>
+</body>
+
+</html>

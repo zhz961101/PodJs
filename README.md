@@ -8,7 +8,7 @@ state | index | name    | content             | comment
 ----------------------|-------|---------|---------------------|--------
 💡    | 0xF01 | pui     | pui走你             | ...
 💡    | 0xF02 | tut     | realization  kernel | ...
-💡    | 0xF03 | example | more demo           | ...
+📌    | 0xF03 | example | more demo           | ...
 💡    | 0xF04 | router  | SPA                 | ...
 💡    | 0xF05 | i18n    | CHINGLISH           | ...
 
@@ -17,7 +17,9 @@ state | index | name    | content             | comment
 - CA: [cellular automata 操作上百dom](https://zhzluke96.github.io/PoiJs/example/ca/CAxx.html)
 - MarkDown Editor: [高亮 同步滚动 实时更新]
 - TreeView: [template callee](https://zhzluke96.github.io/PoiJs/example/treeView/index.html)
-- ~~router_lite: [HashRouter 暂时break](https://zhzluke96.github.io/PoiJs/example/Router/HashRouter.html)~~
+- traffic-light: [state machine](https://zhzluke96.github.io/PoiJs/example/fsm/index.html)
+- markdown Editor: [diff && mount](https://zhzluke96.github.io/PoiJs/example/Editor/index.html)
+- pui-component: [CSS隔离 WEB组件化](https://zhzluke96.github.io/PoiJs/example/pui-comp/index.html)
 
 # code
 - minify:https://zhzluke96.github.io/PoiJs/dist/Poi.bundle.js
