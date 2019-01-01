@@ -3,13 +3,13 @@ const {
     extend,
     GetAttrElement,
     proxyArr
-} = require("../util/util");
-const attrRoster = require("../util/attrRoster");
+} = require("./util/util");
+const attrRoster = require("./util/attrRoster");
 // const TplEng = require("./template");
 const {
     JxTpl
 } = require("./jx")
-const Jsvm = require("../util/JsVm");
+const Jsvm = require("./util/JsVm");
 
 let replaceSubNode = (html, subPos, supper, localPo) => {
     let resloveData = attrs => {

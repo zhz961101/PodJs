@@ -1,10 +1,11 @@
-const {
-    callable
-} = require("../util/util")
-
 module.exports = {
     creatCustomEle,
     tplLoader
+}
+
+function callable(o) {
+    if (!o) return false
+    return typeof o == "function"
 }
 
 /**
@@ -22,7 +23,7 @@ function creatCustomEle(tagName, shadowHtml = "", option, onShadow = true, base 
     thatEle.prototype.constructor = thatEle;
     Object.setPrototypeOf(thatEle, base);
     thatEle.prototype.connectedCallback = function () {
-        if(onShadow){
+        if (onShadow) {
             this.shadowRoot = this.attachShadow({
                 mode: 'open' // self-closing is hard to control
             });

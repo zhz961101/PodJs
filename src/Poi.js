@@ -2,7 +2,7 @@ const Poi = require("./core/Poi")
 const {
     $,
     HTMLClean
-} = require("./util/util")
+} = require("./core/util/util")
 const {
     Jx
 } = require("./core/jx")

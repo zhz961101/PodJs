@@ -1,6 +1,6 @@
 const {
     ev_supList
-} = require("../util/util");
+} = require("./util/util");
 
 class EventObj {
     constructor() {

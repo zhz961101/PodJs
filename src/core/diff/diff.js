@@ -1,10 +1,10 @@
 const {
     domApi
-} = require("../../util/domapi.js");
+} = require("../../domapi");
 
 const {
     frameify
-} = require('../../util/frameify.js');
+} = require('../util/frameify.js');
 
 const {
     LCS,

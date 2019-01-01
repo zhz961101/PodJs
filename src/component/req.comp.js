@@ -4,7 +4,7 @@ const {
 } = require("./component")
 const {
     domApi
-} = require("../util/domapi.js");
+} = require("../domapi.js");
 
 const eleTagName = "p-require"
 

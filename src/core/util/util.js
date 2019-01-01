@@ -116,11 +116,6 @@ function HTMLClean(text){
     return mergeSpace(cleanSriptTag(text))
 }
 
-function callable(o){
-    if(!o)return false
-    return typeof o == "function"
-}
-
 module.exports = {
     deepClone,
     extend,
@@ -129,6 +124,5 @@ module.exports = {
     GetAttrElement,
     proxyArr: proxy_arr,
     $,$$,
-    HTMLClean,
-    callable
+    HTMLClean
 };
