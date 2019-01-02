@@ -3,6 +3,10 @@
 // 从而支持await和async
 // @more: https://www.w3.org/TR/requestidlecallback/
 
+const timeCheckStepGap = 10;
+// 很多时候检查是否超时居然会占用超过本体的执行时间
+// 简直不能忍，初步写成十次检查一回吧
+
 var reqFrame = ((window) => {
     // 每帧50ms
     // * 本来按照常识，这里是很适合idlecallback的，
@@ -15,29 +19,17 @@ var reqFrame = ((window) => {
     //
     const rF = window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
-        window.mozRequestAnimationFrame;
-    if (rF) {
-        return function(cb) {
-            var start = Date.now();
-            return rF(function(call2now) {
-                cb({
-                    timeRemaining() {
-                        return Math.max(0, 50 - (Date.now() - start));
-                    },
-                });
-            });
-        };
-    }
-    // default
+        window.mozRequestAnimationFrame ||
+        ((fn)=>setTimeout(fn,1))
     return function(cb) {
-        var start = Date.now();
-        return setTimeout(function() {
+        let start = Date.now();
+        return rF(function(call2now) {
             cb({
-                timeRemainingn() {
-                    return Math.max(0, 50 - (Date.now() - start));
+                timeRemaining() {
+                    return 50 - (Date.now() - start);
                 },
             });
-        }, 1);
+        });
     };
 })(window);
 
@@ -46,12 +38,14 @@ var cancelFrame = ((window) => {
         window.webkitCancelAnimationFrame ||
         window.webkitCancelRequestAnimationFrame ||
         window.mozCancelAnimationFrame ||
-        window.mozCancelRequestAnimationFrame || (id => clearTimeout(id));
+        window.mozCancelRequestAnimationFrame ||
+        (id => clearTimeout(id));
+    // return (id => clearTimeout(id));
 })(window);
 
 export function frameify(gen, _Int_) {
     return new Promise((resolve, reject) => {
-        var frameid;
+        let frameid;
         if (_Int_) _Int_.clear = () => {
             // Interrupt
             cancelFrame(frameid);
@@ -59,10 +53,21 @@ export function frameify(gen, _Int_) {
             resolve(void 0);
             return void 0;
         }
+        
+        try {
+            inner()
+        } catch (e) {
+            reject(e)
+        }
 
         function inner() {
             frameid = reqFrame((deadline) => {
-                while (deadline.timeRemaining() > 5) {
+                let count = 0;
+                while (true) {
+                    count = (count + 1) % timeCheckStepGap
+                    if(count == 0 && deadline.timeRemaining() < 0){
+                        break
+                    }
                     var n = gen.next();
                     if (n.done) {
                         resolve(n.value);
@@ -71,11 +76,6 @@ export function frameify(gen, _Int_) {
                 }
                 inner();
             })
-        }
-        try {
-            inner()
-        } catch (e) {
-            reject(e)
         }
     })
 }

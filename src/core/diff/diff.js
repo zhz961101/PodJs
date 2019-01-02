@@ -40,9 +40,28 @@ let diffDomArr = async (newDomEles, oldDomEles, targetDom, INT_OBJ) => {
         return planArr
     }
     let lcs = new LCS(newDomEles,oldDomEles, domApi.isSame, false)
-    // let lcs = new LCS(newDomEles,oldDomEles, domApi.isSameLayerNode, false)
-    let _ = await frameify(lcs.genFillMat(), INT_OBJ)
-    if(_ == undefined)return planArr // []
+    
+    if(newDomEles.length > 32){
+        // why 32?
+        // O(nm) => O(32*32) => O(1024)
+        // 即复杂度太高的就异步
+
+        // 本来异步是一种一劳永逸的方法
+        // 但是这里的异步层次太深，频繁切换状态容易被浏览器抢占
+        // 比如paint（当页面中有可滚动或者hover动画时）往往会抢占帧并且无法返回（浏览器应该提供这种api接口）
+        // 所以对于复杂度低的lcs矩阵这里则不会异步执行
+        // （显而易见的，将co提到更搞一层是一种解决办法，至于为什么没有这么写，我会在 [features.md] 文件中继续谈）
+
+        // in fact, asynchronous is a once-and-for-all way
+        // But the code level here is too deep, and frequent switching task states are easily preempted by the browser.
+        // For example, paint (when it have scrollable DOM or animation in the page) tends to preempt frames and cannot callback (the browser should provide this api interface)
+        // So for lcs matrices with low complexity, it will not be executed asynchronously here.
+        // (Obviously, it’s a solution to mention co as a layer(diffDomTree). As for why not, I will continue to talk in the [features.md] file)
+        let _ = await frameify(lcs.genFillMat(), INT_OBJ)
+        if(_ == undefined)return planArr // []
+    }else{
+        lcs.fillMat()
+    }
     // Interrupt Request
     // react的做法是通过throw一个非error对象，然后在最顶层捕获
     // 这里我没搞这么麻烦(机智)，就回复空return就行
