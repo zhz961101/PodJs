@@ -58,8 +58,10 @@ let diffDomArr = async (newDomEles, oldDomEles, targetDom, INT_OBJ) => {
         // So for lcs matrices with low complexity, it will not be executed asynchronously here.
         // (Obviously, it’s a solution to mention co as a layer(diffDomTree). As for why not, I will continue to talk in the [features.md] file)
         let _ = await frameify(lcs.genFillMat(), INT_OBJ)
-        lcs = null;// GC
-        if(_ == undefined)return planArr // []
+        if(_ == undefined){
+            lcs = null;// GC
+            return planArr // []
+        }
     }else{
         lcs.fillMat()
     }
