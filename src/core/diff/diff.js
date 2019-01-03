@@ -41,7 +41,7 @@ let diffDomArr = async (newDomEles, oldDomEles, targetDom, INT_OBJ) => {
     }
     let lcs = new LCS(newDomEles,oldDomEles, domApi.isSame, false)
     
-    if(newDomEles.length > 32){
+    if(newDomEles.length * oldDomEles.length > 1024){
         // why 32?
         // O(nm) => O(32*32) => O(1024)
         // 即复杂度太高的就异步
@@ -58,6 +58,7 @@ let diffDomArr = async (newDomEles, oldDomEles, targetDom, INT_OBJ) => {
         // So for lcs matrices with low complexity, it will not be executed asynchronously here.
         // (Obviously, it’s a solution to mention co as a layer(diffDomTree). As for why not, I will continue to talk in the [features.md] file)
         let _ = await frameify(lcs.genFillMat(), INT_OBJ)
+        lcs = null;// GC
         if(_ == undefined)return planArr // []
     }else{
         lcs.fillMat()
@@ -68,6 +69,8 @@ let diffDomArr = async (newDomEles, oldDomEles, targetDom, INT_OBJ) => {
     // 毕竟只是针对单一用例(只有rerender需要协程支持)
     let NonCommon = lcs.getTraceback(false)
     let Common = lcs.getTraceback(true)
+
+    lcs = null;// GC
 
     const isEmpty_lcs = arr => arr.bufA.length == 0 && arr.bufB.length == 0
 

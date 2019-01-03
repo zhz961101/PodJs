@@ -53,7 +53,7 @@ class LCS{
                 let rowArr = [],
                     itemA = _this.seqA[X];
                 for (let Y in _this.seqB) {
-                    yield void 0;
+                    yield _this.seqB.length;
                     let itemB = _this.seqB[Y],
                         left = Y == 0 ? NullCell : rowArr[Y - 1],
                         above = X == 0 ? NullCell : lcsArr[X - 1][Y],

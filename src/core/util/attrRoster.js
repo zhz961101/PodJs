@@ -9,20 +9,20 @@
 
 // 获取浏览器环境里dom中带有大写且非函数的键名
 // Get the uppercase and non-function key names in the DOM in the browser environment
-function Roster() {
-    let div = document.createElement("div"),
-        text = document.createTextNode(""),
-        ret = {};
-    for (const prop in div) {
-        if (prop != prop.toLowerCase() && typeof div[prop] != "function")
-            ret[prop.toLowerCase()] = prop
-    }
-    for (const prop in text) {
-        if (prop != prop.toLowerCase() && typeof text[prop] != "function")
-            ret[prop.toLowerCase()] = prop
-    }
-    return ret
-}
+// function Roster() {
+//     let div = document.createElement("div"),
+//         text = document.createTextNode(""),
+//         ret = {};
+//     for (const prop in div) {
+//         if (prop != prop.toLowerCase() && typeof div[prop] != "function")
+//             ret[prop.toLowerCase()] = prop
+//     }
+//     for (const prop in text) {
+//         if (prop != prop.toLowerCase() && typeof text[prop] != "function")
+//             ret[prop.toLowerCase()] = prop
+//     }
+//     return ret
+// }
 
 // Roster (chrome) ==>
 // Removed some parameters for internal implementation
