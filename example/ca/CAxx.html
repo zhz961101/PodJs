@@ -79,10 +79,10 @@
     <script type="text/x-template" id="app-template" charset="utf-8">
         Step:<span>{{=stepCount}}</span>
         <br>
-        <button type="button" name="button" on:click="random(true)">random</button>
-        <button type="button" name="button" on:click="next()">Next step</button>
-        <button type="button" name="button" on:click="play('poi!play!')" title="reader mount">play</button>
-        <button type="button" name="button" on:click="stop()">stop</button>
+        <button on:click="random(true)">random</button>
+        <button on:click="next()" title="[async Render]You can try to click twice or more in a row.">Next step</button>
+        <button on:click="play('poi!play!')" title="reader mount">play</button>
+        <button on:click="stop()">stop</button>
         <br>
         <input type="text" placeholder="Non-blocking UI">
         <button>none call</button>

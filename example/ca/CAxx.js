@@ -104,9 +104,10 @@ let poiApp = Poi({
             this.random();
         },
         renderBefore(){
-            console.log("**render**")
+            console.log("**render before**")
         },
         renderAfter(){
+            console.log("**render after**")
             if(this.isPlaying)setTimeout(()=>this.next(),500)
         }
     }
