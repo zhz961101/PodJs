@@ -1,16 +1,8 @@
 # gh-pages
-毕竟玩web，io页还是要有的(自由的味道，真香)
+一些简单的介绍
 
 # todos
-💡=>📌=>📦=>🎉
-
-state | index | name    | content             | comment
-----------------------|-------|---------|---------------------|--------
-💡    | 0xF01 | pui     | pui走你             | ...
-💡    | 0xF02 | tut     | realization  kernel | ...
-📌    | 0xF03 | example | more demo           | ...
-💡    | 0xF04 | router  | SPA                 | ...
-💡    | 0xF05 | i18n    | CHINGLISH           | ...
+- docify
 
 # some demo
 - hello world: [link](https://zhzluke96.github.io/PoiJs/example/hello%20world.html)
@@ -22,5 +14,5 @@ state | index | name    | content             | comment
 - pui-component: [CSS隔离 WEB组件化](https://zhzluke96.github.io/PoiJs/example/pui-comp/index.html)
 
 # code
-- minify:https://zhzluke96.github.io/PoiJs/dist/Poi.bundle.js
+- min:https://zhzluke96.github.io/PoiJs/dist/Poi.bundle.js
 - dev-es6-nonBabel:https://zhzluke96.github.io/PoiJs/dist/Poi.js
