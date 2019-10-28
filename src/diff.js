@@ -1,18 +1,23 @@
 const dom_util = require("./dom_util");
 
+// cache
+let frag,fragDiv;
+
+function create_dom(html) {
+    frag = frag || document.createDocumentFragment();
+    if(!fragDiv){
+        fragDiv = document.createElement("div");
+        frag.appendChild(fragDiv)
+    }
+    fragDiv.innerHTML = html
+    return treeify_childs(fragDiv.childNodes, true)
+}
+
 const domSel = d => {
     if (d.nodeType == 11) return "#shadowRoot"
     if (d.nodeType == 3) return "#text"
     return `${d.nodeName}${d.id?"#"+d.id:''}${d.className.split(" ").join(".")}${d.name?'['+d.name+']':''}`
 };
-
-function create_dom(html) {
-    var frag = document.createDocumentFragment();
-    let d = document.createElement("div");
-    frag.appendChild(d)
-    d.innerHTML = html
-    return treeify_childs(d.childNodes, true)
-}
 
 function treeify_childs(childs, noidx) {
     let ret = []
@@ -25,38 +30,13 @@ function treeify_childs(childs, noidx) {
     return ret
 }
 
-// let poi_id_count = 1;
-// let pois = []
-// function isStructDom(dom) {
-//     if (dom.getAttribute && dom.getAttribute("structed") == "") return true;
-//     if (dom.childNodes.length == 0) return true
-//     if (dom.childNodes.length == 1 && dom.childNodes[0].nodeType == 3) return true;
-//     return false;
-// }
-
-// function getDiffKey(dom) {
-//     if (dom.getAttribute && dom.getAttribute("diff_key")) return dom.getAttribute("diff_key");
-//     if (dom.data) return dom.data;
-//     if (dom.childNodes.length == 0) return null;
-//     if (dom.childNodes[0].data) return dom.childNodes[0].data
-//     return null;
-// }
-
 function treeify($dom, noidx) {
-    if (typeof $dom == "undefined") return
-    // if (typeof ($dom.__idx__) == "undefined" && !noidx) {
-    //     $dom.__idx__ = poi_id_count++;
-    //     pois.push($dom);
-    // }
+    if (typeof $dom == "undefined") return {}
     return {
-        // idx: $dom.__idx__,
         $: $dom,
         sel: domSel($dom),
-        // digest: $dom.outerHTML?md5($dom.outerHTML):md5($dom.data),
         tag: $dom.localName,
         type: $dom.nodeType,
-        // isStruct: isStructDom($dom),
-        // diffKey: getDiffKey($dom),
         isStruct: $dom.getAttribute ? $dom.getAttribute("structed") == "" : false,
         diffKey: $dom.getAttribute ? $dom.getAttribute("diff_key") : null,
         isEle: $dom.nodeType == 1,

@@ -1,3 +1,4 @@
+
 module.exports = {
     liteSameNode($a, $b) {
         return $a.tag == $b.tag && $a.type == $b.type && $a.$.id == $b.$.id;

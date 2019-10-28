@@ -121,7 +121,8 @@ class Poi {
         this.renderBefore && this.renderBefore.call(this);
         const newHTML = this.$tpl(this.$data);
         // console.log(newHTML);
-        diff_patch(this.$, newHTML);
+        const attrOps = diff_patch(this.$, newHTML);
+        this.opslaoder && this.opslaoder(attrOps);
         this.renderAfter && this.renderAfter.call(this);
     }
     render(callChain, value) {
