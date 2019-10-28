@@ -1,6 +1,6 @@
 import { Compile } from "./compile"
 // import { observe } from './observer'
-import { reactive } from './reactivity/reactivity';
+import { reactive, computed } from './reactivity/reactivity';
 
 // __DEV__
 import { createElement, render } from "./vdom/vdom"
@@ -10,13 +10,20 @@ if (window) window["d2v"] = Dom2Vnode
 if (window) window["createElement"] = createElement
 if (window) window["render"] = render
 
+interface mvvmOptions {
+    manualComple?: boolean
+    disposable?: boolean
+}
+
 export class ViewModel {
     $data: Object
     $compile: Compile
+    $options: mvvmOptions
 
-    constructor(el: Node, data: Object, scoped: boolean = false) {
+    constructor(el: Node, data: Object, options: mvvmOptions = {}) {
         this.$data = reactive(data)
-        if (!scoped) {
+        this.$options = options
+        if (!options.manualComple) {
             this.$compile = new Compile(this, el)
         }
     }
@@ -67,3 +74,5 @@ export class ViewModel {
 if (window) {
     window["ViewModel"] = ViewModel
 }
+
+

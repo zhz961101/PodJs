@@ -1,4 +1,5 @@
 import { baseHandler } from './basehandler';
+import { nextTick } from './nxtTick';
 
 type Deps = Set<Effect>
 
@@ -21,7 +22,7 @@ export function getToRaw(value: object): object {
     return proxy2Raw.get(value) || value
 }
 
-export function reactive(target: object) {
+export function reactive(target: object, upper: object = null) {
     let observed
     if (observed = raw2Proxy.get(target)) {
         return observed
@@ -30,7 +31,7 @@ export function reactive(target: object) {
         return target
     }
     // ------ cacher ----- 👆
-    observed = new Proxy(target, baseHandler)
+    observed = new Proxy(target, baseHandler(upper))
     // ------ cacher ----- 👇
     raw2Proxy.set(target, observed)
     proxy2Raw.set(observed, target)
@@ -47,7 +48,7 @@ export function trigger(target: object, key: string) {
         if (!deps) return
         deps.forEach(effect => effect.computed ? computedRunners.add(effect) : effects.add(effect))
     }
-    const run = e => e()
+    const run = e => nextTick(e)
     // Important: computed effects 需要提前运行
     computedRunners.forEach(run)
     effects.forEach(run)

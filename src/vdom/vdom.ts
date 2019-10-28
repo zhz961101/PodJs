@@ -29,6 +29,24 @@ export const childType = {
 }
 
 
+const deepClone = (obj: any): any => {
+    var proto = Object.getPrototypeOf(obj);
+    return Object.assign({}, Object.create(proto), obj);
+}
+
+export const deepCloneVnode = (vnode: Vnode): Vnode => {
+    let obj = deepClone(vnode)
+    return {
+        tag: obj.tag,
+        children: obj.children,
+        key: obj.key,
+        attrs: obj.attrs,
+        type: obj.type,
+        childrenType: obj.childrenType,
+        el: obj.el
+    }
+}
+
 function toVnode(v: Vnode | Vnode[] | string): Vnode {
     if (Array.isArray(v)) return toVnode(v[0])
     if (typeof v == "string") return createTextVnode(v)

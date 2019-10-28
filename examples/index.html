@@ -23,6 +23,7 @@
         <button p-on:click="countUpx500">countUpx500</button>
         <hr>
         <button p-on:click="randAddItem">random add</button>
+        <span>items.length: {{ items.length }}</span>
         <ul>
             <li p-for="item,i of items">
                 <span>{{i}}: </span>
@@ -39,7 +40,7 @@
         <div p-bind:html="html"></div>
         <hr>
     </div>
-    <script src="../dist/index.js"></script>
+    <script src="../dist/index.min.js"></script>
     <script>
         const $ = q => document.querySelector(q)
         let vm = new ViewModel($("#mvvm-app"), {

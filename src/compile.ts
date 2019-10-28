@@ -1,9 +1,9 @@
 import { ViewModel } from "./mvvm"
-import { render, childType } from "./vdom/vdom"
+import { render, deepCloneVnode, childType } from "./vdom/vdom"
 import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"
-// import { effect } from './reactivity/reactivity'
-import { nextTickEffect } from './nxtTick';
-const effect = nextTickEffect
+import { effect } from './reactivity/reactivity'
+// import { nextTickEffect } from './nxtTick';
+// const effect = nextTickEffect
 const reg = /\{\{(.*?)\}\}/g
 
 function nodeToFragment(el: Node): DocumentFragment {
@@ -139,18 +139,26 @@ const compileUtil = {
         const renderValue = () => ctxRenderValue(vm.$data)
         let updaterFunc = updater[dir + "Updater"]
 
-        effect(() => updaterFunc(node, renderValue()))
+        if (vm.$options.disposable)
+            updaterFunc(node, renderValue())
+        else
+            effect(() => updaterFunc(node, renderValue()))
     },
     bindv(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
         const renderValue = () => exp.replace(reg, (_, exp) => vm._get(exp))
         let updaterFunc = updater[dir + "Updater"]
 
-        effect(() => updaterFunc(node, renderValue()))
+        if (vm.$options.disposable)
+            updaterFunc(node, renderValue())
+        else
+            effect(() => updaterFunc(node, renderValue()))
     },
     bind(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
         let updaterFunc = updater[dir + "Updater"]
-
-        effect(() => updaterFunc(node, vm._get(exp)))
+        if (vm.$options.disposable)
+            updaterFunc(node, vm._get(exp))
+        else
+            effect(() => updaterFunc(node, vm._get(exp)))
     },
     html(node: HTMLElement, vm: ViewModel, exp: string) {
         this.bindCode(node, vm, exp, "html")
@@ -195,9 +203,15 @@ const compileUtil = {
         let expArgsName: string[] = exprs[1].split(",")
         let target: string = exprs[3]
         const parentNode = node.parentNode
+        const parentVnodeTpl = Dom2Vnode(parentNode)
+        parentVnodeTpl.children = []
 
         parentNode.removeChild(node)
-        effect(() => updaterFunc())
+
+        if (vm.$options.disposable)
+            updaterFunc()
+        else
+            effect(() => updaterFunc())
 
         function updaterFunc() {
             const newVal = vm._get(target)
@@ -209,7 +223,7 @@ const compileUtil = {
                 complieWithScope(el, ctxObj, vm)
                 return Dom2Vnode(el)
             })
-            const vnode = parentNode["vnode"] || Dom2Vnode(parentNode)
+            const vnode = deepCloneVnode(parentVnodeTpl)
             vnode.children = vnodes
             switch (vnodes.length) {
                 case 0:
@@ -228,7 +242,9 @@ const compileUtil = {
 }
 
 function complieWithScope(el: Node, scope: object, supVm: ViewModel) {
-    const vm = new ViewModel(el, scope, true)
+    let vm = new ViewModel(el, scope, { manualComple: true, disposable: true })
     Object.setPrototypeOf(vm, supVm)
-    new Compile(vm, el)
+    let compiler = new Compile(vm, el)
+    // manual GC
+    vm = compiler = null
 }

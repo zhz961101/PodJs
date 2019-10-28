@@ -58,25 +58,79 @@ npm run build:w
 ```
 
 # Usage
-come soon
+> 现目前还未完成，详见 examples
+
+```typescript
+class App extends Poi {
+    constructor() {
+        super("w-app", {...})
+    }
+
+    template(): string | Vnode {
+        // return `...`
+        return createElement('div',[...])
+    }
+
+    setup() {
+        const state = reactive({
+            msg: "hello world!",
+            count: 18,
+            items: [
+                "apple",
+                "banana"
+            ],
+            apiURL: "///"
+        })
+        return {
+            state
+        }
+    }
+
+    @computed
+    get doubleCount() {
+        return this.state.count * 2
+    }
+
+    @cache(1000 * 60 * 60)  // 1 hour cache
+    @catchTry(1000, 5)      // error retry
+    async appInfo() {
+        let resp = await fetch(this.state.apiURL)
+        return resp.json()
+    }
+
+    @debounce(500)
+    async login() {
+        /*
+         * code
+         */
+    }
+
+    @watch("state.items")
+    itemsChange(newValue: Arrya<string>) {
+        console.log("items change",newValue)
+    }
+}
+```
 
 # Changelog
 - reactivity
 - 移除 observe && watcher
 - nextTickEffect
+- disposable ViewModel (work on vnode compiling)
 
 # Todo
 - [x] refactoring
 - [x] proxy reactivity （vue-next 实现）解决深层依赖问题
-- [ ] proxy 父级对象依赖
-- [ ] es6+ 语法
+- [x] proxy 父级对象依赖通知
+- [ ] 减少无关依赖重绘，脏检查
 - [ ] 复用v2b版本 web component 实现
-- [ ] 垃圾回收 Dep Watcher
+- [ ] es6+ 语法
+- [ ] patch 分离，从diff中分离patch操作
+- [ ] vnode render after 垃圾收集
 - [ ] Myers' diff for diff vdom
   > 增加dom复用减少GC
-- [ ] patch 分离，从diff中分离patch操作
 - [ ] 异步渲染 (v1b协程实现)
-- [ ] 更多注释，更多示例
+- [ ] 更多注释，示例，文档
 - [ ] 自定义指令
 
 # LICENSE
