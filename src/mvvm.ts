@@ -1,9 +1,10 @@
 import { Compile } from "./compile"
-import { observe } from './observer'
-import { createElement, render } from "./vdom/vdom"
-import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"
+// import { observe } from './observer'
+import { reactive } from './reactivity/reactivity';
 
 // __DEV__
+import { createElement, render } from "./vdom/vdom"
+import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"
 if (window) window["h2v"] = HTML2Vdom
 if (window) window["d2v"] = Dom2Vnode
 if (window) window["createElement"] = createElement
@@ -14,11 +15,7 @@ export class ViewModel {
     $compile: Compile
 
     constructor(el: Node, data: Object, scoped: boolean = false) {
-        let _data = this.$data = data
-        Object.keys(_data).forEach(key => {
-            this._proxyData(key)
-        });
-        observe(_data)
+        this.$data = reactive(data)
         if (!scoped) {
             this.$compile = new Compile(this, el)
         }
@@ -26,7 +23,7 @@ export class ViewModel {
 
     _get(exp: string): any {
         let arr = exp.trim().split(".")
-        let value = this
+        let value = this.$data
         arr.forEach(vexp => value = value[vexp])
         return value
     }
@@ -34,14 +31,14 @@ export class ViewModel {
     getter(exp: string): Function {
         let arr = exp.trim().split(".")
         return (): any => {
-            let value = this
+            let value = this.$data
             arr.forEach(vexp => value = value[vexp])
             return value
         }
     }
 
     _set(exp: string, newValue: any) {
-        let val = this;
+        let val = this.$data;
         let arr = exp.trim().split('.')
         arr.forEach((k, i) => {
             if (i < arr.length - 1) {
@@ -55,7 +52,7 @@ export class ViewModel {
     setter(exp: string): Function {
         let arr = exp.trim().split('.')
         return newValue => {
-            let val = this;
+            let val = this.$data;
             arr.forEach((k, i) => {
                 if (i < arr.length - 1) {
                     val = val[k];
@@ -64,23 +61,6 @@ export class ViewModel {
                 }
             });
         }
-    }
-
-    _proxyData(key: any) {
-        if (typeof key == "object" && !(key instanceof Array)) {
-            this._proxyData(key)
-        }
-        let _this = this
-        Object.defineProperty(this, key, {
-            configurable: false,
-            enumerable: true,
-            get: function proxyGetter() {
-                return _this.$data[key];
-            },
-            set: function proxySetter(newVal) {
-                _this.$data[key] = newVal;
-            }
-        })
     }
 }
 

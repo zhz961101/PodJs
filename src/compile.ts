@@ -1,14 +1,13 @@
 import { ViewModel } from "./mvvm"
-import { Watcher } from "./watcher"
-import { render, Vnode, childType } from "./vdom/vdom"
+import { render, childType } from "./vdom/vdom"
 import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"
-
+// import { effect } from './reactivity/reactivity'
+import { nextTickEffect } from './nxtTick';
+const effect = nextTickEffect
 const reg = /\{\{(.*?)\}\}/g
-const nonExpReg = /("|'|`).*?\1|[+\-*/!%^&()]|(?!\w)\d+| /g
-const exprReg = /^[a-zA-Z\$_][a-zA-Z\d_]*$/
 
 function nodeToFragment(el: Node): DocumentFragment {
-    let frag = document.createDocumentFragment()
+    const frag = document.createDocumentFragment()
     let child
     while (child = el.firstChild) {
         frag.appendChild(child)
@@ -97,13 +96,6 @@ export class Compile {
                 node.removeAttribute(attrName)
                 return
             }
-            // let attrValue = attr.nodeValue
-            // if (reg.test(attrValue)) {
-            //     compileUtil.bindv(node, this.vm, attrValue, attrName)
-
-            //     node.removeAttribute(attrName)
-            //     return
-            // }
         });
     }
 }
@@ -115,16 +107,15 @@ const updater = {
     modelUpdater(node: any, value: any) {
         node.value = value || ""
     },
-    classUpdater(node: HTMLElement, value: string, oldValue: string) {
+    classUpdater(node: HTMLElement, value: string) {
         let className = node.className;
-        className = className.replace(oldValue, '').replace(/\s$/, '');
+        className = className.replace(className, '').replace(/\s$/, '');
         let space = className && String(value) ? ' ' : '';
         node.className = className + space + value;
     },
     htmlUpdater(node: HTMLElement, value: any) {
         let vnode = HTML2Vdom(value)
         render(vnode, node)
-        // node.innerHTML = value || ""
     },
     valueUpdater(node: any, value: any) {
         node.value = value || ""
@@ -135,49 +126,31 @@ function ctxCall(code: string): Function {
     return new Function("ctx", "with(ctx){return (" + code + ")}")
 }
 
-function doubleCtxCall(code: string): Function {
-    return new Function("ctx1", "ctx2", "with(ctx1){with(ctx2){return (" + code + ")}}")
-}
-
 const compileUtil = {
     eventHandler(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
         let evenType = dir.split(":")[1]
         let fn = vm.$data[exp]
         if (evenType && fn && typeof fn == "function") {
-            node.addEventListener(evenType, fn.bind(vm), false)
+            node.addEventListener(evenType, fn.bind(vm.$data), false)
         }
     },
     bindCode(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
         const ctxRenderValue = ctxCall(exp)
-        const renderValue = () => ctxRenderValue(vm)
+        const renderValue = () => ctxRenderValue(vm.$data)
         let updaterFunc = updater[dir + "Updater"]
-        updaterFunc && updaterFunc(node, renderValue())
 
-        exp.split(nonExpReg)
-            .filter(v => v)
-            .map(v => v.trim())
-            .filter(v => v.length != 0)
-            .filter(v => exprReg.test(v))
-            .forEach(exp => {
-                new Watcher(vm, exp, (_, oldValue) => updaterFunc(node, renderValue(), oldValue))
-            })
+        effect(() => updaterFunc(node, renderValue()))
     },
     bindv(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
         const renderValue = () => exp.replace(reg, (_, exp) => vm._get(exp))
         let updaterFunc = updater[dir + "Updater"]
-        updaterFunc && updaterFunc(node, renderValue())
 
-        exp.match(reg)
-            .map(v => v.substring(2, v.length - 2))
-            .map(v => v.trim())
-            .forEach(exp => {
-                new Watcher(vm, exp, (_, oldValue) => updaterFunc(node, renderValue(), oldValue))
-            })
+        effect(() => updaterFunc(node, renderValue()))
     },
     bind(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
         let updaterFunc = updater[dir + "Updater"]
-        updaterFunc && updaterFunc(node, vm._get(exp))
-        new Watcher(vm, exp, (value, oldValue) => updaterFunc && updaterFunc(node, value, oldValue))
+
+        effect(() => updaterFunc(node, vm._get(exp)))
     },
     html(node: HTMLElement, vm: ViewModel, exp: string) {
         this.bindCode(node, vm, exp, "html")
@@ -224,9 +197,10 @@ const compileUtil = {
         const parentNode = node.parentNode
 
         parentNode.removeChild(node)
-        updaterFunc(vm._get(target))
+        effect(() => updaterFunc())
 
-        function updaterFunc(newVal: object) {
+        function updaterFunc() {
+            const newVal = vm._get(target)
             if (!Array.isArray(newVal)) return
             const vnodes = newVal.map((...args) => {
                 let ctxObj = Object.create(null)
@@ -250,8 +224,6 @@ const compileUtil = {
             }
             render(vnode, parentNode)
         }
-
-        new Watcher(vm, target, (value, oldValue) => updaterFunc(vm._get(value)))
     },
 }
 

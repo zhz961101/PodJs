@@ -19,7 +19,7 @@ mvvm framework.
 # Background
 Poi 源于一个偷懒的想法，要是可以从一个对象直接映射到web app该多好。
 ```js
-const poi = obj => `html`;
+const poi = obj => html`${template}`;
 ```
 `data => view`，开发者将专注数据的交互和变化，将其余的都交给代码自己完成就好了。看似懒得不能再懒，其实中间确实有很多工作可以做，比较火的一些框架也在实践这种想法。
 
@@ -60,20 +60,16 @@ npm run build:w
 # Usage
 come soon
 
-
 # Changelog
-- new version
-- typescript based
-- vnode & 依赖收集
-- next tick render
-- vue2Diff (default)
-- recat15Diff (fast)
-- 
+- reactivity
+- 移除 observe && watcher
+- nextTickEffect
 
 # Todo
 - [x] refactoring
-- [ ] proxy reactivity （vue-next 实现）解决深层依赖问题
-- [ ] es6+ 支持
+- [x] proxy reactivity （vue-next 实现）解决深层依赖问题
+- [ ] proxy 父级对象依赖
+- [ ] es6+ 语法
 - [ ] 复用v2b版本 web component 实现
 - [ ] 垃圾回收 Dep Watcher
 - [ ] Myers' diff for diff vdom
