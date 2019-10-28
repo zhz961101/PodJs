@@ -1,0 +1,29 @@
+{
+  "name": "poijs",
+  "version": "1.0.0",
+  "description": "mvvm framework.",
+  "main": "webpack.config.js",
+  "scripts": {
+    "build": "cross-env NODE_ENV=production webpack --mode=production",
+    "build:w": "cross-env NODE_ENV=production webpack --watch --mode=production",
+    "dev": "cross-env NODE_ENV=development webpack --mode=development",
+    "dev:w": "cross-env NODE_ENV=development webpack --watch --mode=development",
+    "all": "npm run dev && npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhzLuke96/PoiJs.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zhzLuke96/PoiJs/issues"
+  },
+  "homepage": "https://github.com/zhzLuke96/PoiJs#readme",
+  "devDependencies": {
+    "cross-env": "^6.0.3",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.6.4"
+  }
+}

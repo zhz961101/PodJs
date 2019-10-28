@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        .item-div {
+            background: pink;
+        }
+
+        .item-header {
+            background: tomato;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mvvm-app">
+        <button p-on:click="countUp">{{msg}}</button>
+        <button p-on:click="countUpx500">countUpx500</button>
+        <hr>
+        <button p-on:click="randAddItem">random add</button>
+        <ul>
+            <li p-for="item,i of items">
+                <span>{{i}}: </span>
+                {{item}}
+            </li>
+        </ul>
+        <hr>
+        <input p-model="msg2">
+        <input p-bind:value="'src/' + msg + '/' + msg2 ">
+        <div p-bind:class="'item-'+style"> msg2 = {{ msg2 }}</div>
+        <hr>
+        <h3>html</h3>
+        <textarea p-model="html" cols="30" rows="10"></textarea>
+        <div p-bind:html="html"></div>
+        <hr>
+    </div>
+    <script src="../dist/index.js"></script>
+    <script>
+        const $ = q => document.querySelector(q)
+        let vm = new ViewModel($("#mvvm-app"), {
+            msg: "hello world",
+            msg2: "",
+            count: 0,
+            style: 'div',
+            items: [
+                "apple",
+                "banana",
+            ],
+            html: `<ul>
+    <li>01</li>
+    <li>02</li>
+    <li>03</li>
+    <li>04</li>
+</ul>`,
+            countUp() {
+                this.msg = `hello world ${this.count++}`
+            },
+            countUpx500() {
+                for (let i = 0; i < 100; i++) {
+                    this.msg = `hello world ${this.count++}`
+                    this.msg = `hello world ${this.count++}`
+                    this.msg = `hello world ${this.count++}`
+                    this.msg = `hello world ${this.count++}`
+                    this.msg = `hello world ${this.count++}`
+                }
+            },
+            randAddItem() {
+                this.items.push(Math.random() * Number.MAX_SAFE_INTEGER)
+            }
+        });
+    </script>
+</body>
+
+</html>
