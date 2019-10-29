@@ -63,7 +63,7 @@ npm run build:w
 ```typescript
 class App extends Poi {
     constructor() {
-        super("w-app", {...})
+        super("app-root", {...})
     }
 
     template(): string | Vnode {
@@ -86,7 +86,7 @@ class App extends Poi {
         }
     }
 
-    @computed
+    @computed()
     get doubleCount() {
         return this.state.count * 2
     }
@@ -113,17 +113,20 @@ class App extends Poi {
 ```
 
 # Changelog
-- store
-- mergeReact
-- $global main bus
+- web component
+- __destroy__ for compile
+- dirty cache on computed
+- more cacher
 
 # Todo
 - [x] refactoring
 - [x] proxy reactivity （vue-next 实现）解决深层依赖问题
 - [x] proxy 父级对象依赖通知
 - [ ] 减少无关依赖重绘，脏检查
-- [ ] 复用v2b版本 web component 实现
-- [ ] es6+ 语法
+- [x] 复用v2b版本 web component 实现
+- [x] es6+ 语法
+- [ ] 简单无head指令
+- [ ] 装饰器
 - [ ] patch 分离，从diff中分离patch操作
 - [ ] vnode render after 垃圾收集
 - [ ] Myers' diff for diff vdom

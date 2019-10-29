@@ -6,12 +6,15 @@ import { reactive, computed } from './reactivity/reactivity';
 import { createElement, render } from "./vdom/vdom"
 import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"
 import { Store } from './store/store';
+import { Poi } from './component/create';
 if (window) window["h2v"] = HTML2Vdom
 if (window) window["d2v"] = Dom2Vnode
 if (window) window["createElement"] = createElement
 if (window) window["render"] = render
 if (window) window["reactive"] = reactive
 if (window) window["Store"] = Store
+if (window) window["Poi"] = Poi
+if (window) window["computed"] = computed
 
 const global = reactive({})
 
@@ -27,8 +30,14 @@ export class ViewModel {
     $options: mvvmOptions
 
     constructor(el: Node, data: Object, options: mvvmOptions = {}) {
-        this.$data = reactive(Object.assign(data, { $global: global }))
+        this.$data = Object.assign(data, { $global: global })
         if (data["init"]) data["init"].call(this.$data)
+        delete this.$data["init"]
+        for (const k of Object.keys(this.$data)) {
+            if (typeof this.$data[k] === "function") {
+                this.$data[k] = this.$data[k].bind(this.$data)
+            }
+        }
         this.$options = options
         if (!options.manualComple) {
             this.$compile = new Compile(this, el)

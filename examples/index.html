@@ -18,6 +18,46 @@
 </head>
 
 <body>
+    <script src="../dist/index.js"></script>
+    <app-root></app-root>
+    <script>
+        class app extends Poi {
+            constructor() {
+                super("app-root")
+            }
+            setup() {
+                const info = reactive({
+                    msg: "Poi Component",
+                    count: 0,
+                    now: new Date().toLocaleString(),
+                })
+                return {
+                    info,
+                    double: computed(() => info.count * 2)
+                }
+            }
+            created() {
+                setInterval(() => this.info.now = new Date().toLocaleString(), 1000)
+            }
+            template() {
+                return `
+<h1>{{ info.msg }}<span> {{ info.count }} </span> </h1>
+<button p-on:click="whatDoubleCount" title="computed: double count">wdc</button>
+<button p-on:click="plusCount">+1</button>
+now: <span> {{ info.now }} </span>`
+            }
+            plusCount() {
+                this.info.count += 1
+            }
+            whatDoubleCount() {
+                alert("this.double.value is " + this.double.value)
+            }
+            doubleCount() {
+                return this.double.value
+            }
+        }
+        new app();;
+    </script>
     <div id="mvvm-app">
         <h1> mvvm </h1>
         <input p-model="msg2">
@@ -50,7 +90,6 @@
         </ul>
         <hr>
     </div>
-    <script src="../dist/index.js"></script>
     <script>
         const $ = q => document.querySelector(q)
 
@@ -72,7 +111,7 @@
             }
         })
 
-        let vm = new ViewModel($("#mvvm-app"), {
+        let vm = new ViewModel($("#mvvm-app"), reactive({
             loginState,
             msg: "hello world",
             msg2: "",
@@ -120,7 +159,7 @@
                     welcome: "hello world"
                 }
             }
-        });
+        }));
     </script>
 </body>
 

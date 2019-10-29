@@ -5,9 +5,10 @@ type Deps = Set<Effect>
 
 interface Effect {
     (): any
+    deps: Array<Deps>
     lazy?: boolean
     computed?: boolean
-    deps: Array<Deps>
+    scheduler?: (run: Function) => void
 }
 
 // object => Proxy<object>
@@ -15,7 +16,7 @@ const raw2Proxy = new WeakMap<object, any>()
 // Proxy<object> => object
 const proxy2Raw = new WeakMap<any, object>()
 
-let effectStack: Effect[] = []
+let effectStack: Array<Effect> = []
 let targetMap = new WeakMap<object, WeakMap<String, Deps>>()
 
 export function getToRaw(value: object): object {
@@ -48,7 +49,13 @@ export function trigger(target: object, key: string) {
         if (!deps) return
         deps.forEach(effect => effect.computed ? computedRunners.add(effect) : effects.add(effect))
     }
-    const run = e => nextTick(e)
+    const run = (e: Effect) => {
+        if (e.scheduler) {
+            e.scheduler(e)
+        } else {
+            nextTick(e)
+        }
+    }
     // Important: computed effects 需要提前运行
     computedRunners.forEach(run)
     effects.forEach(run)
@@ -77,6 +84,7 @@ export function track(target: object, key: string) {
 interface EffectOptions {
     lazy?: boolean,
     computed?: boolean
+    scheduler?: () => void
 }
 
 export function effect(fn: Function, options: EffectOptions = {}) {
@@ -91,6 +99,7 @@ function createRectiveEffect(fn: Function, options: EffectOptions) {
     effect.deps = []
     effect.computed = options.computed
     effect.lazy = options.lazy
+    effect.scheduler = options.scheduler
     return effect
 }
 
@@ -106,14 +115,26 @@ function run(effect: Effect, fn: Function, args: any[]): any {
 }
 
 export function computed(fn: Function, options: object = {}) {
+    let dirty = true
+    let value: any
     const runner = effect(fn, Object.assign({
         computed: true,
-        lazy: true
+        lazy: true,
+        scheduler() {
+            dirty = true
+            // trigger(ret, "value")
+        }
     }, options))
-    return {
+    const ret = {
         effect: runner,
         get value() {
-            return runner()
+            if (dirty) {
+                value = runner()
+                dirty = false
+            }
+            return value
         }
     }
+    // return reactive(ret)
+    return ret
 }

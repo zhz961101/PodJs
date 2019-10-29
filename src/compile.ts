@@ -59,6 +59,7 @@ export class Compile {
     }
 
     compileElement(node: DocumentFragment) {
+        if (node["__destroy__"]) return
         let childNodes = node.childNodes
         Array().slice.call(childNodes).forEach(node => {
             if (isElementNode(node)) {
@@ -148,7 +149,16 @@ const compileUtil = {
             effect(() => updaterFunc(node, renderValue()))
     },
     bindv(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
-        const renderValue = () => exp.replace(reg, (_, exp) => vm._get(exp))
+        const ctxCalls = new Map<string, Function>()
+        const renderValue = () => exp.replace(reg, (_, exp) => {
+            let ctxCaller = ctxCalls.get(exp)
+            if (ctxCaller) return ctxCaller(vm.$data)
+            ctxCaller = ctxCall(exp)
+            ctxCalls.set(exp, ctxCaller)
+            return ctxCaller(vm.$data)
+        })
+
+
         let updaterFunc = updater[dir + "Updater"]
 
         if (vm.$options.disposable)
@@ -212,7 +222,9 @@ const compileUtil = {
         const parentVnodeTpl = Dom2Vnode(parentNode)
         parentVnodeTpl.children = []
 
+        node["__destroy__"] = true
         parentNode.removeChild(node)
+        node = null
 
         if (vm.$options.disposable)
             updaterFunc()
@@ -249,7 +261,7 @@ const compileUtil = {
 
 function complieWithScope(el: Node, scope: object, supVm: ViewModel) {
     let vm = new ViewModel(el, scope, { manualComple: true, disposable: true })
-    Object.setPrototypeOf(vm, supVm)
+    // Object.setPrototypeOf(vm, supVm)
     let compiler = new Compile(vm, el)
     // manual GC
     vm = compiler = null
