@@ -119,6 +119,9 @@ const updater = {
     },
     valueUpdater(node: any, value: any) {
         node.value = value || ""
+    },
+    styleUpdater(node: HTMLElement, value: string) {
+        node.style.cssText = value
     }
 }
 
@@ -168,6 +171,9 @@ const compileUtil = {
     },
     value(node: HTMLElement, vm: ViewModel, exp: string) {
         this.bindCode(node, vm, exp, "value")
+    },
+    style(node: HTMLElement, vm: ViewModel, exp: string) {
+        this.bindCode(node, vm, exp, "style")
     },
     model(node: any, vm: ViewModel, exp: string) {
         this.bind(node, vm, exp, 'model')

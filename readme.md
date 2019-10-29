@@ -113,10 +113,9 @@ class App extends Poi {
 ```
 
 # Changelog
-- reactivity
-- 移除 observe && watcher
-- nextTickEffect
-- disposable ViewModel (work on vnode compiling)
+- store
+- mergeReact
+- $global main bus
 
 # Todo
 - [x] refactoring
