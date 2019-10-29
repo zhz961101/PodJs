@@ -1,4 +1,4 @@
-import { Compile } from "./compile"
+import { Compile, difineDirective } from "./compile"
 // import { observe } from './observer'
 import { reactive, computed } from './reactivity/reactivity';
 
@@ -15,6 +15,7 @@ if (window) window["reactive"] = reactive
 if (window) window["Store"] = Store
 if (window) window["Poi"] = Poi
 if (window) window["computed"] = computed
+if (window) window["difineDirective"] = difineDirective
 
 const global = reactive({})
 

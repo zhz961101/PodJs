@@ -2,6 +2,7 @@ import { ViewModel } from "./mvvm"
 import { render, deepCloneVnode, childType } from "./vdom/vdom"
 import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"
 import { effect } from './reactivity/reactivity'
+import { mergeReact } from "./reactivity/mergeReact"
 // import { nextTickEffect } from './nxtTick';
 // const effect = nextTickEffect
 const reg = /\{\{(.*?)\}\}/g
@@ -21,22 +22,6 @@ function isElementNode(node: HTMLElement): boolean {
 
 function isTextNode(node: HTMLElement): boolean {
     return node.nodeType == 3
-}
-
-function isDirctive(attr: string): boolean {
-    return attr.indexOf('p-') == 0
-}
-
-function isEventDirective(attr: string): boolean {
-    return attr.indexOf('on') == 0
-}
-
-function isLinkDirective(attr: string): boolean {
-    return attr.indexOf('bind') == 0
-}
-
-function isModelDirective(attr: string): boolean {
-    return attr.indexOf('model') == 0
 }
 
 export class Compile {
@@ -63,7 +48,7 @@ export class Compile {
         let childNodes = node.childNodes
         Array().slice.call(childNodes).forEach(node => {
             if (isElementNode(node)) {
-                this.complie(node)
+                complie(node, this.vm)
             } else if (isTextNode(node) && reg.test(node.textContent)) {
                 // this.complieText(node, RegExp.$1.trim())
                 this.complieText(node, node.textContent)
@@ -75,53 +60,74 @@ export class Compile {
     }
 
     complieText(node: HTMLElement, exp: string) {
-        compileUtil.text(node, this.vm, exp);
-    }
-
-    complie(node: HTMLElement) {
-        let nodeAttrs = node.attributes
-        Array().slice.call(nodeAttrs).forEach(attr => {
-            let attrName = attr.name
-            if (isDirctive(attrName)) {
-                let exp = attr.value
-                let dir = attrName.substring(2)
-                if (isEventDirective(dir)) {
-                    compileUtil.eventHandler(node, this.vm, exp, dir)
-                } else if (isLinkDirective(dir)) {
-                    let attr = dir.split(':')[1]
-                    compileUtil[attr] && compileUtil[attr](node, this.vm, exp)
-                } else {
-                    compileUtil[dir] && compileUtil[dir](node, this.vm, exp)
-                }
-
-                node.removeAttribute(attrName)
-                return
-            }
-        });
+        bindMap.text(node, this.vm, exp)
     }
 }
 
+function complie(node: HTMLElement, vm: ViewModel) {
+    let nodeAttrs = node.attributes
+    Array().slice.call(nodeAttrs).forEach(attr => {
+        const attrName = attr.name
+        if (attrName[0] == "_") {
+            // directive
+            // _{directive}:{args0}.{args1}={express}
+            const dirArr = attrName.substring(1).split(":")
+            const dirctiveName = dirArr[0]
+            const argStr = dirArr[1] || ""
+            const args = argStr.split(".")
+            directives[dirctiveName] && directives[dirctiveName](node, vm, attr.value, args)
+            node.removeAttribute(attrName)
+            return
+        }
+        const flagIndex = attrName.indexOf(":")
+        switch (flagIndex) {
+            case attrName.length - 1:
+                // {key}:={value} is link on the dom key
+                const targetAttrName = attrName.substring(0, attrName.length - 1)
+                if (bindMap[targetAttrName]) {
+                    bindMap[targetAttrName](node, vm, attr.value)
+                } else {
+                    directives.bindCode(node, vm, attr.value, targetAttrName)
+                }
+                break
+            case 0:
+                // :{event}={target} is Event Directive
+                const EventType = attrName.substring(1)
+                eventHandler(node, vm, attr.value, EventType)
+                break
+            case -1:
+                return // not is directive
+            default:
+            // nothing
+        }
+        node.removeAttribute(attrName)
+        return
+    });
+}
+
+function defaultUpdater(node: HTMLElement, value: any, key: string) {
+    node[key] = value || ""
+}
+
 const updater = {
-    textUpdater(node: HTMLElement, value: any) {
+    text(node: HTMLElement, value: any) {
         node.textContent = value || ""
     },
-    modelUpdater(node: any, value: any) {
+    model(node: any, value: any) {
         node.value = value || ""
     },
-    classUpdater(node: HTMLElement, value: string) {
-        let className = node.className;
-        className = className.replace(className, '').replace(/\s$/, '');
-        let space = className && String(value) ? ' ' : '';
-        node.className = className + space + value;
+    class(node: HTMLElement, value: string) {
+        node.className = value
+        // let className = node.className;
+        // className = className.replace(className, '').replace(/\s$/, '');
+        // let space = className && String(value) ? ' ' : '';
+        // node.className = className + space + value;
     },
-    htmlUpdater(node: HTMLElement, value: any) {
+    html(node: HTMLElement, value: any) {
         let vnode = HTML2Vdom(value)
         render(vnode, node)
     },
-    valueUpdater(node: any, value: any) {
-        node.value = value || ""
-    },
-    styleUpdater(node: HTMLElement, value: string) {
+    style(node: HTMLElement, value: string) {
         node.style.cssText = value
     }
 }
@@ -130,25 +136,30 @@ function ctxCall(code: string): Function {
     return new Function("ctx", "with(ctx){return (" + code + ")}")
 }
 
-const compileUtil = {
-    eventHandler(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
-        let evenType = dir.split(":")[1]
-        let fn = vm.$data[exp]
-        if (evenType && fn && typeof fn == "function") {
-            node.addEventListener(evenType, fn.bind(vm.$data), false)
-        }
-    },
+function eventHandler(node: HTMLElement, vm: ViewModel, exp: string, eventType: string) {
+    let fn = vm.$data[exp]
+    if (eventType && fn && typeof fn == "function") {
+        node.addEventListener(eventType, fn.bind(vm.$data), false)
+    }
+}
+
+const directives = {
     bindCode(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
+        let updaterFunc = updater[dir]
+        if (!updaterFunc) updaterFunc = defaultUpdater
+
         const ctxRenderValue = ctxCall(exp)
         const renderValue = () => ctxRenderValue(vm.$data)
-        let updaterFunc = updater[dir + "Updater"]
 
         if (vm.$options.disposable)
             updaterFunc(node, renderValue())
         else
-            effect(() => updaterFunc(node, renderValue()))
+            effect(() => updaterFunc(node, renderValue(), dir))
     },
     bindv(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
+        let updaterFunc = updater[dir]
+        if (!updaterFunc) updaterFunc = defaultUpdater
+
         const ctxCalls = new Map<string, Function>()
         const renderValue = () => exp.replace(reg, (_, exp) => {
             let ctxCaller = ctxCalls.get(exp)
@@ -159,31 +170,19 @@ const compileUtil = {
         })
 
 
-        let updaterFunc = updater[dir + "Updater"]
-
         if (vm.$options.disposable)
-            updaterFunc(node, renderValue())
+            updaterFunc(node, renderValue(), dir)
         else
-            effect(() => updaterFunc(node, renderValue()))
+            effect(() => updaterFunc(node, renderValue(), dir))
     },
     bind(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
-        let updaterFunc = updater[dir + "Updater"]
+        let updaterFunc = updater[dir]
+        if (!updaterFunc) updaterFunc = defaultUpdater
+
         if (vm.$options.disposable)
-            updaterFunc(node, vm._get(exp))
+            updaterFunc(node, vm._get(exp), dir)
         else
-            effect(() => updaterFunc(node, vm._get(exp)))
-    },
-    html(node: HTMLElement, vm: ViewModel, exp: string) {
-        this.bindCode(node, vm, exp, "html")
-    },
-    class(node: HTMLElement, vm: ViewModel, exp: string) {
-        this.bindCode(node, vm, exp, "class")
-    },
-    value(node: HTMLElement, vm: ViewModel, exp: string) {
-        this.bindCode(node, vm, exp, "value")
-    },
-    style(node: HTMLElement, vm: ViewModel, exp: string) {
-        this.bindCode(node, vm, exp, "style")
+            effect(() => updaterFunc(node, vm._get(exp), dir))
     },
     model(node: any, vm: ViewModel, exp: string) {
         this.bind(node, vm, exp, 'model')
@@ -197,9 +196,6 @@ const compileUtil = {
             // vm[exp] = newValue
             oldValue = newValue
         })
-    },
-    text(node: HTMLElement, vm: ViewModel, exp: string) {
-        this.bindv(node, vm, exp, "text")
     },
     show(node: HTMLElement, vm: ViewModel, exp: string) {
 
@@ -259,10 +255,20 @@ const compileUtil = {
     },
 }
 
+const bindMap = {
+    text(node: HTMLElement, vm: ViewModel, exp: string) {
+        directives.bindv(node, vm, exp, "text")
+    },
+}
+
 function complieWithScope(el: Node, scope: object, supVm: ViewModel) {
-    let vm = new ViewModel(el, scope, { manualComple: true, disposable: true })
-    // Object.setPrototypeOf(vm, supVm)
+    let data = mergeReact(scope, supVm.$data)
+    let vm = new ViewModel(el, data, { manualComple: true, disposable: true })
     let compiler = new Compile(vm, el)
     // manual GC
-    vm = compiler = null
+    vm = data = compiler = null
+}
+
+export function difineDirective(name: string, func: Function) {
+    directives[name] = func
 }

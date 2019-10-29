@@ -113,10 +113,8 @@ class App extends Poi {
 ```
 
 # Changelog
-- web component
-- __destroy__ for compile
-- dirty cache on computed
-- more cacher
+- new directive call
+- difine simple Directive
 
 # Todo
 - [x] refactoring
@@ -125,8 +123,9 @@ class App extends Poi {
 - [ ] 减少无关依赖重绘，脏检查
 - [x] 复用v2b版本 web component 实现
 - [x] es6+ 语法
-- [ ] 简单无head指令
+- [x] 简单无head指令
 - [ ] 装饰器
+- [ ] 插件和hooks
 - [ ] patch 分离，从diff中分离patch操作
 - [ ] vnode render after 垃圾收集
 - [ ] Myers' diff for diff vdom

@@ -14,6 +14,12 @@
         .item-header {
             background: tomato;
         }
+
+        /* body,
+        input,
+        textarea {
+            background: #e7e5e4;
+        } */
     </style>
 </head>
 
@@ -42,8 +48,8 @@
             template() {
                 return `
 <h1>{{ info.msg }}<span> {{ info.count }} </span> </h1>
-<button p-on:click="whatDoubleCount" title="computed: double count">wdc</button>
-<button p-on:click="plusCount">+1</button>
+<button :click="whatDoubleCount" title="computed: double count">wdc</button>
+<button :click="plusCount">+1</button>
 now: <span> {{ info.now }} </span>`
             }
             plusCount() {
@@ -60,36 +66,53 @@ now: <span> {{ info.now }} </span>`
     </script>
     <div id="mvvm-app">
         <h1> mvvm </h1>
-        <input p-model="msg2">
-        <input p-bind:value="'src/' + msg + '/' + msg2 ">
-        <div p-bind:class="'item-'+style"> msg2 = {{ msg2 }}</div>
+        <input _model="msg2">
+        <input value:="'src/' + msg + '/' + msg2 ">
+        <div class:="'item-'+style"> msg2 = {{ msg2 }}</div>
         <hr>
         <h1>html diff</h1>
-        <textarea p-model="html" cols="30" rows="10"></textarea>
-        <div p-bind:html="html"></div>
+        <textarea _model="html" cols="30" rows="10"></textarea>
+        <div html:="html"></div>
         <hr>
         <h1> $global </h1>
         <span>$global.appState.welcome = {{ $global.appState.welcome }}</span>
         <hr>
-        <h1 p-bind:style="'color:' + (loginState.onlogin == 'success' ? 'green' : 'red')">Store</h1><button
-            p-on:click="login">login</button>
+        <h1 style:="'color:' + (loginState.onlogin == 'success' ? 'green' : 'red')">Store</h1><button
+            :click="login">login</button>
         <span>name: {{ loginState.user.name }} age: {{ loginState.user.age }}</span>
         <hr>
         <h1> Next Tick </h1>
-        <button p-on:click="countUp">{{msg}}</button>
-        <button p-on:click="countUpx500">countUpx500</button>
+        <button :click="countUp">{{msg}}</button>
+        <button :click="countUpx500">countUpx500</button>
         <hr>
         <h1> for array </h1>
-        <button p-on:click="randAddItem">random add</button>
+        <button :click="randAddItem">random add</button>
         <span>items.length: {{ items.length }}</span>
         <ul>
-            <li p-for="item,i of items">
+            <li _for="item,i of items">
                 <span>{{i}}: </span>
                 {{item}}
+                <span>{{count}}</span>
             </li>
         </ul>
         <hr>
+        <div _bg:="#0e8dbc" style="text-align: center;padding: 1rem;">
+            <h1 _f-w:="400" _shadow>custom directive</h1>
+        </div>
     </div>
+    <script>
+        difineDirective("f-w", function (node, vm, exp, args) {
+            node.style.fontWeight = exp
+        })
+        difineDirective("bg", function (node, vm, exp, args) {
+            node.style.background = exp
+        })
+        difineDirective("shadow", function (node, vm, exp, args) {
+            node.style.color = "#fff"
+            node.style.textShadow =
+                "0 1px 0 #CCCCCC, 0 2px 0 #c9c9c9, 0 3px 0 #bbb, 0 4px 0 #b9b9b9, 0 5px 0 #aaa, 0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15)"
+        });;
+    </script>
     <script>
         const $ = q => document.querySelector(q)
 
