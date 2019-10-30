@@ -27,3 +27,13 @@ export const mergeReact = (...objects: object[]) => {
     })
 }
 
+export function readOnlyReact(obj: object) {
+    return new Proxy(obj, {
+        get(target, key, receiver) {
+            return Reflect.get(target, key, receiver)
+        },
+        set(target, key) {
+            return false
+        }
+    })
+}

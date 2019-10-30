@@ -2,7 +2,7 @@ import { ViewModel } from "./mvvm"
 import { render, deepCloneVnode, childType } from "./vdom/vdom"
 import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"
 import { effect } from './reactivity/reactivity'
-import { mergeReact } from "./reactivity/mergeReact"
+import { mergeReact } from "./reactivity/wapper"
 // import { nextTickEffect } from './nxtTick';
 // const effect = nextTickEffect
 const reg = /\{\{(.*?)\}\}/g
@@ -22,6 +22,76 @@ function isElementNode(node: HTMLElement): boolean {
 
 function isTextNode(node: HTMLElement): boolean {
     return node.nodeType == 3
+}
+
+export const compileHead = "p-"
+const eventAttrHead = compileHead + "event"
+const bindAttrHead = compileHead + "bind"
+const dirAttrHead = compileHead + "dir"
+const compileType = {
+    EVLISTENER: "EVLISTENER",
+    BINDATTR: "BINDATTR",
+    DIRECTIVE: "DIRECTIVE",
+    PLAIN: "PLAIN",
+    UNKNOW: "UNKNOW"
+}
+
+interface compileInfo {
+    type: string
+    name?: string
+    extra?: string
+}
+
+function getCompileType(attrName: string): compileInfo {
+    if (!(attrName.includes(":") || attrName.includes("_")))
+        return {
+            type: compileType.PLAIN
+        }
+    const dirArr = attrName.split(":")
+    // ==== event listener ====
+    // p-event:click=func
+    if (attrName.indexOf(eventAttrHead + ":") == 0)
+        return {
+            type: compileType.EVLISTENER,
+            name: dirArr[1],
+        }
+    // :click=func
+    if (attrName.indexOf(":") == 0)
+        return {
+            type: compileType.EVLISTENER,
+            name: dirArr[1],
+        }
+    // ==== directive ====
+    // p-dir:model=v2
+    if (attrName.indexOf(dirAttrHead + ":") == 0)
+        return {
+            type: compileType.DIRECTIVE,
+            name: dirArr[1],
+            extra: dirArr[2] || "",
+        }
+    // _dir:arg1.arg2=o
+    if (attrName.indexOf("_") == 0)
+        return {
+            type: compileType.DIRECTIVE,
+            name: dirArr[0].substring(1),
+            extra: dirArr[1] || ""
+        }
+    // ==== bind attr ====
+    // p-bind:value=v1
+    if (attrName.indexOf(bindAttrHead + ":") == 0)
+        return {
+            type: compileType.BINDATTR,
+            name: dirArr[1]
+        }
+    // html:=h1
+    if (attrName.indexOf(":") == attrName.length - 1)
+        return {
+            type: compileType.BINDATTR,
+            name: attrName.slice(0, attrName.length - 1)
+        }
+    return {
+        type: compileType.UNKNOW
+    }
 }
 
 export class Compile {
@@ -54,6 +124,7 @@ export class Compile {
                 this.complieText(node, node.textContent)
             }
             if (node.childNodes && node.childNodes.length) {
+                if (node["__destroy__"]) return
                 this.compileElement(node)
             }
         });
@@ -67,46 +138,54 @@ export class Compile {
 function complie(node: HTMLElement, vm: ViewModel) {
     let nodeAttrs = node.attributes
     Array().slice.call(nodeAttrs).forEach(attr => {
-        const attrName = attr.name
-        if (attrName[0] == "_") {
-            // directive
-            // _{directive}:{args0}.{args1}={express}
-            const dirArr = attrName.substring(1).split(":")
-            const dirctiveName = dirArr[0]
-            const argStr = dirArr[1] || ""
-            const args = argStr.split(".")
-            directives[dirctiveName] && directives[dirctiveName](node, vm, attr.value, args)
-            node.removeAttribute(attrName)
-            return
-        }
-        const flagIndex = attrName.indexOf(":")
-        switch (flagIndex) {
-            case attrName.length - 1:
-                // {key}:={value} is link on the dom key
-                const targetAttrName = attrName.substring(0, attrName.length - 1)
-                if (bindMap[targetAttrName]) {
-                    bindMap[targetAttrName](node, vm, attr.value)
+        const compileT = getCompileType(attr.name)
+        switch (compileT.type) {
+            case compileType.EVLISTENER:
+                eventHandler(node, vm, attr.value, compileT.name)
+                break
+            case compileType.BINDATTR:
+                if (bindMap[compileT.name]) {
+                    bindMap[compileT.name](node, vm, attr.value)
                 } else {
-                    directives.bindCode(node, vm, attr.value, targetAttrName)
+                    directives.bindCode(node, vm, attr.value, compileT.name)
                 }
                 break
-            case 0:
-                // :{event}={target} is Event Directive
-                const EventType = attrName.substring(1)
-                eventHandler(node, vm, attr.value, EventType)
+            case compileType.DIRECTIVE:
+                const args = compileT.extra.split(".")
+                directives[compileT.name] && directives[compileT.name](node, vm, attr.value, args)
                 break
-            case -1:
-                return // not is directive
+            case compileType.PLAIN:
+                return // cant need compile
+            case compileType.UNKNOW:
+                return // [TODO] error!
             default:
-            // nothing
+                return
         }
-        node.removeAttribute(attrName)
+        node.removeAttribute(attr.name)
         return
     });
 }
 
+function getVm(node: any) {
+    let vm = node.$vm
+    while (!vm) {
+        node = node.parentNode
+        if (!node) return
+        vm = node.$vm
+    }
+    return vm
+}
+
 function defaultUpdater(node: HTMLElement, value: any, key: string) {
-    node[key] = value || ""
+    if (key == "disabled") {
+        if (!value) {
+            node.removeAttribute(key)
+        } else {
+            node.setAttribute(key, "")
+        }
+    } else {
+        node.setAttribute(key, value || "")
+    }
 }
 
 const updater = {
@@ -116,12 +195,13 @@ const updater = {
     model(node: any, value: any) {
         node.value = value || ""
     },
-    class(node: HTMLElement, value: string) {
-        node.className = value
-        // let className = node.className;
-        // className = className.replace(className, '').replace(/\s$/, '');
-        // let space = className && String(value) ? ' ' : '';
-        // node.className = className + space + value;
+    class(node: HTMLElement, value: string, oldValue: string) {
+        let className = node.className;
+        if (oldValue && className.includes(oldValue)) {
+            node.className = node.className.replace(oldValue, value)
+            return
+        }
+        node.className += " " + value
     },
     html(node: HTMLElement, value: any) {
         let vnode = HTML2Vdom(value)
@@ -137,9 +217,15 @@ function ctxCall(code: string): Function {
 }
 
 function eventHandler(node: HTMLElement, vm: ViewModel, exp: string, eventType: string) {
-    let fn = vm.$data[exp]
-    if (eventType && fn && typeof fn == "function") {
-        node.addEventListener(eventType, fn.bind(vm.$data), false)
+    const ctxCaller = ctxCall(exp)
+    function callback() {
+        let fn = ctxCaller(vm.$data)
+        if (fn && typeof fn == "function" || fn instanceof Function) {
+            fn.call(vm.$data)
+        }
+    }
+    if (eventType) {
+        node.addEventListener(eventType, callback, false)
     }
 }
 
@@ -147,18 +233,29 @@ const directives = {
     bindCode(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
         let updaterFunc = updater[dir]
         if (!updaterFunc) updaterFunc = defaultUpdater
+        let oldValue = null
 
         const ctxRenderValue = ctxCall(exp)
         const renderValue = () => ctxRenderValue(vm.$data)
 
         if (vm.$options.disposable)
-            updaterFunc(node, renderValue())
+            updaterFunc(node, renderValue(), dir)
         else
-            effect(() => updaterFunc(node, renderValue(), dir))
+            effect(() => {
+                if (node["__destroy__"]) return
+                const newValue = renderValue()
+                if (typeof newValue == "function" || newValue instanceof Function) {
+                    getVm(node)._set("props." + dir, newValue)
+                } else {
+                    updaterFunc(node, newValue, dir, oldValue)
+                    oldValue = newValue
+                }
+            })
     },
     bindv(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
         let updaterFunc = updater[dir]
         if (!updaterFunc) updaterFunc = defaultUpdater
+        let oldValue = null
 
         const ctxCalls = new Map<string, Function>()
         const renderValue = () => exp.replace(reg, (_, exp) => {
@@ -173,16 +270,25 @@ const directives = {
         if (vm.$options.disposable)
             updaterFunc(node, renderValue(), dir)
         else
-            effect(() => updaterFunc(node, renderValue(), dir))
+            effect(() => {
+                const newValue = renderValue()
+                updaterFunc(node, newValue, dir, oldValue)
+                oldValue = newValue
+            })
     },
     bind(node: HTMLElement, vm: ViewModel, exp: string, dir: string) {
         let updaterFunc = updater[dir]
         if (!updaterFunc) updaterFunc = defaultUpdater
+        let oldValue = null
 
         if (vm.$options.disposable)
             updaterFunc(node, vm._get(exp), dir)
         else
-            effect(() => updaterFunc(node, vm._get(exp), dir))
+            effect(() => {
+                const newValue = vm._get(exp)
+                updaterFunc(node, newValue, dir, oldValue)
+                oldValue = newValue
+            })
     },
     model(node: any, vm: ViewModel, exp: string) {
         this.bind(node, vm, exp, 'model')
@@ -207,11 +313,13 @@ const directives = {
         const tplNode = node.cloneNode(true)
         const cloneNode = () => {
             const n = tplNode.cloneNode(true)
-            if (n instanceof HTMLElement)
-                n.removeAttribute("p-for")
+            if (n instanceof HTMLElement) {
+                n.removeAttribute("p-dir:for")
+                n.removeAttribute("_for")
+            }
             return n
         }
-        let exprs = exp.match(/^((\w+,?)+) of (\w+)$/)
+        let exprs = exp.match(/^((\w+,?)+) of (\S+)$/)
         let expArgsName: string[] = exprs[1].split(",")
         let target: string = exprs[3]
         const parentNode = node.parentNode

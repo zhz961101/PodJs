@@ -18,7 +18,7 @@ export class Store {
             // [TODO] throw error
         }
         delete options["type"]
-        this.$actions[options.type](options)
+        return this.$actions[options.type](options)
     }
 
     dispatch(type: string, ...args: any[]) {
@@ -26,7 +26,7 @@ export class Store {
             return
             // [TODO] throw error
         }
-        this.$actions[type](...args)
+        return this.$actions[type](...args)
     }
 }
 

@@ -115,6 +115,13 @@ class App extends Poi {
 # Changelog
 - new directive call
 - difine simple Directive
+- Component bug fix
+- Component Function bind
+- reactive on Generics
+- store bug fix
+- 修复 dom2vnode 文本节点无法patch的问题
+- 修复 render 函数(diif&patch)行为
+- new examples in '/examples/helloworld/'
 
 # Todo
 - [x] refactoring
@@ -124,8 +131,9 @@ class App extends Poi {
 - [x] 复用v2b版本 web component 实现
 - [x] es6+ 语法
 - [x] 简单无head指令
+- [ ] 局部指令 局部组件
 - [ ] 装饰器
-- [ ] 插件和hooks
+- [ ] 插件 和 hooks
 - [ ] patch 分离，从diff中分离patch操作
 - [ ] vnode render after 垃圾收集
 - [ ] Myers' diff for diff vdom

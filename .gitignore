@@ -64,6 +64,7 @@ typings/
 # dist/
 dist/*.*
 dist/*/*.*
+examples/**/dist
 
 # npm lock
 package-lock.json
@@ -79,3 +80,7 @@ local_test/*.*
 !.gitkeep
 !*/.gitkeep
 !*/*/.gitkeep
+
+# vscode config
+.vscode
+

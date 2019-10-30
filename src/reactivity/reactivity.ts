@@ -23,7 +23,7 @@ export function getToRaw(value: object): object {
     return proxy2Raw.get(value) || value
 }
 
-export function reactive(target: object, upper: object = null) {
+export function reactive<T extends object>(target: T, upper: object = null): T {
     let observed
     if (observed = raw2Proxy.get(target)) {
         return observed

@@ -1,4 +1,5 @@
 import { ViewModel } from "../mvvm"
+import { Compile } from "../compile";
 
 function exclude(obj: object, exclude: string[]): object {
     exclude = exclude || [];
@@ -27,48 +28,52 @@ interface propOption {
     passed: () => void
 }
 
-interface propOptions {
+export interface propOptions {
     [key: string]: propOption
 }
 
 export class Poi {
-    props: propOptions
-    template: () => string
-    created: () => void
-    setup: () => object
+    // props?: () => propOptions
+    // template: () => string
+    // created?: () => void
+    // setup?: () => object
 
     constructor(tagNmae: string) {
-        if (!this.template) {
+        if (!this["template"]) {
             throw `cant find template funciton`
         }
-        if (!this.setup) {
-
-        }
-        const observedAttributes = this.props ? Object.keys(this.props) : []
-        const data = (this.setup && this.setup()) || {}
-        const mData = Object.assign(data, exclude(this, ["prop", "template", "created", "setup"]))
-        const elemCls = createCustomElements(mData, this.created, observedAttributes, this.template)
+        const mData = exclude(this, ["props", "template", "created", "setup"])
+        const elemCls = createCustomElements(mData, this["setup"], this["created"], this["template"], this["props"])
 
         customElements.define(tagNmae, elemCls)
     }
 }
 
-function createCustomElements(data: object, created: Function, observedAttributes: string[], template: Function, props: propOptions = null): any {
+function createCustomElements(mData: object, setup: Function, created: Function, template: Function, props: () => propOptions = null): any {
+    // cache observed attributes
+    const observedAttributes = Object.keys((props && props()) || {})
     return class extends HTMLElement {
         $vm: ViewModel
         constructor() {
             super()
+            // For each element, its own data and prop should be independent and built in the constructor.
             const shadow = this.attachShadow({ mode: 'open' })
-            shadow.innerHTML = template()
-            this.$vm = new ViewModel(shadow, data)
+            const setupData = (setup && setup()) || {}
+            this.$vm = new ViewModel(shadow, Object.assign(setupData, mData), {
+                manualComple: true,
+                props: (props && props()) || {}
+            })
+            shadow.innerHTML = template.call(this.$vm.$data)
+            this.$vm.$compile = new Compile(this.$vm, shadow)
         }
         static get observedAttributes() {
             return observedAttributes;
         }
         connectedCallback() {
-            created.call(this.$vm.$data)
+            created && created.call(this.$vm.$data)
         }
         attributeChangedCallback(prop, oldValue, newValue) {
+            const props = this.$vm.$data["props"]
             if (!props) return
             if (oldValue == newValue) return;
             const defaulteValue = props[prop].default,
@@ -86,10 +91,11 @@ function createCustomElements(data: object, created: Function, observedAttribute
                     failedHandler && failedHandler.call(this.$vm.$data, parsedValue, value);
                     // this.$vm.$data[prop] = value;
                 }
-                this.$vm.$data[prop] = value;
+                this.$vm.$data["props"][prop] = value;
             } else {
-                this.$vm.$data[prop] = newValue;
+                this.$vm.$data["props"][prop] = newValue;
             }
         }
     }
 }
+

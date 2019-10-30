@@ -1,0 +1,21 @@
+<style>
+    button {
+        color: darkmagenta;
+    }
+</style>
+<details>
+    <summary>
+        <slot name="title"></slot>
+    </summary>
+    <slot></slot>
+    <hr>
+    <button>inner Button</button>
+</details>
+
+<script>
+    new class extends Poi {
+        constructor() {
+            super("my-details")
+        }
+    }
+</script>

@@ -15,6 +15,16 @@
             background: tomato;
         }
 
+        footer {
+            height: 30vh;
+        }
+
+        body {
+            margin: 0 auto;
+            padding: 1rem;
+            max-width: 640px;
+        }
+
         /* body,
         input,
         textarea {
@@ -24,7 +34,7 @@
 </head>
 
 <body>
-    <script src="../dist/index.js"></script>
+    <script src="../../dist/index.js"></script>
     <app-root></app-root>
     <script>
         class app extends Poi {
@@ -46,11 +56,11 @@
                 setInterval(() => this.info.now = new Date().toLocaleString(), 1000)
             }
             template() {
-                return `
-<h1>{{ info.msg }}<span> {{ info.count }} </span> </h1>
-<button :click="whatDoubleCount" title="computed: double count">wdc</button>
-<button :click="plusCount">+1</button>
-now: <span> {{ info.now }} </span>`
+                return html `
+<h1>{{ info.msg }} <span &html="info.count"></span> </h1>
+<button @click="whatDoubleCount" title="computed: double count">wdc</button>
+<button @click="plusCount">+1</button>
+now: <span &html="info.now"></span>`
             }
             plusCount() {
                 this.info.count += 1
@@ -77,8 +87,10 @@ now: <span> {{ info.now }} </span>`
         <h1> $global </h1>
         <span>$global.appState.welcome = {{ $global.appState.welcome }}</span>
         <hr>
-        <h1 style:="'color:' + (loginState.onlogin == 'success' ? 'green' : 'red')">Store</h1><button
-            :click="login">login</button>
+        <h1 style:="'color:' + (loginState.onlogin == 'success' ? 'green' : 'red')">
+            Store <span>[{{ loginState.onlogin }}]</span>
+        </h1>
+        <button :click="login">login</button>
         <span>name: {{ loginState.user.name }} age: {{ loginState.user.age }}</span>
         <hr>
         <h1> Next Tick </h1>
@@ -97,7 +109,7 @@ now: <span> {{ info.now }} </span>`
         </ul>
         <hr>
         <div _bg:="#0e8dbc" style="text-align: center;padding: 1rem;">
-            <h1 _f-w:="400" _shadow>custom directive</h1>
+            <h1 _f-w:="100" _shadow>custom directive</h1>
         </div>
     </div>
     <script>
@@ -184,6 +196,124 @@ now: <span> {{ info.now }} </span>`
             }
         }));
     </script>
+    <hr>
+    <h1>Component</h1>
+    <hover-card color="green">Component, go!</hover-card>
+    <script>
+        class hoverCard extends Poi {
+            constructor() {
+                super("hover-card")
+            }
+            template() {
+                return html `
+                <style>
+                .card{
+                    margin: 1rem;
+                    padding: .5rem 1rem;
+                    border-radius: .5rem;
+                    // border: 1px solid #007bff;
+                    box-shadow: 0 3px 15px 3px #6c757d60;
+                    text-align: center;
+                }
+                .card:hover{
+                    box-shadow: 0 3px 15px 3px #6c757d;
+                }
+                </style>
+                <div class="card" style:="'color:'+props.color"><slot></slot></div>
+                `
+            }
+            props() {
+                return {
+                    "color": {
+                        type: String,
+                        default: "#007bff"
+                    }
+                }
+            }
+        }
+        new hoverCard();;;
+    </script>
+    <test-app1></test-app1>
+    <script>
+        class testApp1 extends Poi {
+            constructor() {
+                super("test-app1")
+            }
+            setup() {
+                const font = reactive({
+                    color: "#a4b"
+                })
+                return {
+                    font
+                }
+            }
+            template() {
+                return html `
+                font.color: <input $model="font.color">
+                <hover-card color:="font.color">
+                    Passing Data to Child Components with Props!
+                </hover-card>`
+            }
+        }
+        new testApp1();;;
+    </script>
+    <h1>Component Function bind</h1>
+    <test-app2></test-app2>
+    <script>
+        class callBcackComp extends Poi {
+            constructor() {
+                super("call-back")
+            }
+            template() {
+                return html `<button :click="props.callback">call <slot></slot></button>`
+            }
+            props() {
+                return {
+                    "callback": {
+                        type: Function,
+                        default: () => console.log("default callback")
+                    }
+                }
+            }
+        }
+        new callBcackComp()
+        class testApp2 extends Poi {
+            constructor() {
+                super("test-app2")
+            }
+            setup() {
+                return reactive({
+                    text: "hello im test-app2"
+                })
+            }
+            template() {
+                return html `
+                <call-back>default</call-back>
+                <call-back callback:="clear">clear</call-back>
+                <br>
+                message: <span html:="text"></span>`
+            }
+            clear() {
+                console.log("clear called")
+                if (this.text == "") {
+                    this.text = "hello im test-app2"
+                } else {
+                    this.text = ""
+                }
+            }
+        }
+        new testApp2();;;
+    </script>
+    <h1>Component loader</h1>
+    <my-details>
+        <span slot="title">my-details component</span>
+        <button>nothing outer button</button>
+        <span>cooooooooooool!</span>
+    </my-details>
+    <script>
+        loader("./myDetails.html");;
+    </script>
+    <footer></footer>
 </body>
 
 </html>

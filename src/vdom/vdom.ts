@@ -114,7 +114,17 @@ export function render(vnode: Vnode, container: Node) {
     if (container["vnode"]) {
         patch(container["vnode"], vnode, container)
     } else {
-        mount(vnode, container)
+        // mount(vnode, container)
+        const { childrenType, children } = vnode
+        if (childrenType !== childType.EMPTY) {
+            if (childrenType == childType.SINGLE) {
+                mount(toVnode(children), container)
+            } else if (childrenType == childType.MULITPLE) {
+                for (const child of toVnodeArray(children)) {
+                    mount(child, container)
+                }
+            }
+        }
     }
     container["vnode"] = vnode
 }
@@ -264,6 +274,14 @@ export function mount(vnode: Vnode, container: Node, flagNode: Node = null) {
 }
 
 function mountElement(vnode: Vnode, container: Node, flagNode: Node = null) {
+    if (vnode.el) {
+        if (hasChildNode(container, vnode.el)) {
+            return
+        }
+        container.appendChild(vnode.el)
+        return
+    }
+
     let dom = document.createElement(vnode.tag + '')
     vnode.el = dom
     let { attrs, children, childrenType } = vnode
@@ -287,6 +305,14 @@ function mountElement(vnode: Vnode, container: Node, flagNode: Node = null) {
 }
 
 function mountText(vnode: Vnode, container: Node) {
+    if (vnode.el) {
+        if (hasChildNode(container, vnode.el)) {
+            return
+        }
+        container.appendChild(vnode.el)
+        return
+    }
+
     let dom = document.createTextNode(vnode.children + '')
     vnode.el = dom
     container.appendChild(dom)
@@ -316,18 +342,17 @@ function patchAttr(el: Node, key: string, prev: string | object | Function, next
             break
         }
         default: {
-            if (key[0] == "@") {
-                if (prev && typeof prev == "function")
-                    el.removeEventListener(key.slice(1), ev => prev(ev))
-                if (next && typeof next == "function")
-                    el.addEventListener(key.slice(1), ev => next(ev))
-            } else {
-                if (next && typeof next == "string")
-                    if (el instanceof HTMLElement)
-                        el.setAttribute(key, next)
-            }
+            if (typeof next == "string")
+                if (el instanceof HTMLElement)
+                    el.setAttribute(key, next)
             break
         }
     }
 }
 
+function hasChildNode(container: Node, child: Node): boolean {
+    for (const n of container.childNodes) {
+        if (n === child) return true
+    }
+    return false
+}

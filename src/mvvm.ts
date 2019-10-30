@@ -1,12 +1,17 @@
 import { Compile, difineDirective } from "./compile"
 // import { observe } from './observer'
 import { reactive, computed } from './reactivity/reactivity';
+import { html } from './html';
+import { propOptions } from './component/create';
+if (window) window["html"] = html
+
 
 // __DEV__
 import { createElement, render } from "./vdom/vdom"
 import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"
 import { Store } from './store/store';
 import { Poi } from './component/create';
+import { loader } from './loader';
 if (window) window["h2v"] = HTML2Vdom
 if (window) window["d2v"] = Dom2Vnode
 if (window) window["createElement"] = createElement
@@ -16,12 +21,14 @@ if (window) window["Store"] = Store
 if (window) window["Poi"] = Poi
 if (window) window["computed"] = computed
 if (window) window["difineDirective"] = difineDirective
+if (window) window["loader"] = loader
 
 const global = reactive({})
 
 interface mvvmOptions {
     manualComple?: boolean
     disposable?: boolean
+    props?: propOptions
 }
 
 export class ViewModel {
@@ -29,11 +36,23 @@ export class ViewModel {
     $data: Object
     $compile: Compile
     $options: mvvmOptions
+    $id: number
 
     constructor(el: Node, data: Object, options: mvvmOptions = {}) {
+        this.$id = Math.ceil(Math.random() * Number.MAX_SAFE_INTEGER)
         this.$data = Object.assign(data, { $global: global })
         if (data["init"]) data["init"].call(this.$data)
         delete this.$data["init"]
+        if (options.props) {
+            const props = {}
+            for (const key in options.props) {
+                if (options.props.hasOwnProperty(key)) {
+                    props[key] = options.props[key].default || ""
+                }
+            }
+            this.$data["props"] = reactive(props)
+        }
+        // this.$data = reactive(this.$data)
         for (const k of Object.keys(this.$data)) {
             if (typeof this.$data[k] === "function") {
                 this.$data[k] = this.$data[k].bind(this.$data)

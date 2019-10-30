@@ -25,7 +25,9 @@ function toVirtualDOM(dom: any): Vnode {
         // TEXT node
         if (node.nodeType === 3) {
             let content = node.nodeValue || node.textContent
-            children.push(createTextVnode(content))
+            let childTextVnode = createTextVnode(content)
+            childTextVnode.el = node
+            children.push(childTextVnode)
         } else {
             children.push(toVirtualDOM(node))
         }
@@ -42,9 +44,7 @@ function attrsToObj(dom: any): Vattr {
     for (var i = 0, len = attrs.length; i < len; i++) {
         var name = attrs[i].name
         var value = attrs[i].value
-        if (value && value !== 'null') {
-            props[name] = value
-        }
+        props[name] = value
     }
     if (dom.style.cssText) {
         props["style"] = cssText2obj(dom.style.cssText)
