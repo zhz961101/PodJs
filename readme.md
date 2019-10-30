@@ -113,15 +113,10 @@ class App extends Poi {
 ```
 
 # Changelog
-- new directive call
-- difine simple Directive
-- Component bug fix
-- Component Function bind
-- reactive on Generics
-- store bug fix
-- 修复 dom2vnode 文本节点无法patch的问题
-- 修复 render 函数(diif&patch)行为
-- new examples in '/examples/helloworld/'
+- 完整工程项目示例 '/examples/shopping-cart/'
+  > config-file workflow 状态管理(Store) <br>
+  > build: 进入工程根目录 运行 `npm i && npm run build` <br>
+  > *部分代码来自 `vuex/examples/shopping-cart/`
 
 # Todo
 - [x] refactoring

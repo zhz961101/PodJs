@@ -1,0 +1,12 @@
+<div class="cart">
+    <h2>Your Cart</h2>
+    <p $show="!products.length"><i>Please add some products to cart.</i></p>
+    <ul>
+        <li $for="product of products" key:="product.id">
+            {{ product.title }} - {{ product.price }} x {{ product.quantity }}
+        </li>
+    </ul>
+    <p>Total: {{ total }}</p>
+    <p><button disabled:="!products.length" @click="checkout(products)">Checkout</button></p>
+    <p $show="checkoutStatus">Checkout {{ checkoutStatus }}.</p>
+</div>
