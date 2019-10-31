@@ -113,10 +113,12 @@ class App extends Poi {
 ```
 
 # Changelog
-- 更改目录结构方便分发test
-- 为 reactivity store tools dom 添加测试用例
-- 添加测试相关配置
-- 配置Travis CI
+docs($shopping-cart): to be better.
+
+- 修改 /store 编写风格
+- 添加一点样式，展示影子dom的scope效果
+- 使用全局对象$global储存货币单位
+- 顺便修复了一些bug
 
 # Todo
 - [x] refactoring

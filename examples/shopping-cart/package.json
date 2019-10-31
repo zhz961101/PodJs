@@ -7,8 +7,7 @@
     "build": "cross-env NODE_ENV=production webpack --mode=production",
     "build:w": "cross-env NODE_ENV=production webpack --watch --mode=production",
     "dev": "cross-env NODE_ENV=development webpack --mode=development",
-    "dev:w": "cross-env NODE_ENV=development webpack --watch --mode=development",
-    "all": "npm run dev && npm run build"
+    "dev:w": "cross-env NODE_ENV=development webpack --watch --mode=development"
   },
   "keywords": [],
   "author": "",

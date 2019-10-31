@@ -1,11 +1,9 @@
 import { Poi } from '../../../../src/component/create';
-import { html } from '../../../../src/html';
-import { computed, reactive } from '../../../../src/reactivity/reactivity';
-import { productState, cart, products } from '../store/index';
+import { html } from '../../../../src/tools/html';
+import { productState, products } from '../store/product';
+import { cart } from '../store/cart';
 
 import productListTpl from "./ProductListTpl.html"
-
-window["productState"] = productState
 
 export default class ProductList extends Poi {
     constructor() {

@@ -1,6 +1,6 @@
 import { Poi } from '../../../../src/component/create';
-import { html } from '../../../../src/html';
-import { cartState, cart } from '../store/index';
+import { html } from '../../../../src/tools/html';
+import { cartState, cart } from '../store/cart';
 
 import ShoppingCartTpl from "./ShoppingCartTpl.html"
 

@@ -1,5 +1,5 @@
 import { Poi } from '../../../../src/component/create';
-import { html } from '../../../../src/html';
+import { html } from '../../../../src/tools/html';
 import appTpl from "./AppTpl.html"
 
 export default class App extends Poi {
@@ -9,5 +9,8 @@ export default class App extends Poi {
     template(): string {
         return html`${appTpl}`
     }
+    // created() {
+    //     this["$global"].currency = "￥"
+    // }
 }
 
