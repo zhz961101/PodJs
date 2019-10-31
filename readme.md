@@ -1,7 +1,10 @@
 # 🔮PoiJs
 
+[![Build Status](https://travis-ci.org/zhzLuke96/PoiJs.svg?branch=master)](https://travis-ci.org/zhzLuke96/PoiJs)
+[![Coverage Status](https://coveralls.io/repos/github/zhzLuke96/PoiJs/badge.svg?branch=master)](https://coveralls.io/github/zhzLuke96/PoiJs?branch=master)
 ![LICENSE badge](https://img.shields.io/badge/license-GPL3.0-blue)
-![size badge](https://img.shields.io/badge/size-10K-green)
+![size badge](https://img.shields.io/badge/size-15K-green)
+
 
 mvvm framework.
 
@@ -113,12 +116,7 @@ class App extends Poi {
 ```
 
 # Changelog
-docs($shopping-cart): to be better.
-
-- 修改 /store 编写风格
-- 添加一点样式，展示影子dom的scope效果
-- 使用全局对象$global储存货币单位
-- 顺便修复了一些bug
+test: fix CI error.
 
 # Todo
 - [x] refactoring

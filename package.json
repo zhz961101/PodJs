@@ -26,13 +26,14 @@
   "homepage": "https://github.com/zhzLuke96/PoiJs#readme",
   "devDependencies": {
     "@types/jest": "^24.0.21",
+    "coveralls": "^3.0.7",
     "cross-env": "^6.0.3",
     "jest": "^24.9.0",
     "ts-jest": "^24.1.0",
     "ts-loader": "^6.2.1",
-    "typescript": "^3.6.4"
+    "typescript": "^3.6.4",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   },
-  "dependencies": {
-    "coveralls": "^3.0.7"
-  }
+  "dependencies": {}
 }
