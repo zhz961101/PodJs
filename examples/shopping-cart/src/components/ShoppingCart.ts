@@ -1,13 +1,10 @@
-import { Poi } from '../../../../src/component/create';
+import { Poi } from '../../../../src/poi/poi';
 import { html } from '../../../../src/tools/html';
 import { cartState, cart } from '../store/cart';
 
 import ShoppingCartTpl from "./ShoppingCartTpl.html"
 
 export default class ShoppingCart extends Poi {
-    constructor() {
-        super("shop-cart")
-    }
     setup() {
         return {
             get checkoutStatus() {

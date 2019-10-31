@@ -1,4 +1,4 @@
-import { Poi } from '../../../../src/component/create';
+import { Poi } from '../../../../src/poi/poi';
 import { html } from '../../../../src/tools/html';
 import { productState, products } from '../store/product';
 import { cart } from '../store/cart';
@@ -6,9 +6,6 @@ import { cart } from '../store/cart';
 import productListTpl from "./ProductListTpl.html"
 
 export default class ProductList extends Poi {
-    constructor() {
-        super("product-list")
-    }
     setup() {
         return {
             get products() {
