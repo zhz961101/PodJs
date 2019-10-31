@@ -1,6 +1,6 @@
 // import { patchMulitChildren as reactPMC } from './React15Diff';
 import { patchMulitChildren as vuePMC } from './vue2Diff';
-import { ViewModel } from '../mvvm';
+import { ViewModel } from '../mvvm/mvvm';
 
 export interface Vattr {
     [key: string]: string | object

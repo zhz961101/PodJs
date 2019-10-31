@@ -8,7 +8,10 @@
     "build:w": "cross-env NODE_ENV=production webpack --watch --mode=production",
     "dev": "cross-env NODE_ENV=development webpack --mode=development",
     "dev:w": "cross-env NODE_ENV=development webpack --watch --mode=development",
-    "all": "npm run dev && npm run build"
+    "all": "npm run dev && npm run build",
+    "test": "jest",
+    "test:cover": "jest --coverage",
+    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls"
   },
   "repository": {
     "type": "git",
@@ -22,8 +25,14 @@
   },
   "homepage": "https://github.com/zhzLuke96/PoiJs#readme",
   "devDependencies": {
+    "@types/jest": "^24.0.21",
     "cross-env": "^6.0.3",
+    "jest": "^24.9.0",
+    "ts-jest": "^24.1.0",
     "ts-loader": "^6.2.1",
     "typescript": "^3.6.4"
+  },
+  "dependencies": {
+    "coveralls": "^3.0.7"
   }
 }

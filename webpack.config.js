@@ -2,9 +2,12 @@ const path = require('path');
 const devMode = process.env.NODE_ENV !== 'production'
 
 module.exports = {
-    entry: './src/mvvm.ts',
+    entry: {
+        "browser": './src/browser.ts',
+        "index": './src/index.ts'
+    },
     output: {
-        filename: devMode ? 'index.js' : 'index.min.js',
+        filename: devMode ? '[name].js' : '[name].min.js',
         path: path.resolve(__dirname, 'dist')
     },
 

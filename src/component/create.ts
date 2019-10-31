@@ -1,23 +1,6 @@
-import { ViewModel } from "../mvvm"
-import { Compile } from "../compile";
-
-function exclude(obj: object, exclude: string[]): object {
-    exclude = exclude || [];
-    exclude.push("constructor", "__proto__")
-    let ret = Object.create(null);
-    for (const key in obj) {
-        if (exclude.indexOf(key) != -1) continue;
-        const value = obj[key];
-        ret[key] = value
-    }
-    let proto = Object.getPrototypeOf(obj);
-    Object.getOwnPropertyNames(proto).forEach(key => {
-        if (exclude.indexOf(key) != -1) return;
-        const value = obj[key];
-        ret[key] = value
-    })
-    return ret;
-}
+import { ViewModel } from "../mvvm/mvvm"
+import { Compile } from "../compiler/compile";
+import { exclude } from "../utils";
 
 interface propOption {
     type: any

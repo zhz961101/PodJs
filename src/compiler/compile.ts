@@ -1,28 +1,11 @@
-import { ViewModel } from "./mvvm"
-import { render, deepCloneVnode, childType } from "./vdom/vdom"
-import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"
-import { effect } from './reactivity/reactivity'
-import { mergeReact } from "./reactivity/wapper"
-// import { nextTickEffect } from './nxtTick';
-// const effect = nextTickEffect
+import { ViewModel } from "../mvvm/mvvm"
+import { render, deepCloneVnode, childType } from "../vdom/vdom"
+import { HTML2Vdom, Dom2Vnode } from "../vdom/any2v"
+import { effect } from '../reactivity/reactivity'
+import { mergeReact } from "../reactivity/wapper"
+import { ctxCall, nodeToFragment, isElementNode, isTextNode } from "../utils"
+
 const reg = /\{\{(.*?)\}\}/g
-
-function nodeToFragment(el: Node): DocumentFragment {
-    const frag = document.createDocumentFragment()
-    let child
-    while (child = el.firstChild) {
-        frag.appendChild(child)
-    }
-    return frag
-}
-
-function isElementNode(node: HTMLElement): boolean {
-    return node.nodeType == 1
-}
-
-function isTextNode(node: HTMLElement): boolean {
-    return node.nodeType == 3
-}
 
 export const compileHead = "p-"
 const eventAttrHead = compileHead + "event"
@@ -110,6 +93,8 @@ export class Compile {
     }
 
     init() {
+        if (this.el instanceof HTMLElement)
+            complie(this.el, this.vm)
         this.compileElement(this.frag);
     }
 
@@ -166,6 +151,18 @@ function complie(node: HTMLElement, vm: ViewModel) {
     });
 }
 
+function complieWithScope(el: Node, scope: object, supVm: ViewModel) {
+    let data = mergeReact(scope, supVm.$data)
+    let vm = new ViewModel(el, data, { manualComple: true, disposable: true })
+    let compiler = new Compile(vm, el)
+    // manual GC
+    vm = data = compiler = null
+}
+
+export function difineDirective(name: string, func: Function) {
+    directives[name] = func
+}
+
 function getVm(node: any) {
     let vm = node.$vm
     while (!vm) {
@@ -185,6 +182,19 @@ function defaultUpdater(node: HTMLElement, value: any, key: string) {
         }
     } else {
         node.setAttribute(key, value || "")
+    }
+}
+
+function eventHandler(node: HTMLElement, vm: ViewModel, exp: string, eventType: string) {
+    const ctxCaller = ctxCall(exp)
+    function callback() {
+        let fn = ctxCaller(vm.$data)
+        if (fn && typeof fn == "function" || fn instanceof Function) {
+            fn.call(vm.$data)
+        }
+    }
+    if (eventType) {
+        node.addEventListener(eventType, callback, false)
     }
 }
 
@@ -208,24 +218,14 @@ const updater = {
         render(vnode, node)
     },
     style(node: HTMLElement, value: string) {
-        node.style.cssText = value
-    }
-}
-
-function ctxCall(code: string): Function {
-    return new Function("ctx", "with(ctx){return (" + code + ")}")
-}
-
-function eventHandler(node: HTMLElement, vm: ViewModel, exp: string, eventType: string) {
-    const ctxCaller = ctxCall(exp)
-    function callback() {
-        let fn = ctxCaller(vm.$data)
-        if (fn && typeof fn == "function" || fn instanceof Function) {
-            fn.call(vm.$data)
+        const cssArr = value.split(";")
+        for (const cssStr of cssArr) {
+            let m = cssStr.split(":")
+            node.style[m[0].trim()] = m[1].trim()
         }
-    }
-    if (eventType) {
-        node.addEventListener(eventType, callback, false)
+    },
+    show(node: HTMLElement, value: boolean) {
+        node.style.display = value ? "" : "none"
     }
 }
 
@@ -260,10 +260,11 @@ const directives = {
         const ctxCalls = new Map<string, Function>()
         const renderValue = () => exp.replace(reg, (_, exp) => {
             let ctxCaller = ctxCalls.get(exp)
-            if (ctxCaller) return ctxCaller(vm.$data)
+            if (ctxCaller) return ctxCaller(vm.$data) || ""
+            // cache cant hit
             ctxCaller = ctxCall(exp)
             ctxCalls.set(exp, ctxCaller)
-            return ctxCaller(vm.$data)
+            return ctxCaller(vm.$data) || ""
         })
 
 
@@ -304,7 +305,18 @@ const directives = {
         })
     },
     show(node: HTMLElement, vm: ViewModel, exp: string) {
+        let updaterFunc = updater["show"]
 
+        const ctxRenderValue = ctxCall(exp)
+        const renderValue = () => ctxRenderValue(vm.$data)
+
+        if (vm.$options.disposable)
+            return
+        else
+            effect(() => {
+                if (node["__destroy__"]) return
+                updaterFunc(node, renderValue())
+            })
     },
     if(node: HTMLElement, vm: ViewModel, exp: string) {
 
@@ -367,16 +379,4 @@ const bindMap = {
     text(node: HTMLElement, vm: ViewModel, exp: string) {
         directives.bindv(node, vm, exp, "text")
     },
-}
-
-function complieWithScope(el: Node, scope: object, supVm: ViewModel) {
-    let data = mergeReact(scope, supVm.$data)
-    let vm = new ViewModel(el, data, { manualComple: true, disposable: true })
-    let compiler = new Compile(vm, el)
-    // manual GC
-    vm = data = compiler = null
-}
-
-export function difineDirective(name: string, func: Function) {
-    directives[name] = func
 }

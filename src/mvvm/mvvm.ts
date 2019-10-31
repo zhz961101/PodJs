@@ -1,29 +1,9 @@
-import { Compile, difineDirective } from "./compile"
-// import { observe } from './observer'
-import { reactive, computed } from './reactivity/reactivity';
-import { html } from './html';
-import { propOptions } from './component/create';
-if (window) window["html"] = html
+import { Compile } from "../compiler/compile"
+import { reactive } from '../reactivity/reactivity';
+import { propOptions } from '../component/create';
+import { randID } from "../tools/id";
 
-
-// __DEV__
-import { createElement, render } from "./vdom/vdom"
-import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"
-import { Store } from './store/store';
-import { Poi } from './component/create';
-import { loader } from './loader';
-if (window) window["h2v"] = HTML2Vdom
-if (window) window["d2v"] = Dom2Vnode
-if (window) window["createElement"] = createElement
-if (window) window["render"] = render
-if (window) window["reactive"] = reactive
-if (window) window["Store"] = Store
-if (window) window["Poi"] = Poi
-if (window) window["computed"] = computed
-if (window) window["difineDirective"] = difineDirective
-if (window) window["loader"] = loader
-
-const global = reactive({})
+export const __global__ = reactive({})
 
 interface mvvmOptions {
     manualComple?: boolean
@@ -32,15 +12,15 @@ interface mvvmOptions {
 }
 
 export class ViewModel {
-    static $global = global
+    static $global = __global__
     $data: Object
     $compile: Compile
     $options: mvvmOptions
     $id: number
 
     constructor(el: Node, data: Object, options: mvvmOptions = {}) {
-        this.$id = Math.ceil(Math.random() * Number.MAX_SAFE_INTEGER)
-        this.$data = Object.assign(data, { $global: global })
+        this.$id = randID()
+        this.$data = Object.assign(data, { $global: __global__ })
         if (data["init"]) data["init"].call(this.$data)
         delete this.$data["init"]
         if (options.props) {
@@ -121,10 +101,6 @@ export class ViewModel {
             }
         }
     }
-}
-
-if (window) {
-    window["ViewModel"] = ViewModel
 }
 
 

@@ -113,10 +113,10 @@ class App extends Poi {
 ```
 
 # Changelog
-- 完整工程项目示例 '/examples/shopping-cart/'
-  > config-file workflow 状态管理(Store) <br>
-  > build: 进入工程根目录 运行 `npm i && npm run build` <br>
-  > *部分代码来自 `vuex/examples/shopping-cart/`
+- 更改目录结构方便分发test
+- 为 reactivity store tools dom 添加测试用例
+- 添加测试相关配置
+- 配置Travis CI
 
 # Todo
 - [x] refactoring
