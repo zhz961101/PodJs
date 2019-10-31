@@ -5,6 +5,13 @@ import { effect } from '../reactivity/reactivity'
 import { mergeReact } from "../reactivity/wapper"
 import { ctxCall, nodeToFragment, isElementNode, isTextNode } from "../utils"
 
+type componentGenFunc = (el: HTMLElement) => void
+const componentMap = new Map<string, componentGenFunc>()
+
+export function registerComponent(tagName: string, func: componentGenFunc) {
+    componentMap.set(tagName, func)
+}
+
 const reg = /\{\{(.*?)\}\}/g
 
 export const compileHead = "p-"
@@ -121,6 +128,9 @@ export class Compile {
 }
 
 function complie(node: HTMLElement, vm: ViewModel) {
+    if (componentMap.has(node.localName)) {
+        componentMap.get(node.localName)(node)
+    }
     let nodeAttrs = node.attributes
     Array().slice.call(nodeAttrs).forEach(attr => {
         const compileT = getCompileType(attr.name)
@@ -153,7 +163,7 @@ function complie(node: HTMLElement, vm: ViewModel) {
 
 function complieWithScope(el: Node, scope: object, supVm: ViewModel) {
     let data = mergeReact(scope, supVm.$data)
-    let vm = new ViewModel(el, data, { manualComple: true, disposable: true })
+    let vm = new ViewModel(data, { manualCompile: true, disposable: true, el: el })
     let compiler = new Compile(vm, el)
     // manual GC
     vm = data = compiler = null
@@ -214,7 +224,8 @@ const updater = {
         node.className += " " + value
     },
     html(node: HTMLElement, value: any) {
-        let vnode = HTML2Vdom(value)
+        const htmlhead = node.outerHTML.match(/<[^>]+?>/)[0]
+        let vnode = HTML2Vdom(`${htmlhead}${value}</${node.localName}>`)
         render(vnode, node)
     },
     style(node: HTMLElement, value: string) {

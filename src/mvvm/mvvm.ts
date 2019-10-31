@@ -1,14 +1,15 @@
 import { Compile } from "../compiler/compile"
 import { reactive } from '../reactivity/reactivity';
-import { propOptions } from '../component/create';
+import { propOptions } from '../poi/poi';
 import { randID } from "../tools/id";
 
 export const __global__ = reactive({})
 
 interface mvvmOptions {
-    manualComple?: boolean
+    manualCompile?: boolean
     disposable?: boolean
     props?: propOptions
+    el?: Node
 }
 
 export class ViewModel {
@@ -18,7 +19,7 @@ export class ViewModel {
     $options: mvvmOptions
     $id: number
 
-    constructor(el: Node, data: Object, options: mvvmOptions = {}) {
+    constructor(data: Object, options: mvvmOptions = {}) {
         this.$id = randID()
         this.$data = Object.assign(data, { $global: __global__ })
         if (data["init"]) data["init"].call(this.$data)
@@ -32,15 +33,14 @@ export class ViewModel {
             }
             this.$data["props"] = reactive(props)
         }
-        // this.$data = reactive(this.$data)
         for (const k of Object.keys(this.$data)) {
             if (typeof this.$data[k] === "function") {
                 this.$data[k] = this.$data[k].bind(this.$data)
             }
         }
         this.$options = options
-        if (!options.manualComple) {
-            this.$compile = new Compile(this, el)
+        if (!options.manualCompile || !options.el) {
+            this.$compile = new Compile(this, options.el)
         }
     }
 

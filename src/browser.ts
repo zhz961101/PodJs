@@ -3,13 +3,14 @@ import { effect, reactive, computed } from './reactivity/reactivity';
 import { createElement, render } from "./vdom/vdom"
 import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"
 import { Store } from './store/store';
-import { Poi } from './component/create';
+import { Poi, createApp } from './poi/poi';
 import { ViewModel } from "./mvvm/mvvm";
 import { html } from './tools/html';
 
 if (window) {
     window["Poi"] = Poi
     Object.assign(Object.getPrototypeOf(window["Poi"]), {
+        createApp,
         tools: { html },
         mvvm: {
             ViewModel,

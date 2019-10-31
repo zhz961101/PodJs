@@ -126,6 +126,7 @@ export function render(vnode: Vnode, container: Node) {
             }
         }
     }
+    vnode.el = container
     container["vnode"] = vnode
 }
 

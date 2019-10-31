@@ -116,7 +116,12 @@ class App extends Poi {
 ```
 
 # Changelog
-test: fix CI error.
+feat($component,$compile): 取消自定义元素，通过compile挂载组件
+
+- 删除 create.ts
+- 使用 Poi createApp 风格，根据需求定义组件或者挂载节点
+- 修改 helloworld 示例
+- 修正 vdom 中的错误赋值 bug
 
 # Todo
 - [x] refactoring
