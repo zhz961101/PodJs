@@ -5,13 +5,13 @@ import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"
 import { Store } from './store/store';
 import { Poi, createApp } from './poi/poi';
 import { ViewModel } from "./mvvm/mvvm";
-import { html } from './tools/html';
+import { h } from './tools/html';
 
 if (window) {
     window["Poi"] = Poi
     Object.assign(Object.getPrototypeOf(window["Poi"]), {
         createApp,
-        tools: { html },
+        h,
         mvvm: {
             ViewModel,
         },

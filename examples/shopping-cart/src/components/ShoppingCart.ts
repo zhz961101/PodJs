@@ -1,5 +1,5 @@
 import { Poi } from '../../../../src/poi/poi';
-import { html } from '../../../../src/tools/html';
+import { h } from '../../../../src/tools/html';
 import { cartState, cart } from '../store/cart';
 
 import ShoppingCartTpl from "./ShoppingCartTpl.html"
@@ -19,7 +19,7 @@ export default class ShoppingCart extends Poi {
         }
     }
     template(): string {
-        return html`${ShoppingCartTpl}`
+        return h(ShoppingCartTpl)
     }
     checkout(products) {
         cart.dispatch("checkout", products)

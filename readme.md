@@ -116,7 +116,11 @@ class App extends Poi {
 ```
 
 # Changelog
-docs($shopping-cart): 更新example到新api
+feat($html): 使用HTMLExtender类控制模板编译
+
+- 删除 html 函数，改用HTMLExtender解析并修改模板html
+- 增加相关测试
+- 修改示例代码
 
 # Todo
 - [x] refactoring

@@ -39,9 +39,9 @@
         const reactive = Poi.reactivty.reactive;
         const computed = Poi.reactivty.computed;
         const difineDirective = Poi.compiler.difineDirective;
-        const html = Poi.tools.html;
         const Store = Poi.store.Store;
         const ViewModel = Poi.mvvm.ViewModel;
+        const h = Poi.h;
     </script>
     <div id="appRoot"></div>
     <script>
@@ -61,11 +61,11 @@
                 setInterval(() => this.info.now = new Date().toLocaleString(), 1000)
             }
             template() {
-                return html `
+                return h(`
 <h1>{{ info.msg }} <span &html="info.count"></span> </h1>
 <button @click="whatDoubleCount" title="computed: double count">wdc</button>
 <button @click="plusCount">+1</button>
-now: <span &html="info.now"></span>`
+now: <span &html="info.now"></span>`)
             }
             plusCount() {
                 this.info.count += 1
@@ -209,7 +209,7 @@ now: <span &html="info.now"></span>`
     <script>
         class HoverCard extends Poi {
             template() {
-                return html `
+                return h(`
                 <style>
                 .card{
                     margin: 1rem;
@@ -224,7 +224,7 @@ now: <span &html="info.now"></span>`
                 }
                 </style>
                 <div class="card" style:="'color:'+props.color"><slot></slot></div>
-                `
+                `)
             }
             props() {
                 return {
@@ -250,11 +250,11 @@ now: <span &html="info.now"></span>`
                 }
             }
             template() {
-                return html `
+                return h(`
                 font.color: <input $model="font.color">
                 <hover-card color:="font.color">
                     Passing Data to Child Components with Props!
-                </hover-card>`
+                </hover-card>`)
             }
         }
         Poi.createApp(TestApp1).mount(testApp1);
@@ -264,7 +264,7 @@ now: <span &html="info.now"></span>`
     <script>
         class callBcackComp extends Poi {
             template() {
-                return html `<button :click="props.callback">call <slot></slot></button>`
+                return h(`<button :click="props.callback">call <slot></slot></button>`)
             }
             props() {
                 return {
@@ -286,11 +286,11 @@ now: <span &html="info.now"></span>`
                 })
             }
             template() {
-                return html `
+                return h(`
                 <call-back>default</call-back>
                 <call-back callback:="clear">clear</call-back>
                 <br>
-                message: <span html:="text"></span>`
+                message: <span html:="text"></span>`)
             }
             clear() {
                 console.log("clear called")
