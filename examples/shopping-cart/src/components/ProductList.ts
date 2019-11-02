@@ -5,6 +5,8 @@ import { cart } from '../store/cart';
 
 import productListTpl from "./ProductListTpl.html"
 
+const _template = h(productListTpl)
+
 export default class ProductList extends Poi {
     setup() {
         return {
@@ -14,7 +16,7 @@ export default class ProductList extends Poi {
         }
     }
     template(): string {
-        return h(productListTpl)
+        return _template
     }
     addProductToCart(product) {
         cart.dispatch("addProductToCart", product)

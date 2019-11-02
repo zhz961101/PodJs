@@ -116,11 +116,9 @@ class App extends Poi {
 ```
 
 # Changelog
-feat($html): 使用HTMLExtender类控制模板编译
+docs: 增加并修改示例程序
 
-- 删除 html 函数，改用HTMLExtender解析并修改模板html
-- 增加相关测试
-- 修改示例代码
+- 减少template编译次数
 
 # Todo
 - [x] refactoring

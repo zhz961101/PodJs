@@ -4,6 +4,8 @@ import { cartState, cart } from '../store/cart';
 
 import ShoppingCartTpl from "./ShoppingCartTpl.html"
 
+const _template = h(ShoppingCartTpl)
+
 export default class ShoppingCart extends Poi {
     setup() {
         return {
@@ -19,7 +21,7 @@ export default class ShoppingCart extends Poi {
         }
     }
     template(): string {
-        return h(ShoppingCartTpl)
+        return _template
     }
     checkout(products) {
         cart.dispatch("checkout", products)

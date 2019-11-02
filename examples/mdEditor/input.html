@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div id="appRoot"></div>
+    <script src="../../dist/browser.js"></script>
+    <script>
+        const reactive = Poi.reactivty.reactive;
+        const computed = Poi.reactivty.computed;
+        class app extends Poi {
+            setup() {
+                const info = reactive({
+                    msg: "Poi Component"
+                })
+                return {
+                    info,
+                    mssg: computed(() => {
+                        return "__" + info.msg + "__"
+                    }),
+                    get msssg() {
+                        return info.msg
+                    }
+                }
+            }
+            template() {
+                return `<input value:="info.msg" :input="update"><div html:="info.msg"></div><span>{{ mssg.value }}</span>`
+            }
+            update(ev) {
+                this.info.msg = ev.target.value
+            }
+        }
+        Poi.createApp(app).mount(appRoot);
+        void(0);
+    </script>
+</body>
+
+</html>
