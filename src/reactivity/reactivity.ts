@@ -3,9 +3,10 @@ import { nextTick } from './nxtTick';
 
 type Deps = Set<Effect>
 
-interface Effect {
+export interface Effect {
     (): any
     deps: Array<Deps>
+    // active: boolean
     lazy?: boolean
     computed?: boolean
     scheduler?: (run: Function) => void
@@ -100,6 +101,7 @@ function createRectiveEffect(fn: Function, options: EffectOptions) {
     effect.computed = options.computed
     effect.lazy = options.lazy
     effect.scheduler = options.scheduler
+    effect.active = false
     return effect
 }
 
@@ -122,7 +124,8 @@ export function computed(fn: Function, options: object = {}) {
         lazy: true,
         scheduler() {
             dirty = true
-            // trigger(ret, "value")
+            // 触发修改，如果有副作用则顺序调用
+            trigger(ret, "value")
         }
     }, options))
     const ret = {
@@ -135,6 +138,6 @@ export function computed(fn: Function, options: object = {}) {
             return value
         }
     }
-    // return reactive(ret)
-    return ret
+    return reactive(ret)
+    // return ret
 }

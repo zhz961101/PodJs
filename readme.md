@@ -116,10 +116,7 @@ class App extends Poi {
 ```
 
 # Changelog
-fix($compile): fix some bug.
-
-- eventHandler pass event object
-- add value updater for form-dom
+fix($reactivity): computed should trigger.
 
 # Todo
 - [x] refactoring
