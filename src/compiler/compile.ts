@@ -210,8 +210,7 @@ function eventHandler(node: HTMLElement, vm: ViewModel, exp: string, eventType: 
 
 const updater = {
     value(node: HTMLElement, value: any) {
-        // if (node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement || node instanceof HTMLSelectElement) {
-        if (node["value"]) {
+        if (node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement || node instanceof HTMLSelectElement) {
             if (node["value"] != value)
                 node["value"] = value
         } else {

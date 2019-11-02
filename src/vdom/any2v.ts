@@ -15,7 +15,9 @@ export function Dom2Vnode(dom: any): Vnode {
 
 function toVirtualDOM(dom: any): Vnode {
     if (dom.nodeType === 3) {
-        return createTextVnode(dom.nodeValue || node.textContent)
+        const vnode = createTextVnode(dom.nodeValue || node.textContent)
+        vnode.el = dom
+        return vnode
     }
     var tagName = dom.tagName.toLowerCase()
     var props = attrsToObj(dom)

@@ -116,7 +116,9 @@ class App extends Poi {
 ```
 
 # Changelog
-fix($reactivity): computed should trigger.
+docs: 回滚了一些错误的fix
+
+- 修改示例程序的一些代码
 
 # Todo
 - [x] refactoring

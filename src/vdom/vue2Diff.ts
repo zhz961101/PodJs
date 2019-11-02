@@ -48,7 +48,7 @@ export function patchMulitChildren(prevChildren: Vnode[], nextChildren: Vnode[],
 
             for (let j = oldStartIdx; j <= oldEndIdx; j++) {
                 const prevVnode = prevChildren[j];
-                if (prevVnode.key === newStartVnode.key) {
+                if (isDef(prevVnode.key) && isDef(newStartVnode.key) && prevVnode.key === newStartVnode.key) {
                     find = true
                     if (sameVnode(prevVnode, newStartVnode)) {
                         patch(prevVnode, newStartVnode, container)
@@ -56,19 +56,28 @@ export function patchMulitChildren(prevChildren: Vnode[], nextChildren: Vnode[],
                     } else {
                         mount(newStartVnode, container, prevVnode.el, mountPostion.AFTER)
                     }
+                    patchedVnodes.add(prevVnode)
                 }
-                patchedVnodes.add(prevVnode)
             }
             if (!find) {
-                mount(newStartVnode, container, oldStartVnode.el, mountPostion.AFTER)
+                mount(newStartVnode, container, oldStartVnode.el, mountPostion.BEFORE)
             }
             newStartVnode = nextChildren[++newStartIdx]
         }
     }
     if (oldStartIdx > oldEndIdx) {
-        nextChildren.slice(newStartIdx, newEndIdx + 1).reverse().map(vnode => {
-            mount(vnode, container, nextChildren[newStartIdx - 1].el, mountPostion.AFTER)
-        })
+        if (nextChildren[newStartIdx - 1]) {
+            nextChildren.slice(newStartIdx, newEndIdx + 1)
+                .reverse()
+                .map(vnode => {
+                    mount(vnode, container, nextChildren[newStartIdx - 1].el, mountPostion.AFTER)
+                })
+        } else {
+            nextChildren.slice(newStartIdx, newEndIdx + 1)
+                .map(vnode => {
+                    mount(vnode, container, null, mountPostion.BEFORE)
+                })
+        }
     } else if (newStartIdx > newEndIdx) {
         prevChildren.slice(oldStartIdx, oldEndIdx + 1).map(vnode => {
             container.removeChild(vnode.el)
@@ -89,7 +98,7 @@ function isDef(v: any): boolean {
 function makeMap(
     str: string,
     expectsLowerCase?: boolean
-): (key: string) => true | void {
+): (key: any) => true | void {
     const map = Object.create(null)
     const list: Array<string> = str.split(',')
     for (let i = 0; i < list.length; i++) {
@@ -103,8 +112,8 @@ function makeMap(
 function sameInputType(a: Vnode, b: Vnode) {
     if (a.tag !== 'input') return true
     let i
-    const typeA = isDef(i = i.attrs) && i.type
-    const typeB = isDef(i = i.attrs) && i.type
+    const typeA = isDef(i = a.attrs) && (a.attrs.type || "")
+    const typeB = isDef(i = b.attrs) && (b.attrs.type || "")
     return typeA === typeB || isTextInputType(typeA) && isTextInputType(typeB)
 }
 
