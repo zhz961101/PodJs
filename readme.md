@@ -116,11 +116,11 @@ class App extends Poi {
 ```
 
 # Changelog
-feat($vdom): add Container interface, now we can diff any number of child nodes
+feat($compiler): 增加 statement 工具节点，改变 compiler 的操作
 
-- 增加 container 抽象接口
-- 增加 vfrag 类，通过路标系统为文本中的可变片段提供 vnode 的diff patch 能力
-- 修复 vdom 的相关bug：属性值无法patch、多余的空白节点
+- 增加 for skip if else elif 的 statement，以片段的方式操作 vnode
+- 修改 compiler 包结构
+- 一些相关的修正
 
 # Todo
 - [x] refactoring

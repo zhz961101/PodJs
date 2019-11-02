@@ -1,4 +1,4 @@
-import { difineDirective } from "./compiler/compile"
+import { difineDirective } from "./compiler/directives"
 import { effect, reactive, computed } from './reactivity/reactivity';
 import { createElement, render } from "./vdom/vdom"
 import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"

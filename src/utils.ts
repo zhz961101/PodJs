@@ -26,6 +26,7 @@ export function nodeToFragment(el: Node): DocumentFragment {
     let child
     while (child = el.firstChild) {
         frag.appendChild(child)
+        child["$lastParentNode"] = el
     }
     return frag
 }
@@ -36,4 +37,30 @@ export function isElementNode(node: HTMLElement): boolean {
 
 export function isTextNode(node: HTMLElement): boolean {
     return node.nodeType == 3
+}
+
+export function objectHash(obj: object): number {
+    let content = JSON.stringify(obj)
+    let hash = 0;
+    for (let i = 0; i < content.length; i++) {
+        let character = content.charCodeAt(i);
+        hash = ((hash << 5) - hash) + character;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
+}
+
+export function likeHash(a: number, b: number, precision: number = 0.8): boolean {
+    let as = a + "", bs = b + ""
+    let end = (a + "").length
+    end = Math.ceil(precision * end)
+    return as.slice(0, end) == bs.slice(0, end)
+}
+
+export function isDef(obj: any): boolean {
+    return obj !== undefined && obj !== null
+}
+
+export function isUnDef(obj: any): boolean {
+    return obj === undefined || obj === null
 }
