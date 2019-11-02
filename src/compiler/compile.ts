@@ -197,10 +197,10 @@ function defaultUpdater(node: HTMLElement, value: any, key: string) {
 
 function eventHandler(node: HTMLElement, vm: ViewModel, exp: string, eventType: string) {
     const ctxCaller = ctxCall(exp)
-    function callback() {
+    function callback(event) {
         let fn = ctxCaller(vm.$data)
         if (fn && typeof fn == "function" || fn instanceof Function) {
-            fn.call(vm.$data)
+            fn.call(vm.$data, event, event)
         }
     }
     if (eventType) {
@@ -209,6 +209,16 @@ function eventHandler(node: HTMLElement, vm: ViewModel, exp: string, eventType: 
 }
 
 const updater = {
+    value(node: HTMLElement, value: any) {
+        // if (node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement || node instanceof HTMLSelectElement) {
+        if (node["value"]) {
+            if (node["value"] != value)
+                node["value"] = value
+        } else {
+            node.setAttribute("nodeValue", value)
+            node.setAttribute("value", value)
+        }
+    },
     text(node: HTMLElement, value: any) {
         node.textContent = value || ""
     },
@@ -258,6 +268,7 @@ const directives = {
                 if (typeof newValue == "function" || newValue instanceof Function) {
                     getVm(node)._set("props." + dir, newValue)
                 } else {
+                    if (oldValue == newValue) return
                     updaterFunc(node, newValue, dir, oldValue)
                     oldValue = newValue
                 }

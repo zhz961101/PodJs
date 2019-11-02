@@ -116,10 +116,10 @@ class App extends Poi {
 ```
 
 # Changelog
-fix($vdom): 修正错误的插入位置
+fix($compile): fix some bug.
 
-- 使用enum提升代码效率
-- 修正diff中的错误逻辑
+- eventHandler pass event object
+- add value updater for form-dom
 
 # Todo
 - [x] refactoring
