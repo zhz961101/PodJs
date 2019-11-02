@@ -116,9 +116,10 @@ class App extends Poi {
 ```
 
 # Changelog
-docs: 增加并修改示例程序
+fix($vdom): 修正错误的插入位置
 
-- 减少template编译次数
+- 使用enum提升代码效率
+- 修正diff中的错误逻辑
 
 # Todo
 - [x] refactoring

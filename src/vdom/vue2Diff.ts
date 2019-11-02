@@ -1,4 +1,4 @@
-import { Vnode, patch, mount } from './vdom';
+import { Vnode, patch, mount, mountPostion } from './vdom';
 
 export function patchMulitChildren(prevChildren: Vnode[], nextChildren: Vnode[], container: Node) {
     let oldStartIdx = 0
@@ -10,20 +10,25 @@ export function patchMulitChildren(prevChildren: Vnode[], nextChildren: Vnode[],
     let newStartVnode = nextChildren[0]
     let newEndVnode = nextChildren[newEndIdx]
 
-
+    const patchedVnodes = new WeakSet()
     while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
         // if (isUndef(oldStartVnode)) {
         //     oldStartVnode = prevChildren[++oldStartIdx] // Vnode has been moved left
         // } else if (isUndef(oldEndVnode)) {
         //     oldEndVnode = prevChildren[--oldEndIdx]
         // } else
-        if (sameVnode(oldStartVnode, newStartVnode)) {
+        if (patchedVnodes.has(oldStartVnode)) {
+            oldStartVnode = prevChildren[++oldStartIdx]
+        } else if (patchedVnodes.has(oldStartVnode)) {
+            oldEndVnode = prevChildren[--oldEndIdx]
+        } else if (sameVnode(oldStartVnode, newStartVnode)) {
             patch(oldStartVnode, newStartVnode, container)
             newStartVnode.el = oldStartVnode.el
             oldStartVnode = prevChildren[++oldStartIdx]
             newStartVnode = nextChildren[++newStartIdx]
         } else if (sameVnode(oldEndVnode, newEndVnode)) {
-            patch(oldStartVnode, newStartVnode, container)
+            patch(oldEndVnode, newEndVnode, container)
+            newEndVnode.el = oldEndVnode.el
             oldEndVnode = prevChildren[--oldEndIdx]
             newEndVnode = nextChildren[--newEndIdx]
         } else if (sameVnode(oldStartVnode, newEndVnode)) { // Vnode moved right
@@ -41,7 +46,7 @@ export function patchMulitChildren(prevChildren: Vnode[], nextChildren: Vnode[],
         } else {
             let find = false
 
-            for (let j = 0; j < prevChildren.length; j++) {
+            for (let j = oldStartIdx; j <= oldEndIdx; j++) {
                 const prevVnode = prevChildren[j];
                 if (prevVnode.key === newStartVnode.key) {
                     find = true
@@ -49,19 +54,20 @@ export function patchMulitChildren(prevChildren: Vnode[], nextChildren: Vnode[],
                         patch(prevVnode, newStartVnode, container)
                         container.insertBefore(prevVnode.el, oldStartVnode.el)
                     } else {
-                        mount(newStartVnode, container, oldStartVnode.el)
+                        mount(newStartVnode, container, prevVnode.el, mountPostion.AFTER)
                     }
                 }
+                patchedVnodes.add(prevVnode)
             }
             if (!find) {
-                mount(newStartVnode, container, oldStartVnode.el)
+                mount(newStartVnode, container, oldStartVnode.el, mountPostion.AFTER)
             }
             newStartVnode = nextChildren[++newStartIdx]
         }
     }
     if (oldStartIdx > oldEndIdx) {
-        nextChildren.slice(newStartIdx, newEndIdx + 1).map(vnode => {
-            mount(vnode, container)
+        nextChildren.slice(newStartIdx, newEndIdx + 1).reverse().map(vnode => {
+            mount(vnode, container, nextChildren[newStartIdx - 1].el, mountPostion.AFTER)
         })
     } else if (newStartIdx > newEndIdx) {
         prevChildren.slice(oldStartIdx, oldEndIdx + 1).map(vnode => {

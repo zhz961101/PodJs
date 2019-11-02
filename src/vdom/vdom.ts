@@ -1,4 +1,4 @@
-// import { patchMulitChildren as reactPMC } from './React15Diff';
+import { patchMulitChildren as reactPMC } from './React15Diff';
 import { patchMulitChildren as vuePMC } from './vue2Diff';
 import { ViewModel } from '../mvvm/mvvm';
 
@@ -7,27 +7,30 @@ export interface Vattr {
 }
 
 export interface Vnode {
-    type: string
+    type: vnodeType
     tag?: string | Function
     attrs?: Vattr
     children: Vnode[] | Vnode | string
-    childrenType: string
+    childrenType: childType
     el?: Node
     key?: any
 }
 
-export const vnodeType = {
-    HTML: 'HTML',
-    TEXT: 'TEXT',
+export enum vnodeType {
+    HTML,
+    TEXT,
 
-    COMPONENT: 'COMPONENT'
+    COMPONENT,
 }
-export const childType = {
-    EMPTY: 'EMPTY',
-    SINGLE: 'SINGLE',
-    MULITPLE: 'MULITPLE'
+export enum childType {
+    EMPTY,
+    SINGLE,
+    MULITPLE,
 }
-
+export enum mountPostion {
+    BEFORE,
+    AFTER
+}
 
 const deepClone = (obj: any): any => {
     var proto = Object.getPrototypeOf(obj);
@@ -121,7 +124,7 @@ export function render(vnode: Vnode, container: Node) {
                 mount(toVnode(children), container)
             } else if (childrenType == childType.MULITPLE) {
                 for (const child of toVnodeArray(children)) {
-                    mount(child, container)
+                    mount(child, container, null, mountPostion.AFTER)
                 }
             }
         }
@@ -177,8 +180,8 @@ function patchElement(prev: Vnode, next: Vnode, container: Node) {
 }
 
 function patchChildren(
-    prevChildrenType: string,
-    nextChildrenType: string,
+    prevChildrenType: childType,
+    nextChildrenType: childType,
     prevChildren: Vnode[],
     nextChildren: Vnode[],
     container: Node,
@@ -197,7 +200,7 @@ function patchChildren(
                 case childType.MULITPLE: {
                     container.removeChild(prevChildren[0].el)
                     for (let i = 0; i < nextChildren.length; i++) {
-                        mount(nextChildren[i], container)
+                        mount(nextChildren[i], container, null, mountPostion.AFTER)
                     }
                     break
                 }
@@ -207,7 +210,7 @@ function patchChildren(
         case childType.EMPTY: {
             switch (nextChildrenType) {
                 case childType.SINGLE: {
-                    mount(nextChildren[0], container)
+                    mount(nextChildren[0], container, null, mountPostion.AFTER)
                     break
                 }
                 case childType.EMPTY: {
@@ -215,7 +218,7 @@ function patchChildren(
                 }
                 case childType.MULITPLE: {
                     for (let i = 0; i < nextChildren.length; i++) {
-                        mount(nextChildren[i], container)
+                        mount(nextChildren[i], container, null, mountPostion.AFTER)
                     }
                     break
                 }
@@ -228,7 +231,7 @@ function patchChildren(
                     for (let i = 0; i < prevChildren.length; i++) {
                         container.removeChild(prevChildren[i].el)
                     }
-                    mount(nextChildren[0], container)
+                    mount(nextChildren[0], container, null, mountPostion.AFTER)
                     break
                 }
                 case childType.EMPTY: {
@@ -239,6 +242,7 @@ function patchChildren(
                 }
                 case childType.MULITPLE: {
                     vuePMC(prevChildren, nextChildren, container)
+                    // reactPMC(prevChildren, nextChildren, container)
                     break
                 }
             }
@@ -263,10 +267,10 @@ function patchText(prev: Vnode, next: Vnode) {
     }
 }
 
-export function mount(vnode: Vnode, container: Node, flagNode: Node = null) {
+export function mount(vnode: Vnode, container: Node, flagNode: Node = null, postion: mountPostion = mountPostion.BEFORE) {
     let { type } = vnode
     if (type == vnodeType.HTML) {
-        mountElement(vnode, container, flagNode)
+        mountElement(vnode, container, flagNode, postion)
     } else if (type == vnodeType.TEXT) {
         mountText(vnode, container)
     } else if (type == vnodeType.COMPONENT) {
@@ -274,12 +278,12 @@ export function mount(vnode: Vnode, container: Node, flagNode: Node = null) {
     }
 }
 
-function mountElement(vnode: Vnode, container: Node, flagNode: Node = null) {
+function mountElement(vnode: Vnode, container: Node, flagNode: Node = null, postion: mountPostion = mountPostion.BEFORE) {
     if (vnode.el) {
         if (hasChildNode(container, vnode.el)) {
             return
         }
-        container.appendChild(vnode.el)
+        setElementPostion(container, vnode.el, flagNode, postion)
         return
     }
 
@@ -295,14 +299,38 @@ function mountElement(vnode: Vnode, container: Node, flagNode: Node = null) {
 
     if (childrenType !== childType.EMPTY) {
         if (childrenType == childType.SINGLE) {
-            mount(toVnode(children), dom)
+            mount(toVnode(children), dom, null, mountPostion.AFTER)
         } else if (childrenType == childType.MULITPLE) {
             for (const child of toVnodeArray(children)) {
-                mount(child, dom)
+                mount(child, dom, null, mountPostion.AFTER)
             }
         }
     }
-    flagNode ? container.insertBefore(dom, flagNode) : container.appendChild(dom)
+    setElementPostion(container, dom, flagNode, postion)
+}
+
+function setElementPostion(container: Node, el: Node, flagNode: Node, postion: mountPostion) {
+    if (flagNode) {
+        if (postion == mountPostion.AFTER) {
+            if (flagNode.nextSibling) {
+                container.insertBefore(el, flagNode.nextSibling)
+            } else {
+                container.appendChild(el)
+            }
+        } else if (postion == mountPostion.BEFORE) {
+            container.insertBefore(el, flagNode)
+        }
+        return
+    }
+    if (postion == mountPostion.AFTER) {
+        container.appendChild(el)
+    } else if (postion == mountPostion.BEFORE) {
+        if (container.childNodes.length == 0) {
+            container.appendChild(el)
+        } else {
+            container.insertBefore(el, container.childNodes[0])
+        }
+    }
 }
 
 function mountText(vnode: Vnode, container: Node) {
