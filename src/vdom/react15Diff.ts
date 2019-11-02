@@ -1,6 +1,7 @@
 import { Vnode, patch, mount } from './vdom';
+import { Container } from './container';
 
-export function patchMulitChildren(prevChildren: Vnode[], nextChildren: Vnode[], container: Node) {
+export function patchMulitChildren(prevChildren: Vnode[], nextChildren: Vnode[], container: Container) {
     let lastIndex = 0
     for (let i = 0; i < nextChildren.length; i++) {
         const nextVnode = nextChildren[i];

@@ -53,7 +53,7 @@ function mountInElement(el: HTMLElement, poi: any) {
     const app = new poi()
 
     const data = (app.setup && app.setup()) || {}
-    const mData = exclude(app, ["props", "template", "created", "setup"])
+    const mData = exclude(app, ["props", "template", "created", "setup", "methods"])
 
     const props = (app.props && app.props()) || {}
     const observedAttributes = Object.keys(props)

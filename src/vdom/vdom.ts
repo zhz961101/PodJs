@@ -1,6 +1,7 @@
 import { patchMulitChildren as reactPMC } from './React15Diff';
 import { patchMulitChildren as vuePMC } from './vue2Diff';
-import { ViewModel } from '../mvvm/mvvm';
+import { Container, NodeContainer } from './container';
+import { objectHash, isDef, isUnDef } from '../utils';
 
 export interface Vattr {
     [key: string]: string | object
@@ -14,6 +15,7 @@ export interface Vnode {
     childrenType: childType
     el?: Node
     key?: any
+    // hash: number
 }
 
 export enum vnodeType {
@@ -46,7 +48,8 @@ export const deepCloneVnode = (vnode: Vnode): Vnode => {
         attrs: obj.attrs,
         type: obj.type,
         childrenType: obj.childrenType,
-        el: obj.el
+        el: obj.el,
+        // hash: obj.hash
     }
 }
 
@@ -93,38 +96,44 @@ export function createElement(tag: string | Function, attrs: Vattr, children: Vn
         childrenType = childType.SINGLE
         vchildren = createTextVnode(children + '')
     }
-    return {
+    let retVnode: Vnode = {
         type,
         tag,
         attrs,
         children: vchildren || children,
         childrenType,
         key: attrs && attrs.key,
+        // hash: 0
     }
+    // retVnode.hash = objectHash(retVnode)
+    return retVnode
 }
 
 export function createTextVnode(content: string): Vnode {
-    return {
+    let retVnode: Vnode = {
         type: vnodeType.TEXT,
         tag: null,
         attrs: null,
         children: content,
         childrenType: childType.EMPTY,
         key: null,
+        // hash: 0
     }
+    // retVnode.hash = objectHash(retVnode)
+    return retVnode
 }
 export function render(vnode: Vnode, container: Node) {
     if (container["vnode"]) {
-        patch(container["vnode"], vnode, container)
+        patch(container["vnode"], vnode, new NodeContainer(container))
     } else {
         // mount(vnode, container)
         const { childrenType, children } = vnode
         if (childrenType !== childType.EMPTY) {
             if (childrenType == childType.SINGLE) {
-                mount(toVnode(children), container)
+                mount(toVnode(children), new NodeContainer(container))
             } else if (childrenType == childType.MULITPLE) {
                 for (const child of toVnodeArray(children)) {
-                    mount(child, container, null, mountPostion.AFTER)
+                    mount(child, new NodeContainer(container), null, mountPostion.AFTER)
                 }
             }
         }
@@ -133,7 +142,7 @@ export function render(vnode: Vnode, container: Node) {
     container["vnode"] = vnode
 }
 
-export function patch(prev: Vnode, next: Vnode, container: Node) {
+export function patch(prev: Vnode, next: Vnode, container: Container) {
     let nextType = next.type
     let prevType = prev.type
 
@@ -146,7 +155,7 @@ export function patch(prev: Vnode, next: Vnode, container: Node) {
     }
 }
 
-function patchElement(prev: Vnode, next: Vnode, container: Node) {
+function patchElement(prev: Vnode, next: Vnode, container: Container) {
     if (prev.type !== next.type) {
         replaceVnode(prev, next, container)
         return
@@ -164,7 +173,7 @@ function patchElement(prev: Vnode, next: Vnode, container: Node) {
     if (prevAttrs) {
         for (let key in prevAttrs) {
             let prevVal = prevAttrs[key]
-            if (prevVal && !nextAttrs.hasOwnProperty(key)) {
+            if (isDef(prevVal) && !nextAttrs.hasOwnProperty(key)) {
                 patchAttr(el, key, prevVal, null)
             }
         }
@@ -175,16 +184,16 @@ function patchElement(prev: Vnode, next: Vnode, container: Node) {
         next.childrenType,
         toVnodeArray(prev.children),
         toVnodeArray(next.children),
-        el,
+        new NodeContainer(el),
     )
 }
 
-function patchChildren(
+export function patchChildren(
     prevChildrenType: childType,
     nextChildrenType: childType,
     prevChildren: Vnode[],
     nextChildren: Vnode[],
-    container: Node,
+    container: Container,
 ) {
     switch (prevChildrenType) {
         case childType.SINGLE: {
@@ -251,7 +260,7 @@ function patchChildren(
     }
 }
 
-function replaceVnode(prev: Vnode, next: Vnode, container: Node) {
+function replaceVnode(prev: Vnode, next: Vnode, container: Container) {
     if (next.el)
         container.replaceChild(next.el, prev.el)
     else {
@@ -267,7 +276,7 @@ function patchText(prev: Vnode, next: Vnode) {
     }
 }
 
-export function mount(vnode: Vnode, container: Node, flagNode: Node = null, postion: mountPostion = mountPostion.BEFORE) {
+export function mount(vnode: Vnode, container: Container, flagNode: Node = null, postion: mountPostion = mountPostion.BEFORE) {
     let { type } = vnode
     if (type == vnodeType.HTML) {
         mountElement(vnode, container, flagNode, postion)
@@ -278,7 +287,7 @@ export function mount(vnode: Vnode, container: Node, flagNode: Node = null, post
     }
 }
 
-function mountElement(vnode: Vnode, container: Node, flagNode: Node = null, postion: mountPostion = mountPostion.BEFORE) {
+function mountElement(vnode: Vnode, container: Container, flagNode: Node = null, postion: mountPostion = mountPostion.BEFORE) {
     if (vnode.el) {
         if (hasChildNode(container, vnode.el)) {
             return
@@ -299,24 +308,20 @@ function mountElement(vnode: Vnode, container: Node, flagNode: Node = null, post
 
     if (childrenType !== childType.EMPTY) {
         if (childrenType == childType.SINGLE) {
-            mount(toVnode(children), dom, null, mountPostion.AFTER)
+            mount(toVnode(children), new NodeContainer(dom), null, mountPostion.AFTER)
         } else if (childrenType == childType.MULITPLE) {
             for (const child of toVnodeArray(children)) {
-                mount(child, dom, null, mountPostion.AFTER)
+                mount(child, new NodeContainer(dom), null, mountPostion.AFTER)
             }
         }
     }
     setElementPostion(container, dom, flagNode, postion)
 }
 
-function setElementPostion(container: Node, el: Node, flagNode: Node, postion: mountPostion) {
+function setElementPostion(container: Container, el: Node, flagNode: Node, postion: mountPostion) {
     if (flagNode) {
         if (postion == mountPostion.AFTER) {
-            if (flagNode.nextSibling) {
-                container.insertBefore(el, flagNode.nextSibling)
-            } else {
-                container.appendChild(el)
-            }
+            container.insertAfter(el, flagNode)
         } else if (postion == mountPostion.BEFORE) {
             container.insertBefore(el, flagNode)
         }
@@ -325,15 +330,16 @@ function setElementPostion(container: Node, el: Node, flagNode: Node, postion: m
     if (postion == mountPostion.AFTER) {
         container.appendChild(el)
     } else if (postion == mountPostion.BEFORE) {
-        if (container.childNodes.length == 0) {
+        const childNodes = container.childNodes
+        if (childNodes.length == 0) {
             container.appendChild(el)
         } else {
-            container.insertBefore(el, container.childNodes[0])
+            container.insertBefore(el, childNodes[0])
         }
     }
 }
 
-function mountText(vnode: Vnode, container: Node) {
+function mountText(vnode: Vnode, container: Container) {
     if (vnode.el) {
         if (hasChildNode(container, vnode.el)) {
             return
@@ -359,7 +365,7 @@ function patchAttr(el: Node, key: string, prev: string | object | Function, next
             if (typeof prev == "object")
                 for (let k in prev) {
                     if (el instanceof HTMLElement)
-                        if (!next || !next.hasOwnProperty(k))
+                        if (isUnDef(next) || !next.hasOwnProperty(k))
                             el.style[k] = null
                 }
             break
@@ -368,18 +374,24 @@ function patchAttr(el: Node, key: string, prev: string | object | Function, next
             if (typeof next == "string")
                 if (el instanceof HTMLElement)
                     el.className = next
+            if (isUnDef(next))
+                if (el instanceof HTMLElement)
+                    el.className = ""
             break
         }
         default: {
             if (typeof next == "string")
                 if (el instanceof HTMLElement)
                     el.setAttribute(key, next)
+            if (isUnDef(next))
+                if (el instanceof HTMLElement)
+                    el.removeAttribute(key)
             break
         }
     }
 }
 
-function hasChildNode(container: Node, child: Node): boolean {
+function hasChildNode(container: Container, child: Node): boolean {
     for (const n of container.childNodes) {
         if (n === child) return true
     }

@@ -1,4 +1,4 @@
-import { Vnode, Vattr, createElement, createTextVnode, vnodeType } from './vdom';
+import { Vnode, Vattr, createElement, createTextVnode, vnodeType, childType } from './vdom';
 
 export function HTML2Vdom(html: string): Vnode {
     let root: any = document.createElement('div')
@@ -21,7 +21,7 @@ function toVirtualDOM(dom: any): Vnode {
     }
     var tagName = dom.tagName.toLowerCase()
     var props = attrsToObj(dom)
-    var children = []
+    var children: Array<Vnode> = []
     for (var i = 0, len = dom.childNodes.length; i < len; i++) {
         var node = dom.childNodes[i]
         // TEXT node
@@ -34,7 +34,15 @@ function toVirtualDOM(dom: any): Vnode {
             children.push(toVirtualDOM(node))
         }
     }
-    const vnode = createElement(tagName, props, children)
+    const vnode = createElement(tagName, props, children.filter(v => {
+        if (v.type === vnodeType.TEXT) {
+            if (typeof v.children == "string" && v.children === "\n") {
+                // 删除无效节点
+                return false
+            }
+        }
+        return true
+    }))
     vnode.el = dom
     return vnode
 }

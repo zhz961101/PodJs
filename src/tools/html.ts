@@ -45,7 +45,11 @@ export class HTMLExtender {
             if (match.index > lastIndex) {
                 result += this.content.slice(lastIndex, match.index)
             }
-            result += "<" + this.walkAttrs(match[1]) + ">"
+            if (match[0].slice(0, 4) == "<!--" && match[0].slice(-3) == "-->") {
+                result += match[0]
+            } else {
+                result += "<" + this.walkAttrs(match[1]) + ">"
+            }
             lastIndex = re.lastIndex
         }
         if (lastIndex < this.content.length) {
@@ -66,7 +70,16 @@ export class HTMLExtender {
             const nxtName = this.tansAttrName(name)
             retAttrArr.push({ name: nxtName, value })
         }
-        return `${tagName} ${retAttrArr.map(v => v.name + "=" + '"' + v.value + '"').join(" ")}`
+        let retHTML = tagName + " "
+        retAttrArr.forEach(attr => {
+            retHTML += attr.name
+            if (attr.value !== undefined || attr.value !== null) {
+                retHTML += "="
+                retHTML += '"' + attr.value + '"'
+            }
+            retHTML += " "
+        })
+        return retHTML
     }
 
     deserialize(attrStr: string): Array<{ name: string, value?: string }> {

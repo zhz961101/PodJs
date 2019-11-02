@@ -1,6 +1,8 @@
 import { Vnode, patch, mount, mountPostion } from './vdom';
+import { Container } from './container';
+import { likeHash, isDef } from '../utils';
 
-export function patchMulitChildren(prevChildren: Vnode[], nextChildren: Vnode[], container: Node) {
+export function patchMulitChildren(prevChildren: Vnode[], nextChildren: Vnode[], container: Container) {
     let oldStartIdx = 0
     let newStartIdx = 0
     let oldEndIdx = prevChildren.length - 1
@@ -87,13 +89,6 @@ export function patchMulitChildren(prevChildren: Vnode[], nextChildren: Vnode[],
 
 const isTextInputType = makeMap('text,number,password,search,email,tel,url')
 
-// function isUndef(v: any): boolean {
-//     return v === undefined || v === null
-// }
-
-function isDef(v: any): boolean {
-    return v !== undefined && v !== null
-}
 
 function makeMap(
     str: string,
@@ -119,6 +114,8 @@ function sameInputType(a: Vnode, b: Vnode) {
 
 function sameVnode(a: Vnode, b: Vnode) {
     return (
+        // isDef(a.key) && isDef(b.key) ? a.key === b.key :
+        //     a.hash === b.hash &&
         a.key === b.key &&
         a.tag === b.tag &&
         isDef(a.attrs) === isDef(b.attrs) &&
