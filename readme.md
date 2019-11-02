@@ -116,11 +116,10 @@ class App extends Poi {
 ```
 
 # Changelog
-feat($compiler): 增加 statement 工具节点，改变 compiler 的操作
+docs: 增加 fragment 示例代码
 
-- 增加 for skip if else elif 的 statement，以片段的方式操作 vnode
-- 修改 compiler 包结构
-- 一些相关的修正
+- 增加 fragment 功能相关的示例代码 /examples/ifelse/index.html
+- 示例代码中加入对 webcomponent.js loader 的调用，简单的兼容 IE 等浏览器（无法完全兼容）
 
 # Todo
 - [x] refactoring

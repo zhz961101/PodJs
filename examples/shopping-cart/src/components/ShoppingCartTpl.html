@@ -4,7 +4,7 @@
     }
 </style>
 <div class="cart">
-    <p $show="!products.length"><i>Please add some products to cart.</i></p>
+    <p $if="!products.length"><i>Please add some products to cart.</i></p>
     <ul>
         <li $for="product of products" key:="product.id">
             {{ product.title }} - {{ product.price }}{{ $global.currency }} x {{ product.quantity }}
@@ -12,6 +12,6 @@
     </ul>
     <p>Total: {{ total }}{{ $global.currency }}</p>
     <p><button disabled:="!products.length" @click="checkout(products)">Checkout</button></p>
-    <p $show="checkoutStatus" style:="'color:'+(checkoutStatus!='successful'?'red':'green')">Checkout
+    <p $if="checkoutStatus" style:="'color:'+(checkoutStatus!='successful'?'red':'green')">Checkout
         {{ checkoutStatus }}.</p>
 </div>
