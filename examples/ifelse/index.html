@@ -19,13 +19,15 @@
 
 <body>
     <script>
-        const reactive = Poi.reactivty.reactive;
-        const computed = Poi.reactivty.computed;
-        const difineDirective = Poi.compiler.difineDirective;
-        const Store = Poi.store.Store;
-        const ViewModel = Poi.mvvm.ViewModel;
-        const h = Poi.h;
         const $ = q => document.querySelector(q);
+        const {
+            reactive,
+            computed,
+            difineDirective,
+            Store,
+            ViewModel,
+            h
+        } = Poi;
     </script>
     <h1>if else elif statement</h1>
     <div id="appRoot"></div>
@@ -51,10 +53,15 @@
                 })
             }
             template() {
-                return $("#appTpl").innerHTML
+                return h($("#appTpl").innerHTML)
             }
             succ() {
                 this.count++
+            }
+            created() {
+                setInterval(() => {
+                    this.count++
+                }, 1000);
             }
         }
         Poi.createApp(app).mount(appRoot)
@@ -78,7 +85,7 @@
                 font-weight: bolder;
             }
         </style>
-        <for user i of users>
+        <for :="user,i of users">
             <div class="card">
                 <div class="badge">{{i}}</div>
                 <br>
@@ -211,7 +218,7 @@
                 })
             }
             template() {
-                return $("#forAppTpl").innerHTML
+                return h($("#forAppTpl").innerHTML)
             }
             async created() {
                 const udata = await UserInfoApi()

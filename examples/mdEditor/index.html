@@ -56,8 +56,11 @@
         <article class="root markdown-body" html:="compiled.value"></article>
     </script>
     <script>
-        const reactive = Poi.reactivty.reactive;
-        const computed = Poi.reactivty.computed;
+        const {
+            reactive,
+            computed,
+            h
+        } = Poi;
         class app extends Poi {
             constructor() {
                 super()
@@ -66,7 +69,7 @@
                 }, 200)
             }
             template() {
-                return appTpl.innerHTML
+                return h(appTpl.innerHTML)
             }
             setup() {
                 const state = reactive({

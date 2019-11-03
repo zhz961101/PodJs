@@ -1,4 +1,7 @@
 
+export const __DEV__ = false
+export const __IE__DEV__ = false
+
 export function exclude(obj: object, exclude: string[]): object {
     exclude = exclude || [];
     exclude.push("constructor", "__proto__")
@@ -64,3 +67,7 @@ export function isDef(obj: any): boolean {
 export function isUnDef(obj: any): boolean {
     return obj === undefined || obj === null
 }
+
+const ua = navigator.userAgent
+const isIE = ua.indexOf("compatible") > -1 && ua.indexOf("MSIE") > -1;
+export const isEdge = ua.indexOf("Edge") > -1 && !isIE;

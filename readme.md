@@ -116,10 +116,12 @@ class App extends Poi {
 ```
 
 # Changelog
-docs: 增加 fragment 示例代码
+feat($vdom): 增加了关于 IE edge 的兼容性内容
 
-- 增加 fragment 功能相关的示例代码 /examples/ifelse/index.html
-- 示例代码中加入对 webcomponent.js loader 的调用，简单的兼容 IE 等浏览器（无法完全兼容）
+- h 函数增加ie无法识别的转换
+- 修改 statement 中 ie 无法正确识别的内容
+- browser api flatten
+- 修改 example
 
 # Todo
 - [x] refactoring

@@ -4,7 +4,7 @@ import { Dom2Vnode } from "../vdom/any2v"
 import { complieWithScope } from "./directives"
 import { effect } from "../reactivity/reactivity"
 import { Vnode } from "../vdom/vdom"
-import { ctxCall } from "../utils"
+import { ctxCall, isEdge } from "../utils"
 
 const LogicStatus = {
     ELSEIF: false
@@ -20,16 +20,18 @@ export const statements = {
     // </for>
     for(node: Node, vm: ViewModel) {
         if (!(node instanceof HTMLElement)) return
-        const attrs = Array.from(node.attributes).map(attr => attr.name)
-        if (attrs.length < 3) {
+        let attrs = Array.from(node.attributes)
+        if (isEdge && attrs[0].name == "class") {
+            attrs = attrs.slice(1)
+        }
+        if (attrs.length < 1) {
             throw new Error(`Expected least 3 arguments, but got ${attrs.length}.`)
         }
-        if (attrs.indexOf("of") < 1) {
-            throw new Error(`Cannot resolve parameter name from [${attrs}]`)
-        }
-        const ofIdx = attrs.indexOf("of")
-        const argsName = attrs.slice(0, ofIdx)
-        const expr = attrs[ofIdx + 1]
+
+        const exprs = attrs[0].value.match(/^((\w+,?)+) of (\S+)$/)
+        const expArgsName: string[] = exprs[1].split(",")
+        const target: string = exprs[3]
+
         const vfrag = new VFragment(node)
 
         const tplNodes: Array<Node> = Array.from(node.childNodes).map(child => node.removeChild(child));
@@ -43,12 +45,12 @@ export const statements = {
             effect(() => updaterFunc())
 
         function updaterFunc() {
-            const newVal = vm._get(expr)
+            const newVal = vm._get(target)
             if (!Array.isArray(newVal)) return
             const vnodes = []
             newVal.forEach((...args) => {
                 let ctxObj = Object.create(null)
-                argsName.forEach((k, i) => ctxObj[k] = args[i])
+                expArgsName.forEach((k, i) => ctxObj[k] = args[i])
                 for (const n of tplNodes) {
                     const el = n.cloneNode(true)
                     complieWithScope(el, ctxObj, vm)
@@ -66,11 +68,15 @@ export const statements = {
     // <if :="state.count%4==0">
     if(node: Node, vm: ViewModel) {
         if (!(node instanceof HTMLElement)) return
-        if (node.attributes.length == 0) {
+        let attrs = Array.from(node.attributes)
+        if (isEdge && attrs[0].name == "class") {
+            attrs = attrs.slice(1)
+        }
+        if (attrs.length == 0) {
             throw new Error("IF statement need argument, but got 0.")
         }
-        const expr = node.attributes[0].value
-        if (expr.trim().length == 0) {
+        const expr = attrs[0].value
+        if (expr.trim().length === 0) {
             throw new Error("IF statement need argument, but got empty string.")
         }
         const vfrag = new VFragment(node)
@@ -116,10 +122,14 @@ export const statements = {
     // <elif :="state.count%2==0">
     elif(node: Node, vm: ViewModel) {
         if (!(node instanceof HTMLElement)) return
-        if (node.attributes.length == 0) {
+        let attrs = Array.from(node.attributes)
+        if (isEdge && attrs[0].name == "class") {
+            attrs = attrs.slice(1)
+        }
+        if (attrs.length == 0) {
             throw new Error("ELSE-IF statement need argument, but got 0.")
         }
-        const expr = node.attributes[0].value
+        const expr = attrs[0].value
 
         if (expr.trim().length == 0) {
             throw new Error("ELSE-IF statement need argument, but got empty string.")

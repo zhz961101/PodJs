@@ -171,4 +171,12 @@ defaultExtender.addAttrExtend(/\$(\S+)/, compileHead + "dir:$1")
 defaultExtender.addAttrExtend(/\@(\S+)/, compileHead + "event:$1")
 defaultExtender.addAttrExtend(/\&(\S+)/, compileHead + "bind:$1")
 
+// for IE edge
+// <if :="..."> => <if arg="...">
+defaultExtender.addAttrExtend(/^:$/, "exp")
+// <div style:="style" > => <div p-bind:style="style">
+defaultExtender.addAttrExtend(/(\S+):$/, compileHead + "bind:$1")
+// <div :click="...""> => <div p-event:click="...">
+defaultExtender.addAttrExtend(/^:(\S+)/, compileHead + "event:$1")
+
 export const h = defaultExtender.getLoader()

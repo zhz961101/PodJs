@@ -12,25 +12,15 @@ if (window) {
     Object.assign(Object.getPrototypeOf(window["Poi"]), {
         createApp,
         h,
-        mvvm: {
-            ViewModel,
-        },
-        vdom: {
-            h2v: HTML2Vdom,
-            d2v: Dom2Vnode,
-            createElement,
-            render
-        },
-        compiler: {
-            difineDirective
-        },
-        store: {
-            Store,
-        },
-        reactivty: {
-            computed,
-            reactive,
-            effect
-        }
+        ViewModel,
+        h2v: HTML2Vdom,
+        d2v: Dom2Vnode,
+        createElement,
+        render,
+        difineDirective,
+        Store,
+        computed,
+        reactive,
+        effect,
     })
 }

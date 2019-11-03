@@ -1,5 +1,5 @@
 import { ViewModel } from "../mvvm/mvvm"
-import { ctxCall, nodeToFragment, isElementNode, isTextNode } from "../utils"
+import { ctxCall, nodeToFragment, isElementNode, isTextNode, isEdge } from "../utils"
 import { bindMap, directives } from "./directives"
 import { statements } from './statement';
 
@@ -112,7 +112,8 @@ export class Compile {
     }
 
     compileElement(node: DocumentFragment) {
-        if (node["__destroy__"]) return
+        const destroyed = node["__destroy__"]
+        if (destroyed) return
         let childNodes = node.childNodes
         Array().slice.call(childNodes).forEach(node => {
             if (isElementNode(node)) {
@@ -126,7 +127,8 @@ export class Compile {
                 return
             }
             if (node.childNodes && node.childNodes.length) {
-                if (node["__destroy__"]) return
+                const destroyed = node["__destroy__"]
+                if (destroyed) return
                 this.compileElement(node)
             }
         });
@@ -142,10 +144,24 @@ function complie(node: HTMLElement, vm: ViewModel) {
         // mount element
         componentMap.get(node.localName)(node)
     }
-    let nodeAttrs = node.attributes
-    Array().slice.call(nodeAttrs).forEach(attr => {
+    let nodeAttrs = Array.from(node.attributes)
+    // 👇 IE 会莫名其妙的排序 attributes 列表，即使手动将指令放到第一个仍然会有问题，所以需要针对修改
+    if (isEdge) {
+        nodeAttrs = nodeAttrs.sort((a, _) => {
+            if (a.name.indexOf("for") || a.name.indexOf("if")) {
+                return -1
+            }
+            return 0
+        })
+    }
+
+    nodeAttrs.forEach(attr => {
+        // 👇 ts compiler optimizes in advance, so it needs to take out the value and judge again
+        const destroyed = node["__destroy__"]
+        if (destroyed) {
+            return
+        }
         const compileT = getCompileType(attr.name)
-        console.log(attr.name, attr)
         switch (compileT.type) {
             case compileType.EVLISTENER:
                 eventHandler(node, vm, attr.value, compileT.name)

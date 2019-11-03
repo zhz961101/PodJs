@@ -1,7 +1,7 @@
-import { patchMulitChildren as reactPMC } from './React15Diff';
+// import { patchMulitChildren as reactPMC } from './react15Diff';
 import { patchMulitChildren as vuePMC } from './vue2Diff';
 import { Container, NodeContainer } from './container';
-import { objectHash, isDef, isUnDef } from '../utils';
+import { isDef, isUnDef } from '../utils';
 
 export interface Vattr {
     [key: string]: string | object
@@ -374,7 +374,7 @@ function patchAttr(el: Node, key: string, prev: string | object | Function, next
             if (typeof next == "string")
                 if (el instanceof HTMLElement)
                     el.className = next
-            if (isUnDef(next))
+            if (isUnDef(next) && isDef(prev))
                 if (el instanceof HTMLElement)
                     el.className = ""
             break
