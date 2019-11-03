@@ -116,12 +116,7 @@ class App extends Poi {
 ```
 
 # Changelog
-feat($vdom): 增加了关于 IE edge 的兼容性内容
-
-- h 函数增加ie无法识别的转换
-- 修改 statement 中 ie 无法正确识别的内容
-- browser api flatten
-- 修改 example
+chore($tslint): 添加 tslint 规则，并修正代码中的错误
 
 # Todo
 - [x] refactoring

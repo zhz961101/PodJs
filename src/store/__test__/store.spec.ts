@@ -1,36 +1,35 @@
-import { Store } from '../store';
+import { Store } from "../store";
 
 describe("store/Store", () => {
 
     it("should be reported error, when a subscribe cannot be found", () => {
-        let store = new Store(() => ({}))
+        const store = new Store(() => ({}));
         expect(() => store.dispatch("a"))
-            .toThrow(`a is not defined on Store[$id:${store.$id}]`)
-    })
+            .toThrow(`a is not defined on Store[$id:${store.$id}]`);
+    });
 
     it("should remove type attribute when emit", () => {
-        let store = new Store(() => ({
+        const store = new Store(() => ({
             action(options: any) {
-                expect(options["type"]).toBe(undefined)
-                expect(options["msg"]).toEqual("hello")
-            }
-        }))
+                expect(options.type).toBe(undefined);
+                expect(options.msg).toEqual("hello");
+            },
+        }));
         store.emit({
             type: "action",
-            msg: "hello"
-        })
-    })
+            msg: "hello",
+        });
+    });
 
     it("should be support async function ", () => {
-        let store = new Store(() => ({
+        const store = new Store(() => ({
             async action() {
-                return "hello"
-            }
-        }))
+                return "hello";
+            },
+        }));
         store.dispatch("action")
-            .then(result => {
-                expect(result).toEqual("hello")
-            })
-    })
-})
-
+            .then((result) => {
+                expect(result).toEqual("hello");
+            });
+    });
+});

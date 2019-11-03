@@ -9,6 +9,8 @@
     "dev": "cross-env NODE_ENV=development webpack --mode=development",
     "dev:w": "cross-env NODE_ENV=development webpack --watch --mode=development",
     "all": "npm run dev && npm run build",
+    "lint:fix": "tslint -c tslint.json --fix \"./src/**/*.ts\" --force",
+    "lint": "tslint -c tslint.json \"./src/**/*.ts\" --force",
     "test": "jest",
     "test:cover": "jest --coverage",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls"
@@ -31,6 +33,7 @@
     "jest": "^24.9.0",
     "ts-jest": "^24.1.0",
     "ts-loader": "^6.2.1",
+    "tslint": "^5.20.0",
     "typescript": "^3.6.4",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"

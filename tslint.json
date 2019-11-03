@@ -1,0 +1,39 @@
+{
+    "defaultSeverity": "error",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "rules": {
+        "ban-comma-operator": true,
+        "no-empty-interface": true,
+        "no-return-await": true,
+        "no-invalid-this": true,
+        "no-duplicate-super": true,
+        "no-arg": true,
+        "forin": true,
+        "await-promise": true,
+        "no-unnecessary-type-assertion": true,
+        "object-literal-sort-keys": false,
+        "interface-name": [true, "never-prefix"],
+        "max-classes-per-file": [
+            true,
+            4
+        ],
+        "max-line-length": {
+            "options": [120]
+        },
+        "semicolon": [
+            true,
+            "always"
+        ],
+        "curly": true,
+        "arrow-parens": true,
+        "no-var-keyword": true
+    },
+    "jsRules": {
+        "max-line-length": {
+            "options": [120]
+        }
+    },
+    "rulesDirectory": []
+}

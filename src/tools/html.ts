@@ -1,182 +1,186 @@
-import { compileHead } from '../compiler/compile';
+import { compileHead } from "../compiler/compile";
 
-const re = /<(?!\/)([^>]+?)>/g
+const tagStartRe = /<(?!\/)([^>]+?)>/g;
 
 export class HTMLExtender {
-    reMap: Array<[RegExp, string]>
-    content: string
-    cursor: number
+    public reMap: Array<[RegExp, string]>;
+    public content: string;
+    public cursor: number;
 
     constructor() {
-        this.reMap = new Array<[RegExp, string]>()
+        this.reMap = new Array<[RegExp, string]>();
     }
 
-    addAttrExtend(re: RegExp, tpl: string) {
-        this.reMap.push([re, tpl])
+    public addAttrExtend(nameRe: RegExp, tpl: string) {
+        this.reMap.push([nameRe, tpl]);
     }
 
-    getLoader() {
-        return (html: string): string => this.load(html)
+    public getLoader() {
+        return (html: string): string => this.load(html);
     }
 
-    load(html: string): string {
-        this.content = html
-        return this.walkHTML()
+    public load(html: string): string {
+        this.content = html;
+        return this.walkHTML();
     }
 
-    tansAttrName(name: string): string {
+    public tansAttrName(name: string): string {
         for (const kv of this.reMap) {
-            const [re, tpl] = kv
+            const [re, tpl] = kv;
             if (re.test(name)) {
-                return name.replace(re, tpl)
+                return name.replace(re, tpl);
             }
         }
-        return name
+        return name;
     }
 
-    walkHTML(): string {
-        let result = ""
+    public walkHTML(): string {
+        let result = "";
         // init regexp object
-        re.lastIndex = 0
+        tagStartRe.lastIndex = 0;
         // 👆 这是一个可读写变量，但是却自顾自的给自己赋值，👍
-        let lastIndex = 0
-        let match
-        while (match = re.exec(this.content)) {
+        let lastIndex = 0;
+        let match;
+        while (true) {
+            match = tagStartRe.exec(this.content);
+            if (!match) {
+                break;
+            }
             if (match.index > lastIndex) {
-                result += this.content.slice(lastIndex, match.index)
+                result += this.content.slice(lastIndex, match.index);
             }
-            if (match[0].slice(0, 4) == "<!--" && match[0].slice(-3) == "-->") {
-                result += match[0]
+            if (match[0].slice(0, 4) === "<!--" && match[0].slice(-3) === "-->") {
+                result += match[0];
             } else {
-                result += "<" + this.walkAttrs(match[1]) + ">"
+                result += "<" + this.walkAttrs(match[1]) + ">";
             }
-            lastIndex = re.lastIndex
+            lastIndex = tagStartRe.lastIndex;
         }
         if (lastIndex < this.content.length) {
-            result += this.content.slice(lastIndex)
+            result += this.content.slice(lastIndex);
         }
-        return result
+        return result;
     }
 
-    walkAttrs(tag: string) {
-        let spaceIdx = tag.indexOf(" ")
-        if (spaceIdx == -1) return tag
-        let tagName = tag.slice(0, spaceIdx)
-        let attrStr = tag.slice(spaceIdx + 1)
-        let attrArr = this.deserialize(attrStr)
-        let retAttrArr = []
+    public walkAttrs(tag: string) {
+        const spaceIdx = tag.indexOf(" ");
+        if (spaceIdx === -1) { return tag; }
+        const tagName = tag.slice(0, spaceIdx);
+        const attrStr = tag.slice(spaceIdx + 1);
+        const attrArr = this.deserialize(attrStr);
+        const retAttrArr = [];
         for (const attr of attrArr) {
-            const { name, value } = attr
-            const nxtName = this.tansAttrName(name)
-            retAttrArr.push({ name: nxtName, value })
+            const { name, value } = attr;
+            const nxtName = this.tansAttrName(name);
+            retAttrArr.push({ name: nxtName, value });
         }
-        let retHTML = tagName + " "
-        retAttrArr.forEach(attr => {
-            retHTML += attr.name
+        let retHTML = tagName + " ";
+        retAttrArr.forEach((attr) => {
+            retHTML += attr.name;
             if (attr.value !== undefined || attr.value !== null) {
-                retHTML += "="
-                retHTML += '"' + attr.value + '"'
+                retHTML += "=";
+                retHTML += '"' + attr.value + '"';
             }
-            retHTML += " "
-        })
-        return retHTML
+            retHTML += " ";
+        });
+        return retHTML;
     }
 
-    deserialize(attrStr: string): Array<{ name: string, value?: string }> {
-        let tuples = []
-        this.cursor = 0
+    public deserialize(attrStr: string): Array<{ name: string, value?: string }> {
+        const tuples = [];
+        this.cursor = 0;
         while (this.cursor < attrStr.length) {
-            const char = attrStr[this.cursor]
+            const char = attrStr[this.cursor];
             if (/\s/.test(char)) {
-                //pass
-                this.cursor++
-                continue
+                // pass
+                this.cursor++;
+                continue;
             } else {
-                let tuple = this.walkTuple(attrStr)
-                tuples.push(tuple)
+                const tuple = this.walkTuple(attrStr);
+                tuples.push(tuple);
             }
         }
-        return tuples
+        return tuples;
     }
 
-    walkTuple(attrStr: string): { name: string, value?: string } {
-        let name = ""
+    public walkTuple(attrStr: string): { name: string, value?: string } {
+        let name = "";
         while (this.cursor < attrStr.length) {
-            const char = attrStr[this.cursor]
+            const char = attrStr[this.cursor];
             if (/\s/.test(char)) {
-                if (name.length != 0) {
-                    this.cursor++
-                    return { name }
+                if (name.length !== 0) {
+                    this.cursor++;
+                    return { name };
                 }
-                //pass
-            } else if (char == "=") {
-                this.cursor++
-                break
+                // pass
+            } else if (char === "=") {
+                this.cursor++;
+                break;
             } else {
-                name += char
+                name += char;
             }
-            this.cursor++
+            this.cursor++;
         }
         while (this.cursor < attrStr.length) {
-            const char = attrStr[this.cursor]
+            const char = attrStr[this.cursor];
             if (/\s/.test(char)) {
-                //pass
-                this.cursor++
-                continue
-            } else if (char == "'" || char == '"') {
-                let val = this.walkString(attrStr)
-                return { name, value: val }
+                // pass
+                this.cursor++;
+                continue;
+            } else if (char === "'" || char === '"') {
+                const val = this.walkString(attrStr);
+                return { name, value: val };
             } else {
-                let val = this.walkValue(attrStr)
-                return { name, value: val }
+                const val = this.walkValue(attrStr);
+                return { name, value: val };
             }
         }
-        return { name }
+        return { name };
     }
 
-    walkString(attrStr: string): string {
-        let res = "",
-            stack = [attrStr[this.cursor++]]
+    public walkString(attrStr: string): string {
+        let res = "";
+        const stack = [attrStr[this.cursor++]];
         while (this.cursor < attrStr.length) {
-            const char = attrStr[this.cursor]
-            if (char == "'" || char == '"') {
-                let top = stack[stack.length - 1]
-                if (top == char) {
-                    stack.pop()
-                    if (stack.length == 0) {
-                        break
+            const char = attrStr[this.cursor];
+            if (char === "'" || char === '"') {
+                const top = stack[stack.length - 1];
+                if (top === char) {
+                    stack.pop();
+                    if (stack.length === 0) {
+                        break;
                     }
                 } else {
-                    stack.push(char)
+                    stack.push(char);
                 }
             }
-            res += char
-            this.cursor++
+            res += char;
+            this.cursor++;
         }
-        this.cursor++
-        return res
+        this.cursor++;
+        return res;
     }
 
-    walkValue(attrStr: string): string {
-        let spaceIdx = attrStr.indexOf(" ", this.cursor)
-        if (spaceIdx == -1) spaceIdx = attrStr.length
-        let res = attrStr.slice(this.cursor, spaceIdx)
-        this.cursor += res.length
-        return res
+    public walkValue(attrStr: string): string {
+        let spaceIdx = attrStr.indexOf(" ", this.cursor);
+        if (spaceIdx === -1) { spaceIdx = attrStr.length; }
+        const res = attrStr.slice(this.cursor, spaceIdx);
+        this.cursor += res.length;
+        return res;
     }
 }
 
-const defaultExtender = new HTMLExtender()
-defaultExtender.addAttrExtend(/\$(\S+)/, compileHead + "dir:$1")
-defaultExtender.addAttrExtend(/\@(\S+)/, compileHead + "event:$1")
-defaultExtender.addAttrExtend(/\&(\S+)/, compileHead + "bind:$1")
+const defaultExtender = new HTMLExtender();
+defaultExtender.addAttrExtend(/\$(\S+)/, compileHead + "dir:$1");
+defaultExtender.addAttrExtend(/\@(\S+)/, compileHead + "event:$1");
+defaultExtender.addAttrExtend(/\&(\S+)/, compileHead + "bind:$1");
 
 // for IE edge
 // <if :="..."> => <if arg="...">
-defaultExtender.addAttrExtend(/^:$/, "exp")
+defaultExtender.addAttrExtend(/^:$/, "exp");
 // <div style:="style" > => <div p-bind:style="style">
-defaultExtender.addAttrExtend(/(\S+):$/, compileHead + "bind:$1")
+defaultExtender.addAttrExtend(/(\S+):$/, compileHead + "bind:$1");
 // <div :click="...""> => <div p-event:click="...">
-defaultExtender.addAttrExtend(/^:(\S+)/, compileHead + "event:$1")
+defaultExtender.addAttrExtend(/^:(\S+)/, compileHead + "event:$1");
 
-export const h = defaultExtender.getLoader()
+export const h = defaultExtender.getLoader();

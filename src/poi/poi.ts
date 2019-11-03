@@ -1,115 +1,119 @@
-import { ViewModel } from "../mvvm/mvvm"
 import { registerComponent } from "../compiler/compile";
+import { ViewModel } from "../mvvm/mvvm";
 import { exclude } from "../utils";
 
-interface propOption {
-    type: any
-    default?: any
-    required?: boolean
-    validator: (valueL: any) => boolean
-    failed: () => void
-    passed: () => void
+declare global {
+    interface Node {
+        $vm: ViewModel;
+    }
 }
 
-export interface propOptions {
-    [key: string]: propOption
+interface PropOption {
+    type: any;
+    default?: any;
+    required?: boolean;
+    validator: (valueL: any) => boolean;
+    failed: () => void;
+    passed: () => void;
+}
+
+export interface PropOptions {
+    [key: string]: PropOption;
 }
 
 class EmptyTemplateError extends Error {
     constructor() {
-        super("template not define, or template get empty string")
-        this.name = "EmptyTemplateError"
+        super("template not define, or template get empty string");
+        this.name = "EmptyTemplateError";
     }
 }
 
-export class Poi {
-    // props?: () => propOptions
-    // template: () => string
-    // created?: () => void
-    // setup?: () => object
-    methods: object
-
-    constructor() {
-        if (!this["template"]) {
-            throw new EmptyTemplateError()
-        }
-        this.methods = exclude(this, ["props", "template", "created", "setup"])
-    }
+export interface Poi {
+    props?: () => PropOptions;
+    template: () => string;
+    created?: () => void;
+    setup: () => object;
 }
 
-export function createApp(poi: any) {
+export function createApp(poi: Poi) {
     return {
         mount(el: HTMLElement) {
-            mountInElement(el, poi)
+            mountInElement(el, poi);
         },
         component(tagName: string) {
             // only lower case
-            registerComponent(tagName, (el: HTMLElement) => mountInElement(el, poi))
-        }
-    }
+            registerComponent(tagName, (el: HTMLElement) => mountInElement(el, poi));
+        },
+    };
 }
 
-function mountInElement(el: HTMLElement, poi: any) {
-    const app = new poi()
+function mountInElement(el: HTMLElement, app: Poi) {
+    const data = (app.setup && app.setup()) || {};
+    const mData = exclude(app, ["props", "template", "created", "setup"]);
 
-    const data = (app.setup && app.setup()) || {}
-    const mData = exclude(app, ["props", "template", "created", "setup", "methods"])
-
-    const props = (app.props && app.props()) || {}
-    const observedAttributes = Object.keys(props)
+    const props = (app.props && app.props()) || {};
+    const observedAttributes = Object.keys(props);
 
     for (const attrName in props) {
         if (props.hasOwnProperty(attrName)) {
             const prop = props[attrName];
             if (prop.required && el.getAttribute(attrName) === null) {
                 // 标记 required 但是没定义
-                console.warn(`the component need attrbute[${attrName}], but not define.`)
+                // tslint:disable-next-line
+                console.warn(`the component need attrbute[${attrName}], but not define.`);
             }
         }
     }
 
-    const shadow = el.attachShadow({ mode: "open" })
-    shadow.innerHTML = app.template()
-    const vm = new ViewModel(Object.assign(data, mData), { props, el: shadow })
-    el["$vm"] = vm
+    const shadow = el.attachShadow({ mode: "open" });
+    shadow.innerHTML = app.template();
+    const vm = new ViewModel(Object.assign(data, mData), { props, el: shadow });
+    el.$vm = vm;
 
-    const observer = new MutationObserver(mutations => {
-        mutations.forEach(function (mutation) {
-            if (mutation.type == "attributes" && observedAttributes.indexOf(mutation.attributeName) != -1) {
-                const oldValue = mutation.oldValue
-                const newValue = mutation.target["getAttribute"](mutation.attributeName)
-                attributeChangedCallback(mutation.attributeName, oldValue, newValue, vm)
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === "attributes" && observedAttributes.indexOf(mutation.attributeName) !== -1) {
+                const oldValue = mutation.oldValue;
+                if (!(mutation.target instanceof HTMLElement)) { return; }
+                const newValue = mutation.target.getAttribute(mutation.attributeName);
+                attributeChangedCallback(mutation.attributeName, oldValue, newValue, vm);
             }
-        })
-    })
+        });
+    });
     observer.observe(el, {
-        attributes: true
-    })
+        attributes: true,
+    });
     // created
-    app.created && app.created.call(vm.$data)
+    if (app.created) {
+        app.created.call(vm.$data);
+    }
 }
 
 function attributeChangedCallback(prop: string, oldValue: any, newValue: any, vm: ViewModel) {
-    const props = vm.$data["props"]
-    if (!props) return
-    if (oldValue == newValue) return;
-    const defaulteValue = props[prop].default,
-        valueValidator = props[prop].validator,
-        failedHandler = props[prop].failed,
-        passedHandler = props[prop].passed;
+    const props = vm.$data.props;
+    if (!props) { return; }
+    if (oldValue === newValue) { return; }
+    const defaulteValue = props[prop].default;
+    const valueValidator = props[prop].validator;
+    const failedHandler = props[prop].failed;
+    const passedHandler = props[prop].passed;
     const value = newValue || defaulteValue;
     const parsedValue = (props[prop].type || String)(value);
     if (valueValidator) {
         if (valueValidator.call(vm.$data, parsedValue)) {
             // this.poi.$data[prop] = value;
-            passedHandler && passedHandler.call(vm.$data, parsedValue);
+            if (passedHandler) {
+                passedHandler.call(vm.$data, parsedValue);
+            }
         } else {
             // 输出prop错误信息
-            failedHandler && failedHandler.call(vm.$data, parsedValue, value);
+            if (failedHandler) {
+                failedHandler.call(vm.$data, parsedValue, value);
+            }
             // vm.$data[prop] = value;
         }
-        vm.$data["props"][prop] = value;
+        vm.$data.props[prop] = value;
     } else {
-        vm.$data["props"][prop] = newValue;
+        vm.$data.props[prop] = newValue;
     }
 }

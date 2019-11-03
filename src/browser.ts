@@ -1,15 +1,21 @@
-import { difineDirective } from "./compiler/directives"
-import { effect, reactive, computed } from './reactivity/reactivity';
-import { createElement, render } from "./vdom/vdom"
-import { HTML2Vdom, Dom2Vnode } from "./vdom/any2v"
-import { Store } from './store/store';
-import { Poi, createApp } from './poi/poi';
+import { difineDirective } from "./compiler/directives";
 import { ViewModel } from "./mvvm/mvvm";
-import { h } from './tools/html';
+import { createApp, Poi } from "./poi/poi";
+import { computed, effect, reactive } from "./reactivity/reactivity";
+import { Store } from "./store/store";
+import { h } from "./tools/html";
+import { Dom2Vnode, HTML2Vdom } from "./vdom/any2v";
+import { createElement, render } from "./vdom/vdom";
+
+declare global {
+    interface Window {
+        Poi: object;
+    }
+}
 
 if (window) {
-    window["Poi"] = Poi
-    Object.assign(Object.getPrototypeOf(window["Poi"]), {
+    window.Poi = Poi;
+    Object.assign(Object.getPrototypeOf(window.Poi), {
         createApp,
         h,
         ViewModel,
@@ -22,5 +28,5 @@ if (window) {
         computed,
         reactive,
         effect,
-    })
+    });
 }
