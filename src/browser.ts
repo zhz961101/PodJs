@@ -1,6 +1,6 @@
 import { difineDirective } from "./compiler/directives";
 import { ViewModel } from "./mvvm/mvvm";
-import { createApp, Poi } from "./poi/poi";
+import { createApp } from "./poi/poi";
 import { computed, effect, reactive } from "./reactivity/reactivity";
 import { Store } from "./store/store";
 import { h } from "./tools/html";
@@ -14,7 +14,7 @@ declare global {
 }
 
 if (window) {
-    window.Poi = Poi;
+    window.Poi = class { };
     Object.assign(Object.getPrototypeOf(window.Poi), {
         createApp,
         h,

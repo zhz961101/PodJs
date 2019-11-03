@@ -2,15 +2,16 @@
   "name": "poijs",
   "version": "1.0.0",
   "description": "mvvm framework.",
-  "main": "webpack.config.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --mode=production",
     "build:w": "cross-env NODE_ENV=production webpack --watch --mode=production",
     "dev": "cross-env NODE_ENV=development webpack --mode=development",
     "dev:w": "cross-env NODE_ENV=development webpack --watch --mode=development",
     "all": "npm run dev && npm run build",
-    "lint:fix": "tslint -c tslint.json --fix \"./src/**/*.ts\" --force",
     "lint": "tslint -c tslint.json \"./src/**/*.ts\" --force",
+    "lint:fix": "tslint -c tslint.json --fix \"./src/**/*.ts\" --force",
     "test": "jest",
     "test:cover": "jest --coverage",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls"
@@ -19,9 +20,9 @@
     "type": "git",
     "url": "git+https://github.com/zhzLuke96/PoiJs.git"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["poi"],
+  "author": "zhzluke96",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/zhzLuke96/PoiJs/issues"
   },

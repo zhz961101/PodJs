@@ -61,10 +61,7 @@ typings/
 .next
 
 # distribution directories
-# dist/
-dist/*.*
-dist/*/*.*
-examples/**/dist
+dist
 
 # npm lock
 package-lock.json

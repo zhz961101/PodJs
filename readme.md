@@ -1,4 +1,4 @@
-# 🔮PoiJs
+# Poi
 
 [![Build Status](https://travis-ci.org/zhzLuke96/PoiJs.svg?branch=master)](https://travis-ci.org/zhzLuke96/PoiJs)
 [![Coverage Status](https://coveralls.io/repos/github/zhzLuke96/PoiJs/badge.svg?branch=master)](https://coveralls.io/github/zhzLuke96/PoiJs?branch=master)
@@ -6,10 +6,12 @@
 ![size badge](https://img.shields.io/badge/size-15K-green)
 
 
-mvvm framework.
+mvvm framework, with 
+- web component
+- typescript
 
 # Index
-- [🔮PoiJs](#%f0%9f%94%aepoijs)
+- [Poi](#poi)
 - [Index](#index)
 - [Background](#background)
 - [Features](#features)
@@ -116,7 +118,10 @@ class App extends Poi {
 ```
 
 # Changelog
-chore($github): 添加 issue 和 PR 模板
+docs: 修改 examples
+
+- 修改 shopping-cart 示例代码
+- 增加 *.d.ts 文件的编译
 
 # Todo
 - [x] refactoring

@@ -4,9 +4,12 @@ import appTpl from "./AppTpl.html"
 
 const _template = h(appTpl)
 
-export default class App extends Poi {
+export default class App implements Poi {
     template(): string {
         return _template
+    }
+    setup() {
+        return {}
     }
     // created() {
     //     this["$global"].currency = "￥"

@@ -6,7 +6,7 @@ import ShoppingCartTpl from "./ShoppingCartTpl.html"
 
 const _template = h(ShoppingCartTpl)
 
-export default class ShoppingCart extends Poi {
+export default class ShoppingCart implements Poi {
     setup() {
         return {
             get checkoutStatus() {

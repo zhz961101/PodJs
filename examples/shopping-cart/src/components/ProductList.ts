@@ -7,7 +7,7 @@ import productListTpl from "./ProductListTpl.html"
 
 const _template = h(productListTpl)
 
-export default class ProductList extends Poi {
+export default class ProductList implements Poi {
     setup() {
         return {
             get products() {

@@ -91,7 +91,7 @@ now: <span>{{ info.now }}</span>
                 return this.double.value
             }
         }
-        Poi.createApp(app).mount(appRoot);
+        Poi.createApp(new app()).mount(appRoot);
     </script>
     <div id="mvvm-app">
         <h1> mvvm </h1>
@@ -255,8 +255,8 @@ now: <span>{{ info.now }}</span>
                 }
             }
         }
-        Poi.createApp(HoverCard).mount(hoverCard)
-        Poi.createApp(HoverCard).component("hover-card");
+        Poi.createApp(new HoverCard()).mount(hoverCard)
+        Poi.createApp(new HoverCard()).component("hover-card");
     </script>
     <div id="testApp1"></div>
     <script>
@@ -277,7 +277,7 @@ now: <span>{{ info.now }}</span>
                 </hover-card>`)
             }
         }
-        Poi.createApp(TestApp1).mount(testApp1);
+        Poi.createApp(new TestApp1()).mount(testApp1);
     </script>
     <h1>Component Function bind</h1>
     <div id="testApp2"></div>
@@ -295,7 +295,7 @@ now: <span>{{ info.now }}</span>
                 }
             }
         }
-        Poi.createApp(callBcackComp).component("call-back")
+        Poi.createApp(new callBcackComp()).component("call-back")
         class TestApp2 extends Poi {
             constructor() {
                 super("test-app2")
@@ -321,7 +321,7 @@ now: <span>{{ info.now }}</span>
                 }
             }
         }
-        Poi.createApp(TestApp2).mount(testApp2);
+        Poi.createApp(new TestApp2()).mount(testApp2);
     </script>
     <footer></footer>
 </body>

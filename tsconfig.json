@@ -1,13 +1,16 @@
 {
     "compilerOptions": {
+        "outDir": "dist",
+        "sourceMap": true,
         "module": "commonjs",
         "target": "es6",
+        "declaration": true,
+        "declarationDir": "./dist/types/",
+        "declarationMap": true,
         "removeComments": false,
         "noImplicitAny": false,
-        "sourceMap": true,
-        "allowJs": true,
         "experimentalDecorators": true
     },
-    "exclude": ["./node_modules", "./dist"],
+    "exclude": ["./node_modules", "./dist", "**/__test__", "*.spec.ts"],
     "include": ["./src"]
 }
