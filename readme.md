@@ -116,7 +116,7 @@ class App extends Poi {
 ```
 
 # Changelog
-chore($tslint): 添加 tslint 规则，并修正代码中的错误
+chore($github): 添加 issue 和 PR 模板
 
 # Todo
 - [x] refactoring
