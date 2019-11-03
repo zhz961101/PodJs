@@ -1,7 +1,6 @@
 
-import { randID } from "../tools/id";
-import { Dom2Vnode } from "./any2v";
-import { childType, patchChildren, Vnode, vnodeType } from "./vdom";
+import { randID } from "../utils";
+import { childType, patchChildren, Vnode } from "./vdom";
 
 export class VFragContainer {
     public frag: VFragment;
@@ -49,7 +48,7 @@ export class VFragment {
     public endMark: Comment;
     public container: VFragContainer;
     public $id: number;
-    public $vnodes: Vnode[];
+    private $vnodes: Vnode[];
 
     get parentNode(): Node {
         return this.startMark.parentNode || this.endMark.parentNode;

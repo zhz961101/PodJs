@@ -1,10 +1,10 @@
-import { Poi } from '../../../../src/poi/poi';
+import { Taco } from '../../../../src/taco/taco';
 import { h } from '../../../../src/tools/html';
 import appTpl from "./AppTpl.html"
 
 const _template = h(appTpl)
 
-export default class App implements Poi {
+export default class App implements Taco {
     template(): string {
         return _template
     }

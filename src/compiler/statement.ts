@@ -16,7 +16,7 @@ export const statements = {
     skip(node: Node) {
         node.parentNode.removeChild(node);
     },
-    // <for value i of values>
+    // <for :="item,i of items">
     // </for>
     for(node: Node, vm: ViewModel) {
         if (!(node instanceof HTMLElement)) { return; }
@@ -61,7 +61,7 @@ export const statements = {
             vfrag.patch(vnodes);
         }
     },
-    // <each values as value i>
+    // <each :="items as item,i">
     each(node: Node) {
         const frag = new VFragment(node);
 

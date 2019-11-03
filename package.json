@@ -1,9 +1,8 @@
 {
-  "name": "poijs",
+  "name": "@tacopie/taco",
   "version": "1.0.0",
   "description": "mvvm framework.",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --mode=production",
     "build:w": "cross-env NODE_ENV=production webpack --watch --mode=production",
@@ -18,15 +17,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/zhzLuke96/PoiJs.git"
+    "url": "git+https://github.com/zhzLuke96/TacoJs.git"
   },
-  "keywords": ["poi"],
+  "keywords": ["taco", "mvvm"],
   "author": "zhzluke96",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/zhzLuke96/PoiJs/issues"
+    "url": "https://github.com/zhzLuke96/TacoJs/issues"
   },
-  "homepage": "https://github.com/zhzLuke96/PoiJs#readme",
+  "homepage": "https://github.com/zhzLuke96/TacoJs#readme",
   "devDependencies": {
     "@types/jest": "^24.0.21",
     "coveralls": "^3.0.7",

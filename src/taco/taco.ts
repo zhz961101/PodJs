@@ -21,33 +21,26 @@ export interface PropOptions {
     [key: string]: PropOption;
 }
 
-class EmptyTemplateError extends Error {
-    constructor() {
-        super("template not define, or template get empty string");
-        this.name = "EmptyTemplateError";
-    }
-}
-
-export interface Poi {
+export interface Taco {
     props?: () => PropOptions;
     template: () => string;
     created?: () => void;
     setup: () => object;
 }
 
-export function createApp(poi: Poi) {
+export function createApp(taco: Taco) {
     return {
         mount(el: HTMLElement) {
-            mountInElement(el, poi);
+            mountInElement(el, taco);
         },
         component(tagName: string) {
             // only lower case
-            registerComponent(tagName, (el: HTMLElement) => mountInElement(el, poi));
+            registerComponent(tagName, (el: HTMLElement) => mountInElement(el, taco));
         },
     };
 }
 
-function mountInElement(el: HTMLElement, app: Poi) {
+function mountInElement(el: HTMLElement, app: Taco) {
     const data = (app.setup && app.setup()) || {};
     const mData = exclude(app, ["props", "template", "created", "setup"]);
 
@@ -101,7 +94,6 @@ function attributeChangedCallback(prop: string, oldValue: any, newValue: any, vm
     const parsedValue = (props[prop].type || String)(value);
     if (valueValidator) {
         if (valueValidator.call(vm.$data, parsedValue)) {
-            // this.poi.$data[prop] = value;
             if (passedHandler) {
                 passedHandler.call(vm.$data, parsedValue);
             }
@@ -110,7 +102,6 @@ function attributeChangedCallback(prop: string, oldValue: any, newValue: any, vm
             if (failedHandler) {
                 failedHandler.call(vm.$data, parsedValue, value);
             }
-            // vm.$data[prop] = value;
         }
         vm.$data.props[prop] = value;
     } else {

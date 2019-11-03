@@ -1,4 +1,4 @@
-import { Poi } from '../../../../src/poi/poi';
+import { Taco } from '../../../../src/taco/taco';
 import { h } from '../../../../src/tools/html';
 import { productState, products } from '../store/product';
 import { cart } from '../store/cart';
@@ -7,7 +7,7 @@ import productListTpl from "./ProductListTpl.html"
 
 const _template = h(productListTpl)
 
-export default class ProductList implements Poi {
+export default class ProductList implements Taco {
     setup() {
         return {
             get products() {

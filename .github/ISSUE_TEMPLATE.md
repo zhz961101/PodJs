@@ -16,4 +16,4 @@
 
 **具体是哪一个版本、在什么运行环境（网页端/移动端 windows/mac）之下产生的错误？你在其他版本中测试过你的代码吗？是否有没有错误可以正常运行代码的历史版本？**
 
-**Which versions of Poijs, and which browser / OS are affected by this issue? Did this work in previous versions of Poijs?**
+**Which versions of Tacojs, and which browser / OS are affected by this issue? Did this work in previous versions of Tacojs?**

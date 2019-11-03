@@ -60,8 +60,8 @@
             reactive,
             computed,
             h
-        } = Poi;
-        class app extends Poi {
+        } = Taco;
+        class app extends Taco {
             constructor() {
                 super()
                 this.update = _.debounce(function (ev) {
@@ -83,9 +83,9 @@
             }
             async created() {
                 try {
-                    const poiREADME = await fetch(
+                    const TacoREADME = await fetch(
                         "https://raw.githubusercontent.com/zhzLuke96/PoiJs/master/readme.md")
-                    const result = await poiREADME.text()
+                    const result = await TacoREADME.text()
                     this.state.input = result
                 } catch (error) {
                     console.warn(error)
@@ -96,7 +96,7 @@
             //     this.state.input = ev.target.value || ev.currentTarget.value
             // }
         }
-        Poi.createApp(new app()).mount(appRoot);
+        Taco.createApp(new app()).mount(appRoot);
         void(0);
     </script>
 </body>

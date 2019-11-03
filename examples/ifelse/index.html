@@ -27,7 +27,7 @@
             Store,
             ViewModel,
             h
-        } = Poi;
+        } = Taco;
     </script>
     <h1>if else elif statement</h1>
     <div id="appRoot"></div>
@@ -46,7 +46,7 @@
         </else>
     </script>
     <script>
-        class app extends Poi {
+        class app extends Taco {
             setup() {
                 return reactive({
                     count: 1
@@ -64,7 +64,7 @@
                 }, 1000);
             }
         }
-        Poi.createApp(new app()).mount(appRoot)
+        Taco.createApp(new app()).mount(appRoot)
         void(0);
     </script>
     <h1>for loop use for statement</h1>
@@ -211,7 +211,7 @@
                 }, 1000 + Math.random() * 1000);
             })
         }
-        class forApp extends Poi {
+        class forApp extends Taco {
             setup() {
                 return reactive({
                     users: []
@@ -226,7 +226,7 @@
                 console.log(this)
             }
         }
-        Poi.createApp(new forApp()).mount(forAppRoot)
+        Taco.createApp(new forApp()).mount(forAppRoot)
         void(0);
     </script>
 </body>

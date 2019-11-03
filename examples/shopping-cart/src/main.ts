@@ -1,7 +1,7 @@
 import App from './components/App';
 import ProductList from './components/ProductList';
 import ShoppingCart from './components/ShoppingCart';
-import { createApp } from '../../../src/poi/poi';
+import { createApp } from '../../../src/taco/taco';
 import { __Global__ } from '../../../src/mvvm/mvvm';
 import { cartState } from './store/cart';
 import { productState } from './store/product';

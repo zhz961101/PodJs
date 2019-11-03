@@ -18,7 +18,7 @@ export function registerComponent(tagName: string, func: componentGenFunc) {
 
 export const innerCodeRe = /\{\{(.*?)\}\}/g;
 
-export const compileHead = "p-";
+export const compileHead = "t-";
 const eventAttrHead = compileHead + "event";
 const bindAttrHead = compileHead + "bind";
 const dirAttrHead = compileHead + "dir";
@@ -103,7 +103,7 @@ function getCompileType(attrName: string): CompileInfo {
 export class Compile {
     public vm: ViewModel;
     public el: Node;
-    public frag: DocumentFragment;
+    private frag: DocumentFragment;
 
     constructor(vm: ViewModel, el: Node) {
         this.vm = vm;
@@ -119,14 +119,14 @@ export class Compile {
         }
     }
 
-    public init() {
+    private init() {
         if (this.el instanceof HTMLElement) {
             complie(this.el, this.vm);
         }
         this.compileElement(this.frag);
     }
 
-    public compileElement(node: DocumentFragment) {
+    private compileElement(node: DocumentFragment) {
         const destroyed = node.__destroy__;
         if (destroyed) { return; }
         const childNodes = node.childNodes;
@@ -149,7 +149,7 @@ export class Compile {
         });
     }
 
-    public complieText(node: Node, exp: string) {
+    private complieText(node: Node, exp: string) {
         bindMap.text(node, this.vm, exp);
     }
 }

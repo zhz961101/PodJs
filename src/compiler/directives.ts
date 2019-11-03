@@ -4,7 +4,7 @@ import { mergeReact } from "../reactivity/wapper";
 import { ctxCall } from "../utils";
 import { Dom2Vnode } from "../vdom/any2v";
 import { VFragment } from "../vdom/frag";
-import { Compile, innerCodeRe } from "./compile";
+import { Compile, compileHead, innerCodeRe } from "./compile";
 import { defaultUpdater, updater } from "./updater";
 
 type DirectiveFunc = (node: HTMLElement, vm: ViewModel, exp: string, dir: string) => void;
@@ -161,7 +161,7 @@ export const directives = {
     },
     for(node: HTMLElement, vm: ViewModel, exp: string) {
         node.removeAttribute("_for");
-        node.removeAttribute("p-dir:for");
+        node.removeAttribute(compileHead + "dir:for");
         const tplNode = node.cloneNode(true);
         const cloneNode = () => tplNode.cloneNode(true);
         const exprs = exp.match(/^((\w+,?)+) of (\S+)$/);

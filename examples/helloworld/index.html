@@ -44,15 +44,15 @@
             Store,
             ViewModel,
             h
-        } = Poi;
+        } = Taco;
     </script>
     <!--  -->
     <div id="appRoot"></div>
     <script>
-        class app extends Poi {
+        class app extends Taco {
             setup() {
                 const info = reactive({
-                    msg: "Poi Component",
+                    msg: "Taco Component",
                     count: 0,
                     computedCallCount: 0,
                     now: new Date().toLocaleString(),
@@ -91,22 +91,22 @@ now: <span>{{ info.now }}</span>
                 return this.double.value
             }
         }
-        Poi.createApp(new app()).mount(appRoot);
+        Taco.createApp(new app()).mount(appRoot);
     </script>
     <div id="mvvm-app">
         <h1> mvvm </h1>
         <input _model="msg2">
-        <input p-bind:value="'src/' + msg + '/' + msg2 ">
-        <div p-bind:class="'item-'+style"> msg2 = {{ msg2 }}</div>
+        <input t-bind:value="'src/' + msg + '/' + msg2 ">
+        <div t-bind:class="'item-'+style"> msg2 = {{ msg2 }}</div>
         <hr>
         <h1>html diff</h1>
         <textarea _model="html" cols="30" rows="10"></textarea>
-        <div p-bind:html="html"></div>
+        <div t-bind:html="html"></div>
         <hr>
         <h1> $global </h1>
         <span>$global.appState.welcome = {{ $global.appState.welcome }}</span>
         <hr>
-        <h1 p-bind:style="'color:' + (loginState.onlogin == 'success' ? 'green' : 'red')">
+        <h1 t-bind:style="'color:' + (loginState.onlogin == 'success' ? 'green' : 'red')">
             Store <span>[{{ loginState.onlogin }}]</span>
         </h1>
         <button :click="login">login</button>
@@ -227,7 +227,7 @@ now: <span>{{ info.now }}</span>
     <h1>Component</h1>
     <div id="hoverCard" color="green">Component, go!</div>
     <script>
-        class HoverCard extends Poi {
+        class HoverCard extends Taco {
             template() {
                 return h(`
                 <style>
@@ -255,12 +255,12 @@ now: <span>{{ info.now }}</span>
                 }
             }
         }
-        Poi.createApp(new HoverCard()).mount(hoverCard)
-        Poi.createApp(new HoverCard()).component("hover-card");
+        Taco.createApp(new HoverCard()).mount(hoverCard)
+        Taco.createApp(new HoverCard()).component("hover-card");
     </script>
     <div id="testApp1"></div>
     <script>
-        class TestApp1 extends Poi {
+        class TestApp1 extends Taco {
             setup() {
                 const font = reactive({
                     color: "#a4b"
@@ -277,12 +277,12 @@ now: <span>{{ info.now }}</span>
                 </hover-card>`)
             }
         }
-        Poi.createApp(new TestApp1()).mount(testApp1);
+        Taco.createApp(new TestApp1()).mount(testApp1);
     </script>
     <h1>Component Function bind</h1>
     <div id="testApp2"></div>
     <script>
-        class callBcackComp extends Poi {
+        class callBcackComp extends Taco {
             template() {
                 return h(`<button :click="props.callback">call <slot></slot></button>`)
             }
@@ -295,8 +295,8 @@ now: <span>{{ info.now }}</span>
                 }
             }
         }
-        Poi.createApp(new callBcackComp()).component("call-back")
-        class TestApp2 extends Poi {
+        Taco.createApp(new callBcackComp()).component("call-back")
+        class TestApp2 extends Taco {
             constructor() {
                 super("test-app2")
             }
@@ -321,7 +321,7 @@ now: <span>{{ info.now }}</span>
                 }
             }
         }
-        Poi.createApp(new TestApp2()).mount(testApp2);
+        Taco.createApp(new TestApp2()).mount(testApp2);
     </script>
     <footer></footer>
 </body>

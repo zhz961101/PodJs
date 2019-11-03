@@ -1,4 +1,4 @@
-import { Poi } from '../../../../src/poi/poi';
+import { Taco } from '../../../../src/taco/taco';
 import { h } from '../../../../src/tools/html';
 import { cartState, cart } from '../store/cart';
 
@@ -6,7 +6,7 @@ import ShoppingCartTpl from "./ShoppingCartTpl.html"
 
 const _template = h(ShoppingCartTpl)
 
-export default class ShoppingCart implements Poi {
+export default class ShoppingCart implements Taco {
     setup() {
         return {
             get checkoutStatus() {

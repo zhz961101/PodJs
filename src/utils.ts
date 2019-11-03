@@ -78,3 +78,7 @@ export function isUnDef(obj: any): boolean {
 const ua = navigator.userAgent;
 const isIE = ua.indexOf("compatible") > -1 && ua.indexOf("MSIE") > -1;
 export const isEdge = ua.indexOf("Edge") > -1 && !isIE;
+
+export function randID(): number {
+    return Math.ceil(Math.random() * Number.MAX_SAFE_INTEGER);
+}

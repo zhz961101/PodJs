@@ -1,7 +1,7 @@
 import { Compile } from "../compiler/compile";
-import { PropOptions } from "../poi/poi";
 import { reactive } from "../reactivity/reactivity";
-import { randID } from "../tools/id";
+import { PropOptions } from "../taco/taco";
+import { randID } from "../utils";
 
 export const __Global__ = reactive({}); // tslint:disable-line
 
