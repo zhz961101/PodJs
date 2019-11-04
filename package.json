@@ -4,7 +4,7 @@
   "description": "mvvm framework.",
   "main": "dist/index.js",
   "typings": "dist/types",
-  "unpkg": "dist/index.umd.min.js",
+  "unpkg": "dist/_index.min.js",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --mode=production",
     "build:w": "cross-env NODE_ENV=production webpack --watch --mode=production",

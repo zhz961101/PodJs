@@ -18,6 +18,8 @@
 - [Overview](#overview)
 - [Features](#features)
 - [Usage](#usage)
+  - [Browser](#browser)
+  - [Webpack](#webpack)
 - [Brower Support](#brower-support)
 - [Related Efforts](#related-efforts)
 - [Maintainers](#maintainers)
@@ -53,7 +55,12 @@ now，一种船新的web开发模式来了，可能是你现在所见的`Tacojs`
 - 高效： 通过多种措施保障 dom 层渲染效率，大部分情况连 vnode 对象都不用出现
 
 # Usage
-useing npm install package
+## Browser
+```html
+<script src="https://unpkg.com/@tacopie/taco"></script>
+```
+
+## Webpack
 ```
 npm install -D @tacopie/taco
 ```
@@ -113,9 +120,7 @@ Feel free to dive in! [Open an issue](https://github.com/zhzLuke96/TacoJs/issues
 TacoJs follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
 # Changelog
-feat($taco): app object new property [style]
-
-- now you can set the style just like setting a template.
+fix($unpkg): modify unpkg default file.
 
 # Todo
 - [x] refactoring

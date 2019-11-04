@@ -4,8 +4,9 @@ src/
 node_modules/
 .gitignore/
 .travis.yml
-.jest.config.js
+jest.config.js
 tsconfig.json
 tslint.json
 webpack.config.js
 __test__
+.gitkeep
