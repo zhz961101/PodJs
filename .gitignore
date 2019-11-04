@@ -61,7 +61,8 @@ typings/
 .next
 
 # distribution directories
-dist
+dist/*
+!dist/index.js
 
 # npm lock
 package-lock.json
@@ -80,4 +81,3 @@ local_test/*.*
 
 # vscode config
 .vscode
-

@@ -15,16 +15,18 @@
 # Index
 - [Taco](#taco)
 - [Index](#index)
-- [Background](#background)
+- [Overview](#overview)
 - [Features](#features)
-- [Install](#install)
-- [Setup](#setup)
 - [Usage](#usage)
+- [Brower Support](#brower-support)
+- [Related Efforts](#related-efforts)
+- [Maintainers](#maintainers)
+- [Contributing](#contributing)
 - [Changelog](#changelog)
 - [Todo](#todo)
 - [LICENSE](#license)
 
-# Background
+# Overview
 Taco 源于一个偷懒的想法，要是可以从一个对象直接映射到web app该多好。
 ```js
 const taco = obj => html`${template}`;
@@ -50,36 +52,21 @@ now，一种船新的web开发模式来了，可能是你现在所见的`Tacojs`
 - 轻量： API 轻量，快速上手
 - 高效： 通过多种措施保障 dom 层渲染效率，大部分情况连 vnode 对象都不用出现
 
-# Install
+# Usage
+useing npm install package
 ```
 npm install -D @tacopie/taco
 ```
 
-# Setup
-```
-# development pack
-npm run dev
-# development pack with --watch mode
-npm run dev:w
-
-# build pack
-npm run build
-# build pack with --watch mode
-npm run build:w
-```
-
-# Usage
 /components/App.ts
 ```typescript
 import { reactive, computed, h, Taco } from "@tacopie/taco"
 // ...
 import appTplHTML from "./appTpl.html"
-
 export default class App implements Taco {
     template(): string {
-        return h(appTplHTML) // h not required. 
+        return appTplHTML
     }
-
     setup() {
         const state = reactive({
             count: 18,
@@ -92,7 +79,6 @@ export default class App implements Taco {
             state
         }
     }
-
     @computed()
     get doubleCount() {
         return this.state.count * 2
@@ -107,22 +93,45 @@ import App from "./components/App"
 createApp(new App()).mount($("appRoot"))
 ```
 
-# Changelog
-chore: 更名为 Tacojs, npm 库为 @tacopie/taco
+# Brower Support
+Target environments are Chrome, Firefox, Safari.If you need to adapt a low-level browser environment, following preprocessors and polyfill are recommended:
 
-- 和一些简单的修正工作
+- [babel](https://github.com/babel/babel) Babel is a compiler for writing next generation JavaScript. 
+- [webcomponentsjs](https://github.com/webcomponents/polyfills/tree/master/packages/webcomponentsjs) v1 spec polyfills
+
+# Related Efforts
+- [lit-element](https://github.com/Polymer/lit-element) A simple base class for creating fast, lightweight web components
+- [vue](https://github.com/vuejs/vue) A progressive, incrementally-adoptable JavaScript framework for building UI on the web. 
+- [react](https://github.com/facebook/react) A declarative, efficient, and flexible JavaScript library for building user interfaces.
+
+# Maintainers
+[@zhzluke96](https://github.com/zhzLuke96)
+
+# Contributing
+Feel free to dive in! [Open an issue](https://github.com/zhzLuke96/TacoJs/issues/new) or submit PRs.
+
+TacoJs follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
+
+# Changelog
+docs: remove example to another repo.
+
+- packaged as a UMD package by default 
+- add .npmignore
+- add /dist/index.js, auto select js file based on NODE_ENV
 
 # Todo
 - [x] refactoring
 - [x] proxy reactivity （vue-next 实现）解决深层依赖问题
 - [x] proxy 父级对象依赖通知
-- [ ] 减少无关依赖重绘，脏检查
 - [x] 复用v2b版本 web component 实现
 - [x] es6+ 语法
 - [x] 简单无head指令
-- [ ] 局部指令 局部组件
+- [ ] 减少无关依赖重绘，脏检查，effect GC
+- [ ] **局部指令 局部组件**
+- [ ] **插件 和 hooks**
+- [ ] **e2e tests**
+- [ ] typescript strict mode
 - [ ] 装饰器
-- [ ] 插件 和 hooks
 - [ ] patch 分离，从diff中分离patch操作
 - [ ] vnode render after 垃圾收集
 - [ ] Myers' diff for diff vdom
