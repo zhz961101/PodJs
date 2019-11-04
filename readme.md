@@ -4,9 +4,10 @@
 
 [![Build Status](https://travis-ci.org/zhzLuke96/TacoJs.svg?branch=master)](https://travis-ci.org/zhzLuke96/TacoJs)
 [![Coverage Status](https://coveralls.io/repos/github/zhzLuke96/TacoJs/badge.svg?branch=master)](https://coveralls.io/github/zhzLuke96/TacoJs?branch=master)
-![LICENSE badge](https://img.shields.io/badge/license-GPL3.0-blue)
-![size badge](https://img.shields.io/badge/size-15K-green)
-
+[![LICENCE](https://img.shields.io/github/license/zhzluke96/TacoJs)](https://github.com/zhzLuke96/TacoJs)
+[![size badge](https://img.shields.io/github/languages/code-size/zhzluke96/TacoJs?label=size)](https://github.com/zhzLuke96/TacoJs)
+[![language](https://img.shields.io/github/languages/top/zhzluke96/TacoJs)](https://github.com/zhzLuke96/TacoJs)
+[![github star](https://img.shields.io/github/stars/zhzLuke96/TacoJs.svg?style=social)](https://github.com/zhzLuke96/TacoJs)
 
 🌮 mvvm framework, with 
 - web component
@@ -120,7 +121,7 @@ Feel free to dive in! [Open an issue](https://github.com/zhzLuke96/TacoJs/issues
 TacoJs follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
 # Changelog
-chore: add npm script publish.
+docs: add badge.
 
 # Todo
 - [x] refactoring

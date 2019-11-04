@@ -48,9 +48,10 @@ export const updater = {
         render(vnode, node);
     },
     style(node: HTMLElement, value: string) {
-        const cssArr = value.split(";");
+        const cssArr = value.split(";").filter((v) => v.length);
         for (const cssStr of cssArr) {
             const m = cssStr.split(":");
+            if (!m[1]) { continue; }
             node.style[m[0].trim()] = m[1].trim();
         }
     },
