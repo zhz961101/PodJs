@@ -82,3 +82,8 @@ export const isEdge = ua.indexOf("Edge") > -1 && !isIE;
 export function randID(): number {
     return Math.ceil(Math.random() * Number.MAX_SAFE_INTEGER);
 }
+
+const protoToString = Object.prototype.toString;
+export function isType(type: string): (o: any) => boolean {
+    return (o: any): boolean => protoToString.call(o) === type;
+}

@@ -113,11 +113,9 @@ Feel free to dive in! [Open an issue](https://github.com/zhzLuke96/TacoJs/issues
 TacoJs follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
 # Changelog
-docs: remove example to another repo.
+feat($taco): app object new property [style]
 
-- packaged as a UMD package by default 
-- add .npmignore
-- add /dist/index.js, auto select js file based on NODE_ENV
+- now you can set the style just like setting a template.
 
 # Todo
 - [x] refactoring

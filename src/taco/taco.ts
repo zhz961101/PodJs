@@ -1,6 +1,9 @@
 import { registerComponent } from "../compiler/compile";
 import { ViewModel } from "../mvvm/mvvm";
-import { exclude } from "../utils";
+import { h } from "../tools/html";
+import { exclude, isType } from "../utils";
+
+const isArray = isType("[object Array]");
 
 declare global {
     interface Node {
@@ -23,10 +26,13 @@ export interface PropOptions {
 
 export interface Taco {
     props?: () => PropOptions;
-    template: () => string;
+    template: () => string | string[] | object;
     created?: () => void;
     setup: () => object;
+    style?: () => string | string[] | object;
 }
+
+const tacoPrototypeKeys = ["props", "template", "created", "setup", "style"];
 
 export function createApp(taco: Taco) {
     return {
@@ -42,7 +48,8 @@ export function createApp(taco: Taco) {
 
 function mountInElement(el: HTMLElement, app: Taco) {
     const data = (app.setup && app.setup()) || {};
-    const mData = exclude(app, ["props", "template", "created", "setup"]);
+    const propertyData = exclude(app, tacoPrototypeKeys);
+    const appData = Object.assign(data, propertyData);
 
     const props = (app.props && app.props()) || {};
     const observedAttributes = Object.keys(props);
@@ -59,10 +66,28 @@ function mountInElement(el: HTMLElement, app: Taco) {
     }
 
     const shadow = el.attachShadow({ mode: "open" });
-    shadow.innerHTML = app.template();
-    const vm = new ViewModel(Object.assign(data, mData), { props, el: shadow });
+    const shadowHTML = h(app.template.call(appData).toString());
+    let shadowStyle = "";
+    if (app.style) {
+        shadowStyle = loadStyleFromFunction(app.style.bind(appData));
+    }
+    shadow.innerHTML = shadowStyle + shadowHTML;
+    const vm = new ViewModel(appData, { props, el: shadow });
     el.$vm = vm;
 
+    // observer prop
+    observerElementProps(el, observedAttributes, vm);
+    // created
+    if (app.created) {
+        app.created.call(vm.$data);
+    }
+}
+
+function observerElementProps(
+    el: Node,
+    observedAttributes: string[],
+    vm: ViewModel,
+) {
     const observer = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => {
             if (mutation.type === "attributes" && observedAttributes.indexOf(mutation.attributeName) !== -1) {
@@ -76,13 +101,14 @@ function mountInElement(el: HTMLElement, app: Taco) {
     observer.observe(el, {
         attributes: true,
     });
-    // created
-    if (app.created) {
-        app.created.call(vm.$data);
-    }
 }
 
-function attributeChangedCallback(prop: string, oldValue: any, newValue: any, vm: ViewModel) {
+function attributeChangedCallback(
+    prop: string,
+    oldValue: any,
+    newValue: any,
+    vm: ViewModel,
+) {
     const props = vm.$data.props;
     if (!props) { return; }
     if (oldValue === newValue) { return; }
@@ -107,4 +133,34 @@ function attributeChangedCallback(prop: string, oldValue: any, newValue: any, vm
     } else {
         vm.$data.props[prop] = newValue;
     }
+}
+
+function loadStyleFromFunction(
+    styleFunc: () => string | string[] | object,
+): string {
+    if (!styleFunc) {
+        return "";
+    }
+    let retStyle = "";
+    const styleResult = styleFunc();
+    const styleArray: string[] = [];
+    if (typeof styleResult === "string") {
+        styleArray.push(styleResult);
+    } else {
+        if (styleResult instanceof Array) {
+            if (styleResult.hasOwnProperty("toString")) {
+                styleArray.push(styleResult.toString());
+            } else {
+                for (const sl of styleResult) {
+                    styleArray.push(sl.toString());
+                }
+            }
+        } else {
+            throw new Error("Style function returned the wrong object, unable to parse and convert");
+        }
+    }
+    for (const styleString of styleArray) {
+        retStyle += "<style>" + styleString + "</style>";
+    }
+    return retStyle;
 }
