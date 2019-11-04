@@ -15,7 +15,8 @@
     "lint:fix": "tslint -c tslint.json --fix \"./src/**/*.ts\" --force",
     "test": "jest",
     "test:cover": "jest --coverage",
-    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls"
+    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
+    "publish": "npm run all && npm publish"
   },
   "repository": {
     "type": "git",

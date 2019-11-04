@@ -120,7 +120,7 @@ Feel free to dive in! [Open an issue](https://github.com/zhzLuke96/TacoJs/issues
 TacoJs follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
 # Changelog
-fix: export createApp/__Global__/HTMLExtender.
+chore: add npm script publish.
 
 # Todo
 - [x] refactoring

@@ -10,3 +10,4 @@ tslint.json
 webpack.config.js
 __test__
 .gitkeep
+coverage/
