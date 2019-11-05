@@ -123,7 +123,7 @@ Feel free to dive in! [Open an issue](https://github.com/zhzLuke96/TacoJs/issues
 TacoJs follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
 # Changelog
-fix: fixed issue that #comment node cannot be processed.
+fix($vdom): hot fix, worng function call.
 
 # Todo
 I'd like to invite you to join [@tacopie](https://trello.com/tacopie2) on Trello. We use Trello to organize tasks, projects, due dates, and much more.

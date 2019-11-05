@@ -179,7 +179,7 @@ export function patch(prev: Vnode, next: Vnode, container: Container) {
     // nextType === prevType
     switch (nextType) {
         case vnodeType.HTML: {
-            replaceVnode(prev, next, container);
+            patchElement(prev, next, container);
             break;
         }
         case vnodeType.TEXT: {
