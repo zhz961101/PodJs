@@ -121,28 +121,14 @@ Feel free to dive in! [Open an issue](https://github.com/zhzLuke96/TacoJs/issues
 TacoJs follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
 # Changelog
-docs: add badge.
+docs: todos move to trello.
 
 # Todo
-- [x] refactoring
-- [x] proxy reactivity （vue-next 实现）解决深层依赖问题
-- [x] proxy 父级对象依赖通知
-- [x] 复用v2b版本 web component 实现
-- [x] es6+ 语法
-- [x] 简单无head指令
-- [ ] 减少无关依赖重绘，脏检查，effect GC
-- [ ] **局部指令 局部组件**
-- [ ] **插件 和 hooks**
-- [ ] **e2e tests**
-- [ ] typescript strict mode
-- [ ] 装饰器
-- [ ] patch 分离，从diff中分离patch操作
-- [ ] vnode render after 垃圾收集
-- [ ] Myers' diff for diff vdom
-  > 增加dom复用减少GC
-- [ ] 异步渲染 (v1b协程实现)
-- [ ] 更多注释，示例，文档
-- [ ] 自定义指令
+I'd like to invite you to join [@tacopie](https://trello.com/tacopie2) on Trello. We use Trello to organize tasks, projects, due dates, and much more.
+
+boards:
+- [@tacopie/taco](https://trello.com/b/3hIi6dje/tacojs%F0%9F%8C%AE)
+- ...
 
 # LICENSE
 GPL-V3.0
