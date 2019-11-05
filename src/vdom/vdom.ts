@@ -27,6 +27,7 @@ export interface Vnode {
 export enum vnodeType {
     HTML,
     TEXT,
+    COMMENT,
 
     COMPONENT,
 }
@@ -80,9 +81,13 @@ export function createElement(
 ): Vnode {
     let type;
     if (typeof tag === "string") {
-        type = vnodeType.HTML;
-    } else if (typeof tag === "function") {
-        type = vnodeType.COMPONENT;
+        if (tag === "#text") {
+            type = vnodeType.TEXT;
+        } else if (tag === "#comment") {
+            type = vnodeType.COMMENT;
+        } else {
+            type = vnodeType.HTML;
+        }
     } else {
         type = vnodeType.TEXT;
     }
@@ -132,6 +137,17 @@ export function createTextVnode(content: string): Vnode {
     // retVnode.hash = objectHash(retVnode)
     return retVnode;
 }
+
+export function createCommentVnode(data: string): Vnode {
+    return {
+        tag: "#comment",
+        type: vnodeType.COMMENT,
+        children: data,
+        childrenType: childType.SINGLE,
+        key: null,
+    };
+}
+
 export function render(vnode: Vnode, container: Node) {
     if (container.vnode) {
         patch(container.vnode, vnode, new NodeContainer(container));
@@ -158,11 +174,35 @@ export function patch(prev: Vnode, next: Vnode, container: Container) {
 
     if (nextType !== prevType) {
         replaceVnode(prev, next, container);
-    } else if (nextType === vnodeType.HTML) {
-        patchElement(prev, next, container);
-    } else if (nextType === vnodeType.TEXT) {
-        patchText(prev, next);
+        return;
     }
+    // nextType === prevType
+    switch (nextType) {
+        case vnodeType.HTML: {
+            replaceVnode(prev, next, container);
+            break;
+        }
+        case vnodeType.TEXT: {
+            patchText(prev, next);
+            break;
+        }
+        case vnodeType.COMMENT: {
+            patchComment(prev, next, container);
+            break;
+        }
+        case vnodeType.COMPONENT: {
+            // [TODO]
+            break;
+        }
+        default: {
+            // ERROR
+            throw new Error("wrong patch call");
+        }
+    }
+}
+
+function patchComment(prev: Vnode, next: Vnode, container: Container) {
+    next.el = prev.el;
 }
 
 function patchElement(prev: Vnode, next: Vnode, container: Container) {
@@ -301,6 +341,8 @@ export function mount(
         mountElement(vnode, container, flagNode, postion);
     } else if (type === vnodeType.TEXT) {
         mountText(vnode, container);
+    } else if (type === vnodeType.COMMENT) {
+        // [TODO]
     } else if (type === vnodeType.COMPONENT) {
         // [TODO]
     }

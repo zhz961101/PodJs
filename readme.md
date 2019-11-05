@@ -7,11 +7,13 @@
 [![LICENCE](https://img.shields.io/github/license/zhzluke96/TacoJs)](https://github.com/zhzLuke96/TacoJs)
 [![size badge](https://img.shields.io/github/languages/code-size/zhzluke96/TacoJs?label=size)](https://github.com/zhzLuke96/TacoJs)
 [![language](https://img.shields.io/github/languages/top/zhzluke96/TacoJs)](https://github.com/zhzLuke96/TacoJs)
-[![github star](https://img.shields.io/github/stars/zhzLuke96/TacoJs.svg?style=social)](https://github.com/zhzLuke96/TacoJs)
+[![version](https://img.shields.io/github/package-json/v/zhzluke96/TacoJs)](https://github.com/zhzLuke96/TacoJs)
 
 🌮 mvvm framework, with 
 - web component
 - typescript
+
+[![github star](https://img.shields.io/github/stars/zhzLuke96/TacoJs.svg?style=social)](https://github.com/zhzLuke96/TacoJs)
 
 # Index
 - [Taco](#taco)
@@ -121,10 +123,7 @@ Feel free to dive in! [Open an issue](https://github.com/zhzLuke96/TacoJs/issues
 TacoJs follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
 # Changelog
-chore: modify dist file name.
-
-- add [npm run debug] script.
-- modify /index.js
+fix: fixed issue that #comment node cannot be processed.
 
 # Todo
 I'd like to invite you to join [@tacopie](https://trello.com/tacopie2) on Trello. We use Trello to organize tasks, projects, due dates, and much more.

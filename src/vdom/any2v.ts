@@ -1,4 +1,4 @@
-import { childType, createElement, createTextVnode, Vattr, Vnode, vnodeType } from "./vdom";
+import { childType, createCommentVnode, createElement, createTextVnode, Vattr, Vnode, vnodeType } from "./vdom";
 
 export function HTML2Vdom(html: string): Vnode {
     let root: any = document.createElement("div");
@@ -18,6 +18,11 @@ function toVirtualDOM(dom: any): Vnode {
         const textvnode = createTextVnode(dom.nodeValue || dom.textContent);
         textvnode.el = dom;
         return textvnode;
+    }
+    if (dom.nodeType === 8) {
+        const commentVnode = createCommentVnode(dom.nodeValue || dom.textContent);
+        commentVnode.el = dom;
+        return commentVnode;
     }
     const tagName = dom.tagName.toLowerCase();
     const props = attrsToObj(dom);

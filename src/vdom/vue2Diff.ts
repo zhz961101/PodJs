@@ -1,6 +1,6 @@
 import { isDef, likeHash } from "../utils";
 import { Container } from "./container";
-import { mount, mountPostion, patch, Vnode } from "./vdom";
+import { mount, mountPostion, patch, Vnode, vnodeType } from "./vdom";
 
 export function patchMulitChildren(prevChildren: Vnode[], nextChildren: Vnode[], container: Container) {
     let oldStartIdx = 0;
@@ -96,7 +96,7 @@ const isTextInputType = makeMap("text,number,password,search,email,tel,url");
 function makeMap(
     str: string,
     expectsLowerCase?: boolean,
-): (key: any) => true | void {
+): (key: any) => boolean {
     const map = Object.create(null);
     const list: string[] = str.split(",");
     for (const item of list) {
@@ -107,12 +107,19 @@ function makeMap(
         : (val) => map[val];
 }
 
-function sameInputType(a: Vnode, b: Vnode) {
+function sameInputType(a: Vnode, b: Vnode): boolean {
     if (a.tag !== "input") { return true; }
     let i;
     const typeA = isDef(i = a.attrs) && (a.attrs.type || "");
     const typeB = isDef(i = b.attrs) && (b.attrs.type || "");
     return typeA === typeB || isTextInputType(typeA) && isTextInputType(typeB);
+}
+
+function sameComment(a: Vnode, b: Vnode): boolean {
+    if (a.type === vnodeType.COMMENT) {
+        return a.type === b.type && a.children === b.children;
+    }
+    return true;
 }
 
 function sameVnode(a: Vnode, b: Vnode) {
@@ -122,6 +129,7 @@ function sameVnode(a: Vnode, b: Vnode) {
         a.key === b.key &&
         a.tag === b.tag &&
         isDef(a.attrs) === isDef(b.attrs) &&
-        sameInputType(a, b)
+        sameInputType(a, b) &&
+        sameComment(a, b)
     );
 }
