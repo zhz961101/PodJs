@@ -121,7 +121,10 @@ Feel free to dive in! [Open an issue](https://github.com/zhzLuke96/TacoJs/issues
 TacoJs follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
 
 # Changelog
-docs: todos move to trello.
+chore: modify dist file name.
+
+- add [npm run debug] script.
+- modify /index.js
 
 # Todo
 I'd like to invite you to join [@tacopie](https://trello.com/tacopie2) on Trello. We use Trello to organize tasks, projects, due dates, and much more.

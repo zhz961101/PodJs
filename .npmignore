@@ -1,13 +1,29 @@
+# source code
 src/
+
+# github config
 .github/
+.gitignore
+.gitkeep
+
+# vscode config
 .vscode/
+
+# devDependencies
 node_modules/
-.gitignore/
+
+# CI config
 .travis.yml
+
+# jest
 jest.config.js
+coverage/
+__test__/
+test/
+
+# ts config file
 tsconfig.json
 tslint.json
+
+# webpack config file
 webpack.config.js
-__test__
-.gitkeep
-coverage/

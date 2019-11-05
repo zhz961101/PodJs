@@ -2,9 +2,9 @@
   "name": "@tacopie/taco",
   "version": "0.5.3",
   "description": "mvvm framework.",
-  "main": "dist/index.js",
+  "main": "index.js",
   "typings": "dist/types",
-  "unpkg": "dist/_index.min.js",
+  "unpkg": "dist/taco.min.js",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --mode=production",
     "build:w": "cross-env NODE_ENV=production webpack --watch --mode=production",
@@ -16,7 +16,7 @@
     "test": "jest",
     "test:cover": "jest --coverage",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
-    "publish": "npm run all && npm publish"
+    "debug": "cross-env NODE_ENV=development node --inspect-brk ./node_modules/jest/bin/jest --runInBand"
   },
   "repository": {
     "type": "git",
