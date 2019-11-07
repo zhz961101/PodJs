@@ -1,5 +1,6 @@
 
 export interface Container {
+    firstChild: Node;
     childNodes: Node[];
     replaceChild: (newChild: Node, oldChild: Node) => Node;
     insertBefore: (newChild: Node, refChild: Node) => Node;
@@ -8,11 +9,28 @@ export interface Container {
     removeChild: (oldChild: Node) => Node;
 }
 
-export class NodeContainer {
+export function ContainerToFragmentElement(el: Container): DocumentFragment {
+    const frag = document.createDocumentFragment();
+    let child;
+    while (true) {
+        child = el.firstChild;
+        if (!child) {
+            break;
+        }
+        frag.appendChild(child);
+        child.$lastParentNode = el;
+    }
+    return frag;
+}
+
+export class NodeContainer implements Container {
     public $el: Node;
 
     constructor(el: Node) {
         this.$el = el;
+    }
+    get firstChild(): Node {
+        return this.$el.firstChild;
     }
     get childNodes(): Node[] {
         return Array.from(this.$el.childNodes);

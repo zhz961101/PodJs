@@ -3,6 +3,7 @@ import { effect } from "../reactivity/reactivity";
 import { mergeReact } from "../reactivity/wapper";
 import { ctxCall } from "../utils";
 import { Dom2Vnode } from "../vdom/any2v";
+import { NodeContainer } from "../vdom/container";
 import { VFragment } from "../vdom/frag";
 import { Compile, compileHead, innerCodeRe } from "./compile";
 import { defaultUpdater, updater } from "./updater";
@@ -31,7 +32,7 @@ function getVm(node: any) {
 
 export function complieWithScope(el: Node, scope: object, supVm: ViewModel) {
     let data = mergeReact(scope, supVm.$data);
-    let vm = new ViewModel(data, { manualCompile: true, disposable: true, el });
+    let vm = new ViewModel(data, { manualCompile: true, disposable: true });
     let compiler = new Compile(vm, el);
     // manual GC
     vm = data = compiler = null;

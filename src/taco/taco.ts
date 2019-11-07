@@ -2,6 +2,8 @@ import { registerComponent } from "../compiler/compile";
 import { ViewModel } from "../mvvm/mvvm";
 import { h } from "../tools/html";
 import { exclude, isType } from "../utils";
+import { Container, NodeContainer } from "../vdom/container";
+import { VFragment } from "../vdom/frag";
 
 const isArray = isType("[object Array]");
 
@@ -36,17 +38,17 @@ const tacoPrototypeKeys = ["props", "template", "created", "setup", "style"];
 
 export function createApp(taco: Taco) {
     return {
-        mount(el: HTMLElement) {
-            mountInElement(el, taco);
+        mount(el: HTMLElement): ViewModel {
+            return mountElement(el, taco);
         },
         component(tagName: string) {
             // only lower case
-            registerComponent(tagName, (el: HTMLElement) => mountInElement(el, taco));
+            registerComponent(tagName, (el: HTMLElement) => mountElement(el, taco));
         },
     };
 }
 
-function mountInElement(el: HTMLElement, app: Taco) {
+function mountElement(el: HTMLElement, app: Taco): ViewModel {
     const data = (app.setup && app.setup()) || {};
     const propertyData = exclude(app, tacoPrototypeKeys);
     const appData = Object.assign(data, propertyData);
@@ -65,7 +67,7 @@ function mountInElement(el: HTMLElement, app: Taco) {
         }
     }
 
-    const shadow = el.attachShadow({ mode: "open" });
+    const shadow = el.shadowRoot ? el.shadowRoot : el.attachShadow({ mode: "open" });
     const shadowHTML = h(app.template.call(appData).toString());
     let shadowStyle = "";
     if (app.style) {
@@ -81,6 +83,7 @@ function mountInElement(el: HTMLElement, app: Taco) {
     if (app.created) {
         app.created.call(vm.$data);
     }
+    return vm;
 }
 
 function observerElementProps(

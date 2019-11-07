@@ -1,12 +1,20 @@
 
 import { randID } from "../utils";
+import { Container } from "./container";
 import { childType, patchChildren, Vnode } from "./vdom";
 
-export class VFragContainer {
+export class VFragContainer implements Container {
     public frag: VFragment;
 
     constructor(frag: VFragment) {
         this.frag = frag;
+    }
+    get firstChild(): Node {
+        const el: Node = this.frag.startMark;
+        if (el.nextSibling === this.frag.endMark) {
+            return null;
+        }
+        return el.nextSibling;
     }
     // 不包括游标的元素
     get childNodes(): Node[] {

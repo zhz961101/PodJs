@@ -6,6 +6,10 @@ import { VFragment } from "../vdom/frag";
 import { Vnode } from "../vdom/vdom";
 import { complieWithScope } from "./directives";
 
+export function defineStatement(name: string, func: any) {
+    statements[name] = func;
+}
+
 const LogicStatus = {
     ELSEIF: false,
 };

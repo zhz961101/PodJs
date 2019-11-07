@@ -2,6 +2,7 @@ import { Compile } from "../compiler/compile";
 import { reactive } from "../reactivity/reactivity";
 import { PropOptions } from "../taco/taco";
 import { randID } from "../utils";
+import { Container } from "../vdom/container";
 
 export const __Global__ = reactive({}); // tslint:disable-line
 

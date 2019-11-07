@@ -1,5 +1,6 @@
 import { ViewModel } from "../mvvm/mvvm";
 import { ctxCall, isEdge, isElementNode, isTextNode, nodeToFragment } from "../utils";
+import { Container, ContainerToFragmentElement, NodeContainer } from "../vdom/container";
 import { bindMap, directives } from "./directives";
 import { statements } from "./statement";
 
@@ -108,22 +109,24 @@ export class Compile {
     constructor(vm: ViewModel, el: Node) {
         this.vm = vm;
         this.el = el;
-        if (this.el) {
-            if (this.el.nodeType === 1 || this.el.nodeType === 11) {
-                this.frag = nodeToFragment(this.el);
-                this.init();
-                this.el.appendChild(this.frag);
-            } else if (this.el.nodeType === 3) {
-                this.complieText(this.el, this.el.textContent);
-            }
-        }
+
+        this.init();
     }
 
     private init() {
-        if (this.el instanceof HTMLElement) {
-            complie(this.el, this.vm);
+        if (this.el) {
+            const el = this.el;
+            if (el instanceof HTMLElement) {
+                complie(el, this.vm);
+            }
+            if (el.nodeType === 1 || el.nodeType === 11) {
+                this.frag = nodeToFragment(this.el);
+                this.compileElement(this.frag);
+                el.appendChild(this.frag);
+            } else if (el.nodeType === 3) {
+                this.complieText(el, el.textContent);
+            }
         }
-        this.compileElement(this.frag);
     }
 
     private compileElement(node: DocumentFragment) {
