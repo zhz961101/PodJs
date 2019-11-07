@@ -6,6 +6,8 @@ import { VFragment } from "../vdom/frag";
 import { Vnode } from "../vdom/vdom";
 import { complieWithScope } from "./directives";
 
+export type statementFunc = (node: Node, vm: ViewModel) => void;
+
 export function defineStatement(name: string, func: any) {
     statements[name] = func;
 }

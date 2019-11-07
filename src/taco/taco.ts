@@ -1,4 +1,4 @@
-import { registerComponent } from "../compiler/compile";
+import { defineComponent } from "../compiler/compile";
 import { ViewModel } from "../mvvm/mvvm";
 import { h } from "../tools/html";
 import { exclude, isType } from "../utils";
@@ -43,12 +43,12 @@ export function createApp(taco: Taco) {
         },
         component(tagName: string) {
             // only lower case
-            registerComponent(tagName, (el: HTMLElement) => mountElement(el, taco));
+            defineComponent(tagName, (el: HTMLElement) => mountElement(el, taco));
         },
     };
 }
 
-function mountElement(el: HTMLElement, app: Taco): ViewModel {
+export function mountElement(el: HTMLElement, app: Taco): ViewModel {
     const data = (app.setup && app.setup()) || {};
     const propertyData = exclude(app, tacoPrototypeKeys);
     const appData = Object.assign(data, propertyData);

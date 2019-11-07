@@ -1,26 +1,36 @@
-import { Compile } from "../compiler/compile";
+import { TacoPlug } from "..";
+import { TacoExports } from "../api";
+import { Compile, componentFunc } from "../compiler/compile";
+import { DirectiveFunc } from "../compiler/directives";
+import { statementFunc } from "../compiler/statement";
 import { reactive } from "../reactivity/reactivity";
 import { PropOptions } from "../taco/taco";
 import { randID } from "../utils";
-import { Container } from "../vdom/container";
 
 export const __Global__ = reactive({}); // tslint:disable-line
 
-interface MvvmOptions {
+interface VmOptions {
     manualCompile?: boolean;
     disposable?: boolean;
     props?: PropOptions;
     el?: Node;
+    parent?: ViewModel;
+}
+
+interface MvvmEnv {
+    parent: ViewModel;
+    root: ViewModel;
 }
 
 export class ViewModel {
     public static $global = __Global__;
     public $data: any;
     public $compile: Compile;
-    public $options: MvvmOptions;
     public $id: number;
+    public $env: MvvmEnv;
+    public $options: VmOptions;
 
-    constructor(data: any, options: MvvmOptions = {}) {
+    constructor(data: any, options: VmOptions = {}) {
         this.$id = randID();
         this.$data = Object.assign(data, { $global: __Global__ });
         if (data.init) { data.init.call(this.$data); }
@@ -39,10 +49,35 @@ export class ViewModel {
                 this.$data[k] = this.$data[k].bind(this.$data);
             }
         }
+        if (options.parent) {
+            this.$env = {
+                parent: options.parent,
+                root: options.parent.$env.root,
+            };
+        } else {
+            this.$env = {
+                parent: null,
+                root: this,
+            };
+        }
         this.$options = options;
         if (!options.manualCompile || !options.el) {
             this.$compile = new Compile(this, options.el);
         }
+    }
+
+    public Use(plug: TacoPlug) {
+        const tools = Object.assign({}, TacoExports);
+        tools.defineStatement = (name: string, func: statementFunc) => {
+            this.$compile.defineStatement(name, func);
+        };
+        tools.defineDirective = (name: string, func: DirectiveFunc) => {
+            this.$compile.defineDirective(name, func);
+        };
+        tools.defineComponent = (name: string, func: componentFunc) => {
+            this.$compile.defineComponent(name, func);
+        };
+        plug.install(tools);
     }
 
     public _get(exp: string): any {

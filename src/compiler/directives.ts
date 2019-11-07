@@ -8,7 +8,7 @@ import { VFragment } from "../vdom/frag";
 import { Compile, compileHead, innerCodeRe } from "./compile";
 import { defaultUpdater, updater } from "./updater";
 
-type DirectiveFunc = (node: HTMLElement, vm: ViewModel, exp: string, dir: string) => void;
+export type DirectiveFunc = (node: Node, vm: ViewModel, exp: string, dir: string, args: string[]) => void;
 
 export const bindMap = {
     text(node: Node, vm: ViewModel, exp: string) {
@@ -16,7 +16,7 @@ export const bindMap = {
     },
 };
 
-export function difineDirective(name: string, func: DirectiveFunc) {
+export function defineDirective(name: string, func: DirectiveFunc) {
     directives[name] = func;
 }
 

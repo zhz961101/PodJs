@@ -1,8 +1,9 @@
+import { TacoPlug } from "..";
 import { ViewModel } from "../mvvm/mvvm";
 import { ctxCall, isEdge, isElementNode, isTextNode, nodeToFragment } from "../utils";
-import { Container, ContainerToFragmentElement, NodeContainer } from "../vdom/container";
-import { bindMap, directives } from "./directives";
-import { statements } from "./statement";
+// import { Container, ContainerToFragmentElement, NodeContainer } from "../vdom/container";
+import { bindMap, DirectiveFunc, directives } from "./directives";
+import { statementFunc, statements } from "./statement";
 
 declare global {
     interface Node {
@@ -10,10 +11,10 @@ declare global {
     }
 }
 
-type componentGenFunc = (el: HTMLElement) => void;
-const componentMap = new Map<string, componentGenFunc>();
+export type componentFunc = (el: HTMLElement) => void;
+const componentMap = new Map<string, componentFunc>();
 
-export function registerComponent(tagName: string, func: componentGenFunc) {
+export function defineComponent(tagName: string, func: componentFunc) {
     componentMap.set(tagName, func);
 }
 
@@ -106,18 +107,35 @@ export class Compile {
     public el: Node;
     private frag: DocumentFragment;
 
+    private scopeDirectives: Map<string, DirectiveFunc>;
+    private scopeStatements: Map<string, statementFunc>;
+    private scopeComponents: Map<string, componentFunc>;
+
     constructor(vm: ViewModel, el: Node) {
         this.vm = vm;
         this.el = el;
+        this.scopeDirectives = new Map<string, DirectiveFunc>();
+        this.scopeStatements = new Map<string, statementFunc>();
+        this.scopeComponents = new Map<string, componentFunc>();
 
         this.init();
+    }
+
+    public defineComponent(name: string, cb: componentFunc) {
+        this.scopeComponents.set(name, cb);
+    }
+    public defineDirective(name: string, cb: DirectiveFunc) {
+        this.scopeDirectives.set(name, cb);
+    }
+    public defineStatement(name: string, cb: statementFunc) {
+        this.scopeStatements.set(name, cb);
     }
 
     private init() {
         if (this.el) {
             const el = this.el;
             if (el instanceof HTMLElement) {
-                complie(el, this.vm);
+                this.complie(el, this.vm);
             }
             if (el.nodeType === 1 || el.nodeType === 11) {
                 this.frag = nodeToFragment(this.el);
@@ -135,13 +153,16 @@ export class Compile {
         const childNodes = node.childNodes;
         Array().slice.call(childNodes).forEach((childNode) => {
             if (isElementNode(childNode)) {
-                complie(childNode, this.vm);
+                this.complie(childNode, this.vm);
             } else if (isTextNode(childNode) && innerCodeRe.test(childNode.textContent)) {
                 // this.complieText(node, RegExp.$1.trim())
                 this.complieText(childNode, childNode.textContent);
             }
             if (statements[childNode.localName]) {
                 statements[childNode.localName](childNode, this.vm);
+                return;
+            } else if (this.scopeStatements.has(childNode.localName)) {
+                this.scopeStatements.get(childNode.localName)(childNode, this.vm);
                 return;
             }
             if (childNode.childNodes && childNode.childNodes.length) {
@@ -155,58 +176,62 @@ export class Compile {
     private complieText(node: Node, exp: string) {
         bindMap.text(node, this.vm, exp);
     }
-}
 
-function complie(node: HTMLElement, vm: ViewModel) {
-    if (componentMap.has(node.localName)) {
-        // mount element
-        componentMap.get(node.localName)(node);
-    }
-    let nodeAttrs = Array.from(node.attributes);
-    // 👇 IE 会莫名其妙的排序 attributes 列表，即使手动将指令放到第一个仍然会有问题，所以需要针对修改
-    if (isEdge) {
-        nodeAttrs = nodeAttrs.sort((a, _) => {
-            if (a.name.indexOf("for") || a.name.indexOf("if")) {
-                return -1;
+    private complie(node: HTMLElement, vm: ViewModel) {
+        if (componentMap.has(node.localName)) {
+            // mount element
+            componentMap.get(node.localName)(node);
+        } else if (this.scopeComponents.has(node.localName)) {
+            this.scopeComponents.get(node.localName)(node);
+        }
+        let nodeAttrs = Array.from(node.attributes);
+        // 👇 IE 会莫名其妙的排序 attributes 列表，即使手动将指令放到第一个仍然会有问题，所以需要针对修改
+        if (isEdge) {
+            nodeAttrs = nodeAttrs.sort((a, _) => {
+                if (a.name.indexOf("for") || a.name.indexOf("if")) {
+                    return -1;
+                }
+                return 0;
+            });
+        }
+
+        nodeAttrs.forEach((attr) => {
+            // 👇 ts compiler optimizes in advance, so it needs to take out the value and judge again
+            const destroyed = node.__destroy__;
+            if (destroyed) {
+                return;
             }
-            return 0;
+            const compileT = getCompileType(attr.name);
+            switch (compileT.type) {
+                case compileType.EVLISTENER:
+                    eventHandler(node, vm, attr.value, compileT.name);
+                    break;
+                case compileType.BINDATTR:
+                    if (bindMap[compileT.name]) {
+                        bindMap[compileT.name](node, vm, attr.value);
+                    } else {
+                        directives.bindCode(node, vm, attr.value, compileT.name);
+                    }
+                    break;
+                case compileType.DIRECTIVE:
+                    const args = compileT.extra.split(".");
+                    if (directives[compileT.name]) {
+                        directives[compileT.name](node, vm, attr.value, compileT.name, args);
+                    } else if (this.scopeDirectives.has(compileT.name)) {
+                        this.scopeDirectives.get(compileT.name)(node, vm, attr.value, compileT.name, args);
+                    }
+                    break;
+                case compileType.PLAIN:
+                    return; // cant need compile
+                case compileType.UNKNOW:
+                    return; // [TODO] error!
+                default:
+                    return;
+            }
+            node.removeAttribute(attr.name);
+            return;
         });
     }
-
-    nodeAttrs.forEach((attr) => {
-        // 👇 ts compiler optimizes in advance, so it needs to take out the value and judge again
-        const destroyed = node.__destroy__;
-        if (destroyed) {
-            return;
-        }
-        const compileT = getCompileType(attr.name);
-        switch (compileT.type) {
-            case compileType.EVLISTENER:
-                eventHandler(node, vm, attr.value, compileT.name);
-                break;
-            case compileType.BINDATTR:
-                if (bindMap[compileT.name]) {
-                    bindMap[compileT.name](node, vm, attr.value);
-                } else {
-                    directives.bindCode(node, vm, attr.value, compileT.name);
-                }
-                break;
-            case compileType.DIRECTIVE:
-                const args = compileT.extra.split(".");
-                if (directives[compileT.name]) {
-                    directives[compileT.name](node, vm, attr.value, args);
-                }
-                break;
-            case compileType.PLAIN:
-                return; // cant need compile
-            case compileType.UNKNOW:
-                return; // [TODO] error!
-            default:
-                return;
-        }
-        node.removeAttribute(attr.name);
-        return;
-    });
 }
 
 function eventHandler(node: HTMLElement, vm: ViewModel, exp: string, eventType: string) {
