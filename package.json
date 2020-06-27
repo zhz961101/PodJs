@@ -1,6 +1,6 @@
 {
   "name": "@tacopie/taco",
-  "version": "0.5.5",
+  "version": "1.0.0",
   "description": "mvvm framework.",
   "main": "index.js",
   "typings": "dist/types",
