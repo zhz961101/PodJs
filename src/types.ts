@@ -1,4 +1,4 @@
-import { HoxCtx } from './hox'
+import { HoxCtx } from "./hox";
 
 // const ComponentSymbol = Symbol("ComponentSymbol");
 // export const defComponent = (fn) => fn && typeof fn === "function" ? fn[ComponentSymbol] = true : void (0);

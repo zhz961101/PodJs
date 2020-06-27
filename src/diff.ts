@@ -1,20 +1,20 @@
-import flatten from 'lodash/flatten';
+import flatten from "lodash/flatten";
 
 ////////////////////
 const __DEV__ = true;
 ///////////////////
 
-import isEqual from 'lodash/isEqual';
-import { VNode } from './types';
+import isEqual from "lodash/isEqual";
+import { VNode } from "./types";
 
-const isFunc = (f) => typeof f === 'function';
+const isFunc = (f) => typeof f === "function";
 
 const NewPatcher = (
     type: PatcherType,
     prev: VNode,
     next: VNode,
     leftAnchor?: VNode,
-    rightAnchor?: VNode
+    rightAnchor?: VNode,
 ) => ({ type, prev, next, leftAnchor, rightAnchor });
 export type Patcher = ReturnType<typeof NewPatcher>;
 
@@ -57,7 +57,7 @@ const diffVnode = (prev: VNode, next: VNode): Patcher[] => {
                 ...[
                     NewPatcher(PatcherType.MOUNT, prev, next, prev),
                     NewPatcher(PatcherType.UNMOUNT, prev, null),
-                ]
+                ],
             );
         }
     } else {
@@ -227,8 +227,8 @@ const diffLongVNodeArray = (prevChildren: VNode[], nextChildren: VNode[]) => {
                         // 说实话这里逻辑是有点诡异....
                         // 但是确实是对的
                         prevRightIdx !== -1 ? prevChildren[prevRightIdx] : null,
-                        prevRightIdx === -1 ? prevChildren[0] : null
-                    )
+                        prevRightIdx === -1 ? prevChildren[0] : null,
+                    ),
                 );
                 i++;
             }
@@ -259,7 +259,7 @@ const diffLongVNodeArray = (prevChildren: VNode[], nextChildren: VNode[]) => {
                 return NewPatcher(
                     PatcherType.MOUNT,
                     prevChildren[i],
-                    nextChildren[i + idx]
+                    nextChildren[i + idx],
                 );
             });
         ret.push(...unmounts);

@@ -5,7 +5,7 @@ export const useWindowSize = () => {
         w: window.innerWidth,
         h: window.innerHeight,
     });
-    window.addEventListener('resize', ({ target }) => {
+    window.addEventListener("resize", ({ target }) => {
         const { innerWidth, innerHeight } = target as any;
         if (innerWidth !== Size.w) {
             Size.w = innerWidth;

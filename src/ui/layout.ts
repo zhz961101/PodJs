@@ -1,19 +1,19 @@
-import { StyleOptions, useStyle } from '../hox/useStyle';
-import { html } from '../index';
+import { StyleOptions, useStyle } from "../hox/useStyle";
+import { html } from "../index";
 
 const defaultOptions = {
     size: 12,
-    colGap: '0.5rem',
-    rowGap: '0.5rem',
-    justify: 'start' as 'start' | 'end' | 'center' | 'justify' | 'space-between' | 'space-around',
+    colGap: "0.5rem",
+    rowGap: "0.5rem",
+    justify: "start" as "start" | "end" | "center" | "justify" | "space-between" | "space-around",
     style: null as StyleOptions | null,
 };
 
 const RowStyle = (opt: typeof defaultOptions) => ({
-    display: 'grid',
-    'grid-template-columns': `repeat(${opt.size}, 1fr)`,
-    'column-gap': opt.colGap,
-    'row-gap': opt.rowGap,
+    "display": "grid",
+    "grid-template-columns": `repeat(${opt.size}, 1fr)`,
+    "column-gap": opt.colGap,
+    "row-gap": opt.rowGap,
 });
 
 export const Row = (cols: any[], opt = defaultOptions) => {
@@ -34,12 +34,12 @@ const defaultColProps = {
 const ColStyle = (span: number, start: number) =>
     Object.assign(
         {
-            'grid-column-end': `span ${span}`,
-            position: 'relative',
+            "grid-column-end": `span ${span}`,
+            "position": "relative",
         },
         start
             ? {
-                  'grid-column-start': start,
+                  "grid-column-start": start,
               }
             : {},
     );

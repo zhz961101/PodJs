@@ -1,4 +1,4 @@
-import { ref, effect } from "@vue/reactivity";
+import { effect, ref } from "@vue/reactivity";
 
 export const HoxMapSymbol = Symbol("HoxMap");
 export const HoxMapIdxSymbol = Symbol("HoxMapIdx");
@@ -15,12 +15,11 @@ export interface HoxRef<HoxReturnType> {
     value: HoxReturnType;
 }
 
-
 export const NewHoxContext = () => ({
     [HoxMapIdxSymbol]: 0,
     [HoxMapSymbol]: new Map(),
-    [UnmountCallbackSymbol]: []
-} as HoxCtx)
+    [UnmountCallbackSymbol]: [],
+} as HoxCtx);
 
 const HoxCtxStack = [] as HoxCtx[];
 export const currentHoxCtx = (): HoxCtx | null => (HoxCtxStack.length && HoxCtxStack[HoxCtxStack.length - 1]) || null;
@@ -36,13 +35,12 @@ export const setCurrentHoxRef = (ref: HoxRef<unknown>) => {
     if (ctx) {
         ctx[HoxMapSymbol].set(ctx[HoxMapIdxSymbol], ref);
     }
-}
+};
 export const pushHoxCtx = (ctx: HoxCtx) => {
     HoxCtxStack.push(ctx);
     ctx[HoxMapIdxSymbol] = 0; // reset Index to 0
 };
 export const popHoxCtx = (): HoxCtx | null => HoxCtxStack.pop() || null;
-
 
 const NextIdleCall = requestIdleCallback || ((fn) => setTimeout(fn, 1)) as typeof requestIdleCallback;
 const SafeCall = (fn) => NextIdleCall(() => (fn && typeof fn === "function" && fn()));
@@ -50,12 +48,10 @@ const SafeCall = (fn) => NextIdleCall(() => (fn && typeof fn === "function" && f
 export const callUnmountCallback = () => {
     const ctx = currentHoxCtx();
     if (ctx) {
-        [...ctx[UnmountCallbackSymbol]].forEach(refGetter => SafeCall(SafeCall(refGetter)));
+        [...ctx[UnmountCallbackSymbol]].forEach((refGetter) => SafeCall(SafeCall(refGetter)));
         ctx[UnmountCallbackSymbol] = []; // reset to empty
     }
-}
-
-
+};
 
 export const onUnmount = (fn: () => void) => {
     const ctx = currentHoxCtx();
@@ -63,4 +59,4 @@ export const onUnmount = (fn: () => void) => {
         ctx[UnmountCallbackSymbol].push(fn);
     }
     return { ctx };
-}
+};

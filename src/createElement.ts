@@ -1,7 +1,7 @@
-import { VNode } from "./types";
+import { effect, isRef } from "@vue/reactivity";
+import { EmptyArray, EmptyObject } from "./common";
 import { createFragment } from "./createFragment";
-import { isRef, effect } from "@vue/reactivity";
-import { EmptyObject, EmptyArray } from "./common";
+import { VNode } from "./types";
 
 const arrify = <T>(t: T | T[]) => {
     if (Array.isArray(t)) {
@@ -66,9 +66,6 @@ export function createElement(node: VNode): HTMLElement {
     return dom;
 }
 
-
-
-
 const mountStyle = (elem: HTMLElement, style: object) => {
     if (typeof style !== "object") {
         return;
@@ -124,4 +121,4 @@ const mountProps = (elem: HTMLElement, props: object) => {
         }
     }
 };
-
+

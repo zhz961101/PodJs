@@ -1,9 +1,9 @@
-import { UniqueId } from './common';
+import { UniqueId } from "./common";
 
-const str = x => (x && x.toString && x.toString()) || '';
+const str = (x) => (x && x.toString && x.toString()) || "";
 const cssReg = /([^ :]+?) ?: ?([^;]+?)(;|$)/g;
 export const css = (text: TemplateStringsArray, ...values: any[]) => {
-    let cssText = '';
+    let cssText = "";
     for (const idx in text) {
         if (text.hasOwnProperty(idx)) {
             cssText += `${str(text[idx])}${str(values[idx])}`;
@@ -23,24 +23,24 @@ export interface StyleOptions {
 
 const parseStyle = (style: StyleOptions, selector?: string): string => {
     const styles = [];
-    let ret = '';
+    let ret = "";
     for (const key in style) {
         if (style.hasOwnProperty(key)) {
             const val = style[key];
-            if (typeof val === 'object') {
+            if (typeof val === "object") {
                 const nxtSelector = key
-                    .split(',')
-                    .map(k => {
-                        if (k.includes('&')) {
-                            return k.replace('&', selector);
+                    .split(",")
+                    .map((k) => {
+                        if (k.includes("&")) {
+                            return k.replace("&", selector);
                         } else {
                             return `${selector} ${k}`;
                         }
                     })
-                    .join(',');
+                    .join(",");
                 styles.push(parseStyle(val, nxtSelector));
             } else {
-                if (key === 'content') {
+                if (key === "content") {
                     ret += `${key}:'${val}';`;
                     continue;
                 }
@@ -48,7 +48,7 @@ const parseStyle = (style: StyleOptions, selector?: string): string => {
             }
         }
     }
-    return `${selector}{${ret}}${styles.join('')}`;
+    return `${selector}{${ret}}${styles.join("")}`;
 };
 
 const styleClsMap: Map<string, string> = new Map<string, string>();
@@ -58,23 +58,23 @@ const styleToCls = (style: StyleOptions): [string, boolean] => {
     if (styleClsMap.has(text)) {
         return [styleClsMap.get(text), true];
     }
-    const cls = 'style_' + UniqueId();
+    const cls = "style_" + UniqueId();
     styleClsMap.set(text, cls);
     return [cls, false];
 };
 
-const emptyObject = o => Object.keys(o).length === 0;
+const emptyObject = (o) => Object.keys(o).length === 0;
 
 export const useStyle = (style: StyleOptions = {}, applay: boolean = true) => {
-    let className = '';
+    let className = "";
     let dupe = false;
     const EMPTY = emptyObject(style);
     if (!EMPTY) {
         [className, dupe] = styleToCls(style);
         if (!dupe) {
             const cssText = parseStyle(style, `.${className}`);
-            const styleNode = document.createElement('style');
-            styleNode.type = 'text/css';
+            const styleNode = document.createElement("style");
+            styleNode.type = "text/css";
             styleNode.innerHTML = cssText;
             document.head.appendChild(styleNode);
         }
@@ -95,21 +95,21 @@ export const useStyle = (style: StyleOptions = {}, applay: boolean = true) => {
         },
         toggle() {
             if (!ref) {
-                console.warn('ref is not set.', className);
+                console.warn("ref is not set.", className);
                 return;
             }
             ref.classList.toggle(className);
         },
         add() {
             if (!ref) {
-                console.warn('ref is not set.', className);
+                console.warn("ref is not set.", className);
                 return;
             }
             ref.classList.add(className);
         },
         remove() {
             if (!ref) {
-                console.warn('ref is not set.', className);
+                console.warn("ref is not set.", className);
                 return;
             }
             ref.classList.remove(className);

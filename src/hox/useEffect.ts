@@ -1,7 +1,7 @@
 import { effect } from "@vue/reactivity";
 import { currentHoxCtx, UnmountCallbackSymbol } from "../hox";
 
-type IUseEffect = {
+interface IUseEffect {
     (effectFn: () => void): void;
     (effectFn: () => () => void): void;
 }
@@ -11,10 +11,10 @@ export const useEffect: IUseEffect = (effectFn) => {
     unmountRef.value = null;
     effect(() => {
         unmountRef.value = effectFn() || null;
-    })
+    });
     const ctx = currentHoxCtx();
     if (ctx) {
         ctx[UnmountCallbackSymbol].push(() => unmountRef.value);
     }
     return { ctx, unmountRef };
-}
+};

@@ -1,7 +1,7 @@
-import { isDef } from './common';
-import { useState } from './useState';
-import { useWindowSize } from './useWindowSize';
-import { effect } from '@vue/reactivity';
+import { effect } from "@vue/reactivity";
+import { isDef } from "./common";
+import { useState } from "./useState";
+import { useWindowSize } from "./useWindowSize";
 
 interface SizeType {
     w?: number;
@@ -26,10 +26,10 @@ const sizeInclude = (a: SizeType, b: SizeType) => {
 };
 
 export const useResponsive = (opt: ResponsiveOptions) => {
-    const [getter, setter, currentMode] = useState('null');
+    const [getter, setter, currentMode] = useState("null");
     const { Size } = useWindowSize();
     const sizeArr = Object.keys(opt)
-        .map(name => ({ name, ...opt[name] }))
+        .map((name) => ({ name, ...opt[name] }))
         .sort((a, b) => -sizeInclude({ w: a.w, h: a.h }, { w: b.w, h: b.h }));
 
     effect(() => {

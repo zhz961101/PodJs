@@ -1,7 +1,7 @@
-import { VNode } from "./types";
-import { Patcher, PatcherType } from "./diff";
 import { createElement } from "./createElement";
+import { Patcher, PatcherType } from "./diff";
 import { callUnmountCallback } from "./hox";
+import { VNode } from "./types";
 
 interface ContainerOpt {
     mountToLeft: (elem: HTMLElement, anchor: VNode) => void;

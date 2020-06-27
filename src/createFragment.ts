@@ -1,10 +1,9 @@
-import { VNode } from "./types";
-import { uniqKey } from './common';
 import { effect } from "@vue/reactivity";
-import { NewHoxContext, pushHoxCtx, popHoxCtx } from "./hox";
+import { uniqKey } from "./common";
 import { diffVNodeArray } from "./diff";
+import { NewHoxContext, popHoxCtx, pushHoxCtx } from "./hox";
 import { patch } from "./patch";
-
+import { VNode } from "./types";
 
 export function createFragment(render: () => VNode[], rootVnode: VNode) {
     const uk = uniqKey();
@@ -99,7 +98,7 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
     (window as any).frags.push({
         bag,
         headAnchor,
-        tailAnchor
-    })
+        tailAnchor,
+    });
     return bag;
 }
