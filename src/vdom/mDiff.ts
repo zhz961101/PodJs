@@ -1,3 +1,0 @@
-// [TODO] //
-// Myers' diff
-// [TODO] //

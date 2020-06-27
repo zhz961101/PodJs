@@ -4,7 +4,6 @@ const devMode = process.env.NODE_ENV !== 'production'
 module.exports = {
     devtool: devMode ? "inline-source-map" : false,
     entry: {
-        // "browser": './src/browser.ts',
         "taco": './src/index.ts'
     },
     output: {
