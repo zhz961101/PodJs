@@ -1,12 +1,12 @@
-import { effect } from "@vue/reactivity";
-import { currentHoxCtx, UnmountCallbackSymbol } from "../hox";
+import { effect } from '@vue/reactivity';
+import { currentHoxCtx, UnmountCallbackSymbol } from '../hox';
 
 interface IUseEffect {
     (effectFn: () => void): void;
     (effectFn: () => () => void): void;
 }
 
-export const useEffect: IUseEffect = (effectFn) => {
+export const useEffect: IUseEffect = effectFn => {
     const unmountRef = Object.create(null) as { value: any };
     unmountRef.value = null;
     effect(() => {

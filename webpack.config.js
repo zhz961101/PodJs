@@ -1,27 +1,38 @@
-const path = require('path');
+const {
+    resolve
+} = require('path');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const devMode = process.env.NODE_ENV !== 'production'
+const analyzeMode = process.env.ANALYZE_MODE === 'on'
 
 module.exports = {
-    devtool: devMode ? "inline-source-map" : false,
-    entry: {
-        "taco": './src/index.ts'
+    ...{
+        devtool: devMode ? "inline-source-map" : false,
+        entry: {
+            "taco": './src/index.ts',
+        },
+        output: {
+            library: "herb",
+            libraryTarget: "umd",
+            filename: devMode ? '[name].js' : '[name].min.js',
+            path: resolve(__dirname, 'dist')
+        },
+        module: {
+            rules: [{
+                test: /\.ts$/,
+                use: "ts-loader",
+                exclude: /(node_modules|bower_components)/,
+            }]
+        },
+        resolve: {
+            extensions: [
+                '.ts', ".js", ".jsx", "tsx"
+            ]
+        },
     },
-    output: {
-        library: "Taco",
-        libraryTarget: "umd",
-        filename: devMode ? '[name].js' : '[name].min.js',
-        path: path.resolve(__dirname, 'dist')
-    },
-    module: {
-        rules: [{
-            test: /\.ts$/,
-            use: "ts-loader",
-            exclude: /(node_modules|bower_components)/,
-        }]
-    },
-    resolve: {
-        extensions: [
-            '.ts'
-        ]
+    ...analyzeMode && {
+        plugins: [
+            new BundleAnalyzerPlugin(),
+        ],
     }
 };

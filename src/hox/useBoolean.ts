@@ -1,4 +1,4 @@
-import { useState } from "./useState";
+import { useState } from './useState';
 
 export const useBoolean = (init = false) => {
     const [getter, setter, state] = useState(init);

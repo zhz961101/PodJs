@@ -1,5 +1,5 @@
-import { effect, reactive } from "@vue/reactivity";
-import { useState } from "./useState";
+import { effect, reactive } from '@vue/reactivity';
+import { useState } from './useState';
 
 const IdleCallback = (window as any).requestIdleCallback || (window as any).requestAnimationFrame;
 const setFrameInterval = (cb, interval) => {
@@ -34,7 +34,7 @@ type IArgs = string | null | IArgsFn;
 
 const CONCURRENT_PROMISES = {};
 
-const ArrHash = (arr: any[]): string => arr.reduce((all, v) => all + String(v), "");
+const ArrHash = (arr: any[]): string => arr.reduce((all, v) => all + String(v), '');
 
 const getRets = (fn: IArgsFn): any[] => {
     const Rets = fn();

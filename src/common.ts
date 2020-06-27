@@ -1,4 +1,4 @@
-import { isNative } from "lodash";
+import isNative from 'lodash/isNative';
 
 export const typeAs = (o: any) => typeIs(o).slice(8, -1);
 export const typeIs = (o: any) => Object.prototype.toString.call(o);
@@ -11,7 +11,7 @@ export const uniqKey = () => Math.random().toString(36).slice(2);
 const isIOS = false;
 const noop = () => { };
 
-export const nextTick = (function() {
+export const nextTick = (function () {
     let callbacks = []; // 存储需要触发的回调函数
     let pending = false; // 是否正在等待的标识(false:允许触发在下次事件循环触发callbacks中的回调, true: 已经触发过,需要等到下次事件循环)
     let timerFunc; // 设置在下次事件循环触发callbacks的 触发函数
@@ -27,21 +27,26 @@ export const nextTick = (function() {
     }
 
     // 如果支持Promise,使用Promise实现
-    if (typeof Promise !== "undefined" && isNative(Promise)) {
+    if (typeof Promise !== 'undefined' && isNative(Promise)) {
         let p = Promise.resolve();
-        let logError = function(err) { console.error(err); };
-        timerFunc = function() {
+        let logError = function (err) {
+            console.error(err);
+        };
+        timerFunc = function () {
             p.then(nextTickHandler).catch(logError);
             // ios的webview下,需要强制刷新队列,执行上面的回调函数
-            if (isIOS) { setTimeout(noop); }
+            if (isIOS) {
+                setTimeout(noop);
+            }
         };
 
         // 如果Promise不支持,但是支持MutationObserver
-    } else if (typeof MutationObserver !== "undefined" && (
-        isNative(MutationObserver) ||
-        // PhantomJS and iOS 7.x
-        MutationObserver.toString() === "[object MutationObserverConstructor]"
-    )) {
+    } else if (
+        typeof MutationObserver !== 'undefined' &&
+        (isNative(MutationObserver) ||
+            // PhantomJS and iOS 7.x
+            MutationObserver.toString() === '[object MutationObserverConstructor]')
+    ) {
         // use MutationObserver where native Promise is not available,
         // e.g. PhantomJS IE11, iOS7, Android 4.4
         let counter = 1;
@@ -51,13 +56,14 @@ export const nextTick = (function() {
         observer.observe(textNode, {
             characterData: true,
         });
-        timerFunc = function() {
+        timerFunc = function () {
             counter = (counter + 1) % 2;
             textNode.data = String(counter);
         };
-    } else {// 上面两种不支持的话,就使用setTimeout
+    } else {
+        // 上面两种不支持的话,就使用setTimeout
 
-        timerFunc = function() {
+        timerFunc = function () {
             setTimeout(nextTickHandler, 0);
         };
     }
@@ -65,18 +71,23 @@ export const nextTick = (function() {
     return function queueNextTick(cb, ctx) {
         let _resolve; // 用于接受触发 promise.then中回调的函数
         // 向回调数据中pushcallback
-        callbacks.push(function() {
+        callbacks.push(function () {
             // 如果有回调函数,执行回调函数
-            if (cb) { cb.call(ctx); }
-            if (_resolve) { _resolve(ctx); }// 触发promise的then回调
+            if (cb) {
+                cb.call(ctx);
+            }
+            if (_resolve) {
+                _resolve(ctx);
+            } // 触发promise的then回调
         });
-        if (!pending) {// 是否执行刷新callback队列
+        if (!pending) {
+            // 是否执行刷新callback队列
             pending = true;
             timerFunc();
         }
         // 如果没有传递回调函数,并且当前浏览器支持promise,使用promise实现
-        if (!cb && typeof Promise !== "undefined") {
-            return new Promise(function(resolve) {
+        if (!cb && typeof Promise !== 'undefined') {
+            return new Promise(function (resolve) {
                 _resolve = resolve;
             });
         }

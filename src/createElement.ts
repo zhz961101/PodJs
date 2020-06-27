@@ -1,7 +1,7 @@
-import { effect, isRef } from "@vue/reactivity";
-import { EmptyArray, EmptyObject } from "./common";
-import { createFragment } from "./createFragment";
-import { VNode } from "./types";
+import { effect, isRef } from '@vue/reactivity';
+import { EmptyArray, EmptyObject } from './common';
+import { createFragment } from './createFragment';
+import { VNode } from './types';
 
 const arrify = <T>(t: T | T[]) => {
     if (Array.isArray(t)) {
@@ -19,44 +19,47 @@ export function createElement(node: VNode): HTMLElement {
     //     return real_dom;
     // }
     let dom: HTMLElement;
-    if (typeof type === "function") {
+    if (typeof type === 'function') {
         const ComponentRenderd = type(props, children);
         if (Array.isArray(ComponentRenderd) || ComponentRenderd === null) {
             const frag = document.createDocumentFragment();
             const fragObj = createFragment(() => arrify(type(props, children)), node);
 
             fragObj.mountFrag(frag);
-            dom = frag as unknown as HTMLElement;
+            dom = (frag as unknown) as HTMLElement;
         } else {
             dom = createElement(ComponentRenderd);
         }
-    } else if (type[0] === "[") {
-        dom = document.createTextNode("") as unknown as HTMLElement;
+    } else if (type[0] === '[') {
+        dom = (document.createTextNode('') as unknown) as HTMLElement;
         if (isRef(content)) {
             effect(() => {
-                dom.textContent = content.value + "";
+                dom.textContent = content.value + '';
             });
-        } else if (typeof content === "function") {
+        } else if (typeof content === 'function') {
             // 内联组件不挂在hoxctx
             const rendered = content();
             if (Array.isArray(rendered)) {
                 const frag = document.createDocumentFragment();
-                const fragObj = createFragment(() => arrify(content(EmptyObject, EmptyArray)), node);
+                const fragObj = createFragment(
+                    () => arrify(content(EmptyObject, EmptyArray)),
+                    node,
+                );
 
                 fragObj.mountFrag(frag);
-                dom = frag as unknown as HTMLElement;
+                dom = (frag as unknown) as HTMLElement;
             } else {
                 effect(() => {
-                    dom.textContent = content() + "";
+                    dom.textContent = content() + '';
                 });
             }
         } else {
-            dom.textContent = content + "";
+            dom.textContent = content + '';
         }
     } else {
         dom = document.createElement(type);
         mountProps(dom, props);
-        children.forEach((vn) => {
+        children.forEach(vn => {
             dom.appendChild(createElement(vn));
         });
     }
@@ -67,7 +70,7 @@ export function createElement(node: VNode): HTMLElement {
 }
 
 const mountStyle = (elem: HTMLElement, style: object) => {
-    if (typeof style !== "object") {
+    if (typeof style !== 'object') {
         return;
     }
     for (const [key, val] of Object.entries(style)) {
@@ -77,7 +80,7 @@ const mountStyle = (elem: HTMLElement, style: object) => {
     }
 };
 
-const getVal = (v) => typeof v === "function" ? v() : v;
+const getVal = v => (typeof v === 'function' ? v() : v);
 
 const mountProps = (elem: HTMLElement, props: object) => {
     if (!props) {
@@ -85,9 +88,8 @@ const mountProps = (elem: HTMLElement, props: object) => {
     }
     for (const [key, val] of Object.entries(props)) {
         const k = key.toLowerCase();
-        if (k.startsWith("on")) {
-            if (typeof val
-                !== "function") {
+        if (k.startsWith('on')) {
+            if (typeof val !== 'function') {
                 continue;
             }
             // event
@@ -96,16 +98,16 @@ const mountProps = (elem: HTMLElement, props: object) => {
             continue;
         }
         switch (k) {
-            case "style": {
+            case 'style': {
                 mountStyle(elem, getVal(val));
                 break;
             }
-            case "key": {
+            case 'key': {
                 // pass
                 break;
             }
-            case "ref": {
-                if (typeof val === "function") {
+            case 'ref': {
+                if (typeof val === 'function') {
                     val(elem);
                 } else if (isRef(val)) {
                     val.value = elem;
@@ -121,4 +123,3 @@ const mountProps = (elem: HTMLElement, props: object) => {
         }
     }
 };
-

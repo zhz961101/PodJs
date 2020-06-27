@@ -1,15 +1,15 @@
 export const excludeKeysObj = (obj: object, keys: string[]) => {
     const ret = {};
     Object.keys(obj)
-        .filter((key) => !keys.includes(key))
-        .forEach((key) => (ret[key] = obj[key]));
+        .filter(key => !keys.includes(key))
+        .forEach(key => (ret[key] = obj[key]));
     return ret;
 };
 
 export const includeKeysObj = (obj: object, keys: string[]) =>
     excludeKeysObj(
         obj,
-        Object.keys(obj).filter((key) => !keys.includes(key)),
+        Object.keys(obj).filter(key => !keys.includes(key)),
     );
 
 function isUnDef(obj: any): boolean {
@@ -33,9 +33,9 @@ export const isIncluded = (name: string) => {
         return true;
     }
     const js = /js$/i.test(name);
-    const es = Array.from(document.getElementsByTagName(js ? "script" : "link"));
+    const es = Array.from(document.getElementsByTagName(js ? 'script' : 'link'));
     for (const node of es) {
-        if (node[js ? "src" : "href"].indexOf(name) !== -1) {
+        if (node[js ? 'src' : 'href'].indexOf(name) !== -1) {
             IncludedCache.set(name, true);
             return true;
         }

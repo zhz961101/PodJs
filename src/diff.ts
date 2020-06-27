@@ -1,13 +1,13 @@
-import flatten from "lodash/flatten";
+// import flatten from "lodash/flatten";
 
 ////////////////////
 const __DEV__ = true;
 ///////////////////
 
-import isEqual from "lodash/isEqual";
-import { VNode } from "./types";
+import isEqual from 'lodash/isEqual';
+import { VNode } from './types';
 
-const isFunc = (f) => typeof f === "function";
+const isFunc = f => typeof f === 'function';
 
 const NewPatcher = (
     type: PatcherType,
@@ -112,7 +112,7 @@ export const diffVNodeArray = (prev: VNode[], next: VNode[]): Patcher[] => {
                         .fill(null)
                         .map((_, idx) => NewPatcher(PatcherType.MOUNT, null, next[idx]));
 
-                    const idx = next.findIndex((n) => sameVNode(n, prev[0]));
+                    const idx = next.findIndex(n => sameVNode(n, prev[0]));
                     if (idx !== -1) {
                         // 有相似的就不mount
                         ret[idx] = null;
@@ -140,7 +140,7 @@ export const diffVNodeArray = (prev: VNode[], next: VNode[]): Patcher[] => {
                         .fill(null)
                         .map((_, idx) => NewPatcher(PatcherType.UNMOUNT, prev[idx], null));
 
-                    const idx = prev.findIndex((n) => sameVNode(n, prev[0]));
+                    const idx = prev.findIndex(n => sameVNode(n, prev[0]));
                     if (idx !== -1) {
                         // 有相似的就不unmount
                         ret[idx] = null;
@@ -256,11 +256,7 @@ const diffLongVNodeArray = (prevChildren: VNode[], nextChildren: VNode[]) => {
         const mounts = Array.from({ length: nextRightIdx - i + 1 })
             .fill(null)
             .map((_, idx) => {
-                return NewPatcher(
-                    PatcherType.MOUNT,
-                    prevChildren[i],
-                    nextChildren[i + idx],
-                );
+                return NewPatcher(PatcherType.MOUNT, prevChildren[i], nextChildren[i + idx]);
             });
         ret.push(...unmounts);
         ret.push(...mounts);

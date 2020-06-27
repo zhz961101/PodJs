@@ -1,9 +1,9 @@
-import { effect } from "@vue/reactivity";
-import { uniqKey } from "./common";
-import { diffVNodeArray } from "./diff";
-import { NewHoxContext, popHoxCtx, pushHoxCtx } from "./hox";
-import { patch } from "./patch";
-import { VNode } from "./types";
+import { effect } from '@vue/reactivity';
+import { uniqKey } from './common';
+import { diffVNodeArray } from './diff';
+import { NewHoxContext, popHoxCtx, pushHoxCtx } from './hox';
+import { patch } from './patch';
+import { VNode } from './types';
 
 export function createFragment(render: () => VNode[], rootVnode: VNode) {
     const uk = uniqKey();
@@ -20,7 +20,10 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
         get container() {
             return bag.getContainer();
         },
-        getContainer: (): HTMLElement | null => headAnchor.parentNode as unknown as HTMLElement || tailAnchor.parentNode as unknown as HTMLElement || null,
+        getContainer: (): HTMLElement | null =>
+            ((headAnchor.parentNode as unknown) as HTMLElement) ||
+            ((tailAnchor.parentNode as unknown) as HTMLElement) ||
+            null,
         mounted: () => !!bag.getContainer(),
         mountFrag: (target: HTMLElement | DocumentFragment) => {
             target.appendChild(headAnchor);
@@ -35,13 +38,13 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
                 cacheNodes = nodes;
                 return;
             }
-            diffVNodeArray(lastNodes, nodes).forEach((patcher) => patch(patcher, bag));
+            diffVNodeArray(lastNodes, nodes).forEach(patcher => patch(patcher, bag));
             lastNodes = nodes;
         },
         mountToLeft: (elem: HTMLElement, anchor: VNode) => {
             const container = bag.container;
             if (!container) {
-                console.warn("no container found", bag);
+                console.warn('no container found', bag);
                 return;
             }
             const anchorDom = anchor.real_dom_left || anchor.real_dom;
@@ -50,7 +53,7 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
         mountToRight: (elem: HTMLElement, anchor: VNode) => {
             const container = bag.container;
             if (!container) {
-                console.warn("no container found", bag);
+                console.warn('no container found', bag);
                 return;
             }
             const anchorDom = anchor.real_dom_right || anchor.real_dom;
@@ -63,7 +66,7 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
         unmount: (elem: HTMLElement) => {
             const container = bag.container;
             if (!container) {
-                console.warn("no container found", bag);
+                console.warn('no container found', bag);
                 return;
             }
             if (elem.parentNode) {
@@ -76,7 +79,7 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
         mount: (elem: HTMLElement) => {
             const container = bag.container;
             if (!container) {
-                console.warn("no container found", bag);
+                console.warn('no container found', bag);
                 return;
             }
             container.insertBefore(elem, tailAnchor);

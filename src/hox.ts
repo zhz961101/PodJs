@@ -1,8 +1,6 @@
-import { effect, ref } from "@vue/reactivity";
-
-export const HoxMapSymbol = Symbol("HoxMap");
-export const HoxMapIdxSymbol = Symbol("HoxMapIdx");
-export const UnmountCallbackSymbol = Symbol("UnmountCallback");
+export const HoxMapSymbol = Symbol('HoxMap');
+export const HoxMapIdxSymbol = Symbol('HoxMapIdx');
+export const UnmountCallbackSymbol = Symbol('UnmountCallback');
 export interface HoxCtx {
     [HoxMapIdxSymbol]: number;
     [HoxMapSymbol]: Map<number, HoxRef<unknown>>;
@@ -15,14 +13,16 @@ export interface HoxRef<HoxReturnType> {
     value: HoxReturnType;
 }
 
-export const NewHoxContext = () => ({
-    [HoxMapIdxSymbol]: 0,
-    [HoxMapSymbol]: new Map(),
-    [UnmountCallbackSymbol]: [],
-} as HoxCtx);
+export const NewHoxContext = () =>
+    ({
+        [HoxMapIdxSymbol]: 0,
+        [HoxMapSymbol]: new Map(),
+        [UnmountCallbackSymbol]: [],
+    } as HoxCtx);
 
 const HoxCtxStack = [] as HoxCtx[];
-export const currentHoxCtx = (): HoxCtx | null => (HoxCtxStack.length && HoxCtxStack[HoxCtxStack.length - 1]) || null;
+export const currentHoxCtx = (): HoxCtx | null =>
+    (HoxCtxStack.length && HoxCtxStack[HoxCtxStack.length - 1]) || null;
 export const currentHoxRef = (): HoxRef<unknown> | null => {
     const ctx = currentHoxCtx();
     if (ctx && ctx[HoxMapSymbol].has(ctx[HoxMapIdxSymbol])) {
@@ -42,13 +42,14 @@ export const pushHoxCtx = (ctx: HoxCtx) => {
 };
 export const popHoxCtx = (): HoxCtx | null => HoxCtxStack.pop() || null;
 
-const NextIdleCall = requestIdleCallback || ((fn) => setTimeout(fn, 1)) as typeof requestIdleCallback;
-const SafeCall = (fn) => NextIdleCall(() => (fn && typeof fn === "function" && fn()));
+const NextIdleCall =
+    requestIdleCallback || ((fn => setTimeout(fn, 1)) as typeof requestIdleCallback);
+const SafeCall = fn => NextIdleCall(() => fn && typeof fn === 'function' && fn());
 
 export const callUnmountCallback = () => {
     const ctx = currentHoxCtx();
     if (ctx) {
-        [...ctx[UnmountCallbackSymbol]].forEach((refGetter) => SafeCall(SafeCall(refGetter)));
+        [...ctx[UnmountCallbackSymbol]].forEach(refGetter => SafeCall(SafeCall(refGetter)));
         ctx[UnmountCallbackSymbol] = []; // reset to empty
     }
 };

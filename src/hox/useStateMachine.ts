@@ -1,14 +1,14 @@
-import { reactive } from "@vue/reactivity";
-import { useEffect } from "./useEffect";
+import { reactive } from '@vue/reactivity';
+import { useEffect } from './useEffect';
 
 interface StateMachineOptions {
     initial: string;
     [key: string]:
-    | {
-        value: any;
-        [key: string]: string;
-    }
-    | string;
+        | {
+              value: any;
+              [key: string]: string;
+          }
+        | string;
 }
 
 export const useStateMachine = (
@@ -24,7 +24,7 @@ export const useStateMachine = (
     for (const stateName in other) {
         if (other.hasOwnProperty(stateName)) {
             const transiton = other[stateName];
-            if (typeof transiton === "string") {
+            if (typeof transiton === 'string') {
                 continue;
             }
             const { value, ...otherActions } = transiton;

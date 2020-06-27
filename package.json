@@ -16,7 +16,9 @@
     "test": "jest",
     "test:cover": "jest --coverage",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
-    "debug": "cross-env NODE_ENV=development node --inspect-brk ./node_modules/jest/bin/jest --runInBand"
+    "debug": "cross-env NODE_ENV=development node --inspect-brk ./node_modules/jest/bin/jest --runInBand",
+    "format": "prettier --write ./src/**/**.ts",
+    "analyze": "cross-env NODE_ENV=production ANALYZE_MODE=on webpack --mode=production"
   },
   "repository": {
     "type": "git",
@@ -38,16 +40,17 @@
   "devDependencies": {
     "@jest/types": "^24.9.0",
     "@types/jest": "^24.0.22",
-    "@types/lodash": "^4.14.155",
+    "@types/lodash": "^4.14.157",
     "@types/requestidlecallback": "^0.3.1",
-    "@types/virtual-dom": "^2.1.0",
     "cross-env": "^6.0.3",
     "jest": "^24.9.0",
+    "prettier": "^2.0.5",
     "ts-jest": "^24.1.0",
     "ts-loader": "^6.2.1",
     "tslint": "^5.20.1",
     "typescript": "^3.7.2",
     "webpack": "^4.41.2",
+    "webpack-bundle-analyzer": "^3.8.0",
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {

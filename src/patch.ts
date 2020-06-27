@@ -1,7 +1,7 @@
-import { createElement } from "./createElement";
-import { Patcher, PatcherType } from "./diff";
-import { callUnmountCallback } from "./hox";
-import { VNode } from "./types";
+import { createElement } from './createElement';
+import { Patcher, PatcherType } from './diff';
+import { callUnmountCallback } from './hox';
+import { VNode } from './types';
 
 interface ContainerOpt {
     mountToLeft: (elem: HTMLElement, anchor: VNode) => void;
@@ -27,7 +27,7 @@ export function patch(patcher: Patcher, opt: ContainerOpt) {
         case PatcherType.UNMOUNT: {
             if (!prev?.real_dom) {
                 // ERROR
-                console.warn("prev?.real_dom", prev?.real_dom);
+                console.warn('prev?.real_dom', prev?.real_dom);
                 return;
             }
             callUnmountCallback();
@@ -36,7 +36,7 @@ export function patch(patcher: Patcher, opt: ContainerOpt) {
         case PatcherType.CONTENT_CHANGE: {
             if (!prev?.real_dom) {
                 // ERROR
-                console.warn("prev?.real_dom", prev?.real_dom);
+                console.warn('prev?.real_dom', prev?.real_dom);
                 return;
             }
             prev.real_dom.textContent = prev.content = next.content;
