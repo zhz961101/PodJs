@@ -7,17 +7,19 @@ export const useVisible = <T extends HTMLElement>() => {
         isVisibility: () => state.value,
         visibleRef(elem: T) {
             nextTick(() => {
-                const intersectionObserver = new IntersectionObserver(entries => {
-                    if (entries[0].intersectionRatio <= 0) {
-                        if (state.value) {
-                            state.value = false;
+                const intersectionObserver = new IntersectionObserver(
+                    entries => {
+                        if (entries[0].intersectionRatio <= 0) {
+                            if (state.value) {
+                                state.value = false;
+                            }
+                        } else {
+                            if (!state.value) {
+                                state.value = true;
+                            }
                         }
-                    } else {
-                        if (!state.value) {
-                            state.value = true;
-                        }
-                    }
-                });
+                    },
+                );
                 intersectionObserver.observe(elem);
             }, null);
         },

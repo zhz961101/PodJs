@@ -33,7 +33,9 @@ export const isIncluded = (name: string) => {
         return true;
     }
     const js = /js$/i.test(name);
-    const es = Array.from(document.getElementsByTagName(js ? 'script' : 'link'));
+    const es = Array.from(
+        document.getElementsByTagName(js ? 'script' : 'link'),
+    );
     for (const node of es) {
         if (node[js ? 'src' : 'href'].indexOf(name) !== -1) {
             IncludedCache.set(name, true);

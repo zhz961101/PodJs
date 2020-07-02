@@ -1,6 +1,5 @@
-import htm from 'htm';
 import flatten from 'lodash/flatten';
-import { EmptyArray, EmptyObject, typeIs } from './common';
+import { EmptyArray, EmptyObject, typeIs } from '../common';
 import { Component, VNode } from './types';
 
 export function h(
@@ -25,6 +24,3 @@ export function h(
     });
     return { type, props, children: flatten(retChild) };
 }
-
-export const html = htm.bind(h) as HtmlTmp;
-type HtmlTmp = (strings: TemplateStringsArray, ...values: any[]) => VNode;

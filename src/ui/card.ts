@@ -122,7 +122,13 @@ export const Card = (props: CardProps = {}) => {
         <div
             ref=${[cardRef, hoverShadow, (props as any).ref]}
             class="card"
-            ${excludeKeysObj(props, ['title', 'extra', 'actions', 'cover', 'content'])}
+            ${excludeKeysObj(props, [
+                'title',
+                'extra',
+                'actions',
+                'cover',
+                'content',
+            ])}
         >
             ${() =>
                 !cover
@@ -158,7 +164,10 @@ export const Card = (props: CardProps = {}) => {
                     ? ''
                     : html`
                           <footer class="card-actions">
-                              ${() => actions.map(inner => html` <div>${inner}</div> `)}
+                              ${() =>
+                                  actions.map(
+                                      inner => html` <div>${inner}</div> `,
+                                  )}
                           </footer>
                       `}
         </div>

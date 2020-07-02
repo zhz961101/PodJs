@@ -5,7 +5,13 @@ const defaultOptions = {
     size: 12,
     colGap: '0.5rem',
     rowGap: '0.5rem',
-    justify: 'start' as 'start' | 'end' | 'center' | 'justify' | 'space-between' | 'space-around',
+    justify: 'start' as
+        | 'start'
+        | 'end'
+        | 'center'
+        | 'justify'
+        | 'space-between'
+        | 'space-around',
     style: null as StyleOptions | null,
 };
 

@@ -1,5 +1,5 @@
 import { effect, isRef } from '@vue/reactivity';
-import { EmptyArray, EmptyObject } from './common';
+import { EmptyArray, EmptyObject } from '../common';
 import { createFragment } from './createFragment';
 import { VNode } from './types';
 
@@ -23,7 +23,10 @@ export function createElement(node: VNode): HTMLElement {
         const ComponentRenderd = type(props, children);
         if (Array.isArray(ComponentRenderd) || ComponentRenderd === null) {
             const frag = document.createDocumentFragment();
-            const fragObj = createFragment(() => arrify(type(props, children)), node);
+            const fragObj = createFragment(
+                () => arrify(type(props, children)),
+                node,
+            );
 
             fragObj.mountFrag(frag);
             dom = (frag as unknown) as HTMLElement;

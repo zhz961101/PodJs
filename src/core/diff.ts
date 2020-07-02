@@ -90,7 +90,9 @@ export const diffVNodeArray = (prev: VNode[], next: VNode[]): Patcher[] => {
                     // next all mount
                     return Array.from({ length: NextLength })
                         .fill(null)
-                        .map((_, idx) => NewPatcher(PatcherType.MOUNT, null, next[idx]));
+                        .map((_, idx) =>
+                            NewPatcher(PatcherType.MOUNT, null, next[idx]),
+                        );
                     break;
                 }
             }
@@ -110,7 +112,9 @@ export const diffVNodeArray = (prev: VNode[], next: VNode[]): Patcher[] => {
                     // next all mount
                     const ret = Array.from({ length: NextLength })
                         .fill(null)
-                        .map((_, idx) => NewPatcher(PatcherType.MOUNT, null, next[idx]));
+                        .map((_, idx) =>
+                            NewPatcher(PatcherType.MOUNT, null, next[idx]),
+                        );
 
                     const idx = next.findIndex(n => sameVNode(n, prev[0]));
                     if (idx !== -1) {
@@ -131,14 +135,18 @@ export const diffVNodeArray = (prev: VNode[], next: VNode[]): Patcher[] => {
                     // prev all unmount
                     return Array.from({ length: PrevLength })
                         .fill(null)
-                        .map((_, idx) => NewPatcher(PatcherType.UNMOUNT, prev[idx], null));
+                        .map((_, idx) =>
+                            NewPatcher(PatcherType.UNMOUNT, prev[idx], null),
+                        );
                     break;
                 }
                 case 1: {
                     // prev all unmount
                     const ret = Array.from({ length: PrevLength })
                         .fill(null)
-                        .map((_, idx) => NewPatcher(PatcherType.UNMOUNT, prev[idx], null));
+                        .map((_, idx) =>
+                            NewPatcher(PatcherType.UNMOUNT, prev[idx], null),
+                        );
 
                     const idx = prev.findIndex(n => sameVNode(n, prev[0]));
                     if (idx !== -1) {
@@ -251,12 +259,20 @@ const diffLongVNodeArray = (prevChildren: VNode[], nextChildren: VNode[]) => {
         const unmounts = Array.from({ length: prevRightIdx - i + 1 })
             .fill(null)
             .map((_, idx) => {
-                return NewPatcher(PatcherType.UNMOUNT, prevChildren[i + idx], null);
+                return NewPatcher(
+                    PatcherType.UNMOUNT,
+                    prevChildren[i + idx],
+                    null,
+                );
             });
         const mounts = Array.from({ length: nextRightIdx - i + 1 })
             .fill(null)
             .map((_, idx) => {
-                return NewPatcher(PatcherType.MOUNT, prevChildren[i], nextChildren[i + idx]);
+                return NewPatcher(
+                    PatcherType.MOUNT,
+                    prevChildren[i],
+                    nextChildren[i + idx],
+                );
             });
         ret.push(...unmounts);
         ret.push(...mounts);

@@ -1,7 +1,10 @@
 // base
 export { useEffect } from './useEffect';
-export { useState /*useValue, Stateify*/ } from './useState';
+export { useState } from './useState';
+export { useValue } from './useValue';
+export { useRef } from './useRef';
 export { useBoolean } from './useBoolean';
+export { usePromise } from './usePromise';
 export { useLocalState, useSessionState } from './useStorageState';
 
 // dom

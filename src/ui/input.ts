@@ -85,12 +85,19 @@ interface InputProps {
 export const Input = (props: InputProps) => {
     const { prefix, suffix } = props;
     const { styleRef: inputStyleRef } = useStyle(InputStyle);
-    const { styleRef: innerStyleRef } = useStyle({ ...InnerInputStyle, ...inputPlaceholderStyle });
-    const { styleRef: inputFocusStyle, add, remove } = useStyle(focusStyle, false);
-    const { styleRef: inputDisabledStyle, add: disableAdd, remove: disableRemove } = useStyle(
-        disabledStyle,
+    const { styleRef: innerStyleRef } = useStyle({
+        ...InnerInputStyle,
+        ...inputPlaceholderStyle,
+    });
+    const { styleRef: inputFocusStyle, add, remove } = useStyle(
+        focusStyle,
         false,
     );
+    const {
+        styleRef: inputDisabledStyle,
+        add: disableAdd,
+        remove: disableRemove,
+    } = useStyle(disabledStyle, false);
 
     useEffect(() => {
         const disabled = GetValue<boolean>((props as any).disabled);
@@ -112,16 +119,31 @@ export const Input = (props: InputProps) => {
                 inputStyleRef,
                 inputFocusStyle,
                 inputDisabledStyle,
-                elem => elem.addEventListener('click', () => innerRef && innerRef.focus()),
+                elem =>
+                    elem.addEventListener(
+                        'click',
+                        () => innerRef && innerRef.focus(),
+                    ),
             ]}
             ${{ style: (props as any).style }}
         >
-            ${() => (!prefix ? '' : html` <span class="input-group-prefix">${prefix}</span> `)}
+            ${() =>
+                !prefix
+                    ? ''
+                    : html` <span class="input-group-prefix">${prefix}</span> `}
             <input
-                ref=${[innerStyleRef, focusRef, blurRef, elem => (innerRef = elem)]}
+                ref=${[
+                    innerStyleRef,
+                    focusRef,
+                    blurRef,
+                    elem => (innerRef = elem),
+                ]}
                 ${excludeKeysObj(props, ['size', 'style', 'prefix', 'suffix'])}
             />
-            ${() => (!suffix ? '' : html` <span class="input-group-suffix">${suffix}</span> `)}
+            ${() =>
+                !suffix
+                    ? ''
+                    : html` <span class="input-group-suffix">${suffix}</span> `}
         </div>
     `;
 };

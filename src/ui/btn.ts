@@ -249,10 +249,11 @@ export const Button = (props: ButtonProps = {}) => {
     const { motionRef, start: activeStart } = useMotion(
         type === 'danger' ? dangerActiveMotion : activeMotion,
     );
-    const { styleRef: disabledStyleRef, add: addDisabled, remove: removeDisabled } = useStyle(
-        disabledStyle,
-        false,
-    );
+    const {
+        styleRef: disabledStyleRef,
+        add: addDisabled,
+        remove: removeDisabled,
+    } = useStyle(disabledStyle, false);
 
     let mouseupRef = null;
     if (type !== 'link' && !GetValue(disabled)) {
@@ -280,7 +281,14 @@ export const Button = (props: ButtonProps = {}) => {
                 'loading',
             ])}
             type="button"
-            ref=${[styleRef, propsStyleRef, motionRef, mouseupRef, ref, disabledStyleRef]}
+            ref=${[
+                styleRef,
+                propsStyleRef,
+                motionRef,
+                mouseupRef,
+                ref,
+                disabledStyleRef,
+            ]}
             disabled=${() => GetValue(disabled)}
             class=${() => (GetValue(loading) ? 'loading' : '')}
         >
@@ -289,7 +297,9 @@ export const Button = (props: ButtonProps = {}) => {
                     ? ''
                     : Icon({
                           name: 'donut_large',
-                          style: { animation: 'loadingCircle 1s infinite linear' },
+                          style: {
+                              animation: 'loadingCircle 1s infinite linear',
+                          },
                       })}
             ${() => (!icon || GetValue(loading) ? '' : Icon({ name: icon }))}
             ${() => (!text ? '' : html` <span>${text}</span> `)}

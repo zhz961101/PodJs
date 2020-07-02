@@ -1,5 +1,6 @@
-import { reactive } from '@vue/reactivity';
 import { useEffect } from './useEffect';
+import { useState } from './useState';
+import { Ref } from '@vue/reactivity';
 
 interface StateMachineOptions {
     initial: string;
@@ -11,15 +12,13 @@ interface StateMachineOptions {
         | string;
 }
 
-export const useStateMachine = (
-    opt: StateMachineOptions,
-): [{ state: string; value: string }, { [key: string]: () => void }] => {
+export const useStateMachine = (opt: StateMachineOptions) => {
     const { initial, ...other } = opt;
-    const current = reactive({ state: initial, value: null });
+    const [, , current] = useState({ state: initial, value: null });
 
     const canGo = {};
     const stateVale = {};
-    const actions = {};
+    const actions = {} as { [key: string]: () => void };
 
     for (const stateName in other) {
         if (other.hasOwnProperty(stateName)) {
@@ -33,25 +32,30 @@ export const useStateMachine = (
             for (const actionName in otherActions) {
                 if (otherActions.hasOwnProperty(actionName)) {
                     const gotoTranstionName = otherActions[actionName];
-                    actions[actionName] = () => (current.state = gotoTranstionName);
+                    actions[actionName] = () =>
+                        (current.value.state = gotoTranstionName);
                 }
             }
         }
     }
 
-    const transition = reactive({ ...actions });
+    const [, , transition] = useState({ ...actions });
 
     useEffect(() => {
         for (const stateName in canGo) {
             if (canGo.hasOwnProperty(stateName)) {
                 const nextState = canGo[stateName];
-                transition[
-                    `to${stateName.slice(0, 1).toUpperCase()}${stateName.slice(1)}`
-                ] = nextState.includes(current.state) ? () => (current.state = stateName) : null;
+                transition.value[
+                    `to${stateName.slice(0, 1).toUpperCase()}${stateName.slice(
+                        1,
+                    )}`
+                ] = nextState.includes(current.value.state)
+                    ? () => (current.value.state = stateName)
+                    : null;
             }
         }
-        current.value = stateVale[current.state];
+        current.value = stateVale[current.value.state];
     });
 
-    return [current, transition];
+    return [current, transition] as const;
 };

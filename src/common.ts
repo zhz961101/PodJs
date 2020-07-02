@@ -9,7 +9,7 @@ export const EmptyObject = Object.freeze({});
 export const uniqKey = () => Math.random().toString(36).slice(2);
 
 const isIOS = false;
-const noop = () => { };
+const noop = () => {};
 
 export const nextTick = (function () {
     let callbacks = []; // 存储需要触发的回调函数
@@ -45,7 +45,8 @@ export const nextTick = (function () {
         typeof MutationObserver !== 'undefined' &&
         (isNative(MutationObserver) ||
             // PhantomJS and iOS 7.x
-            MutationObserver.toString() === '[object MutationObserverConstructor]')
+            MutationObserver.toString() ===
+                '[object MutationObserverConstructor]')
     ) {
         // use MutationObserver where native Promise is not available,
         // e.g. PhantomJS IE11, iOS7, Android 4.4
