@@ -1,7 +1,9 @@
 import { effect, reactive } from '@vue/reactivity';
 import { useState } from './useState';
 
-const IdleCallback = (window as any).requestIdleCallback || (window as any).requestAnimationFrame;
+const IdleCallback =
+    (window as any).requestIdleCallback ||
+    (window as any).requestAnimationFrame;
 const setFrameInterval = (cb, interval) => {
     const now = Date.now;
     let stime = now();
@@ -34,7 +36,8 @@ type IArgs = string | null | IArgsFn;
 
 const CONCURRENT_PROMISES = {};
 
-const ArrHash = (arr: any[]): string => arr.reduce((all, v) => all + String(v), '');
+const ArrHash = (arr: any[]): string =>
+    arr.reduce((all, v) => all + String(v), '');
 
 const getRets = (fn: IArgsFn): any[] => {
     const Rets = fn();

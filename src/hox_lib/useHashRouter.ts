@@ -1,9 +1,12 @@
 import { reactive } from '@vue/reactivity';
-import { html } from '../h';
+import { html } from '../core/html';
 import { useEffect } from '../hox/useEffect';
 
 interface RouterRoutes {
-    [key: string]: (arg: { pathName: string; params?: { [key: string]: string } }) => any;
+    [key: string]: (arg: {
+        pathName: string;
+        params?: { [key: string]: string };
+    }) => any;
 }
 
 const escapeRegExp = str => str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -21,7 +24,9 @@ const defaultNotFound = () => html`
             </a>
         </li>
         <li>
-            <a href="javascript:void(0)" onclick=${() => window.location.reload()}
+            <a
+                href="javascript:void(0)"
+                onclick=${() => window.location.reload()}
                 >Refresh this page.</a
             >
         </li>
@@ -35,7 +40,8 @@ export const useHashRouter = (routes: RouterRoutes) => {
         pathName: '',
     });
     // bindEvents
-    const refresh = () => (routerState.pathName = location.hash.slice(1) || '/');
+    const refresh = () =>
+        (routerState.pathName = location.hash.slice(1) || '/');
     window.addEventListener('hashchange', refresh, false);
     window.addEventListener('load', refresh, false);
 
@@ -58,7 +64,9 @@ export const useHashRouter = (routes: RouterRoutes) => {
                 if (parameterValues.length !== 0) {
                     parameterValues.shift();
                     const finalParameters = {};
-                    parameterNames.forEach((key, i) => (finalParameters[key] = parameterValues[i]));
+                    parameterNames.forEach(
+                        (key, i) => (finalParameters[key] = parameterValues[i]),
+                    );
                     return finalParameters;
                 }
                 return null;

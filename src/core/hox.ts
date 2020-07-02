@@ -43,13 +43,17 @@ export const pushHoxCtx = (ctx: HoxCtx) => {
 export const popHoxCtx = (): HoxCtx | null => HoxCtxStack.pop() || null;
 
 const NextIdleCall =
-    requestIdleCallback || ((fn => setTimeout(fn, 1)) as typeof requestIdleCallback);
-const SafeCall = fn => NextIdleCall(() => fn && typeof fn === 'function' && fn());
+    requestIdleCallback ||
+    ((fn => setTimeout(fn, 1)) as typeof requestIdleCallback);
+const SafeCall = fn =>
+    NextIdleCall(() => fn && typeof fn === 'function' && fn());
 
 export const callUnmountCallback = () => {
     const ctx = currentHoxCtx();
     if (ctx) {
-        [...ctx[UnmountCallbackSymbol]].forEach(refGetter => SafeCall(SafeCall(refGetter)));
+        [...ctx[UnmountCallbackSymbol]].forEach(refGetter =>
+            SafeCall(SafeCall(refGetter)),
+        );
         ctx[UnmountCallbackSymbol] = []; // reset to empty
     }
 };

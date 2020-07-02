@@ -23,7 +23,8 @@ interface AnimationOption {
     [key: string]: string | number;
 }
 
-const cssTimer = (val: number | string) => (!isNaN(val as number) ? `${val}ms` : val);
+const cssTimer = (val: number | string) =>
+    !isNaN(val as number) ? `${val}ms` : val;
 
 const cssConverter = {
     x(val: string) {
@@ -65,20 +66,30 @@ const cssTextByAnimation = (aniOpt: AnimationOption, className: string) => {
                 cssOpt = { [key]: aniOpt[key] };
             }
             if (cssOpt.transform) {
-                cssOpt.transform = (all.transform || '') + ' ' + cssOpt.transform;
+                cssOpt.transform =
+                    (all.transform || '') + ' ' + cssOpt.transform;
             }
             return { ...all, ...cssOpt };
         }, {});
     const properties = Object.keys(css);
 
-    const duration = `transition-duration: ${Math.max(aniOpt.duration || 1, 50)}ms !important;`;
-    const delay = aniOpt.delay ? `transition-delay: ${aniOpt.delay}ms !important;` : '';
-    const ease = aniOpt.ease ? `transition-timing-function: ${aniOpt.ease} !important;` : '';
+    const duration = `transition-duration: ${Math.max(
+        aniOpt.duration || 1,
+        50,
+    )}ms !important;`;
+    const delay = aniOpt.delay
+        ? `transition-delay: ${aniOpt.delay}ms !important;`
+        : '';
+    const ease = aniOpt.ease
+        ? `transition-timing-function: ${aniOpt.ease} !important;`
+        : '';
     const property = properties.length
         ? `transition-property: ${properties.join(',')} !important;`
         : '';
 
-    return `.${className}{${duration}${delay}${ease}${property}${cssTextFromObj(css)}}`;
+    return `.${className}{${duration}${delay}${ease}${property}${cssTextFromObj(
+        css,
+    )}}`;
 };
 
 const styleClsMap: Map<string, string> = new Map<string, string>();
@@ -114,7 +125,9 @@ export const useMotion = (animLs: AnimationOption[]) => {
 
     function stop() {
         clearAniTimeout(timer);
-        classNames.forEach(([className]) => ref && ref.classList.remove(className));
+        classNames.forEach(
+            ([className]) => ref && ref.classList.remove(className),
+        );
     }
 
     return {

@@ -38,13 +38,19 @@ const shuffle = (arr: any[]) => {
 };
 const shuffleStr = (s: string) => shuffle(s.split('')).join('');
 const performanceHEX = () =>
-    shuffleStr(parseInt(performance.now().toString().replace('.', ''), 10).toString(16));
+    shuffleStr(
+        parseInt(performance.now().toString().replace('.', ''), 10).toString(
+            16,
+        ),
+    );
 const DateHEX = () => shuffleStr(Date.now().toString(16));
 const RandomHEX = () => shuffleStr(Math.random().toString(16).slice(2));
 export const UniqueId = (gap = '_', unit = 6, part = 3) =>
     shuffle(
         Array.from(
-            `${performanceHEX()}${DateHEX()}${RandomHEX()}`.matchAll(new RegExp(`.{${unit}}`, 'g')),
+            `${performanceHEX()}${DateHEX()}${RandomHEX()}`.matchAll(
+                new RegExp(`.{${unit}}`, 'g'),
+            ),
         ),
     )
         .slice(0, part)
@@ -73,3 +79,6 @@ export const debounce = (fn, time = 500) => {
         }, time);
     };
 };
+
+export const delay = (ms: number) =>
+    new Promise((resolve, reject) => setTimeout(resolve, ms));

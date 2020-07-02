@@ -20,15 +20,14 @@ const includeMaterialIconCss = () => {
     document.head.appendChild(link);
 };
 
-export const Icon = (props: IconProps) => {
-    const { name, theme } = props;
+export const Icon = ({ name, theme, ...restProps }: IconProps) => {
 
     includeMaterialIconCss();
 
     return html`
         <i
             class=${'material-icons' + (theme ? `-${theme}` : '')}
-            ${excludeKeysObj(props, ['name', 'theme'])}
+            ...${restProps}
             >${name}</i
         >
     `;

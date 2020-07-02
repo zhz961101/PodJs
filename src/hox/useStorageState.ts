@@ -2,11 +2,9 @@ import { useEffect } from './useEffect';
 import { useState } from './useState';
 
 export const useSessionState = (key: string, initialState: any) => {
-    const storageValue = sessionStorage.getItem(key);
-    if (storageValue) {
-        initialState = storageValue;
-    }
-    const [getter, setter, value] = useState(initialState);
+    const [getter, setter, value] = useState(
+        () => sessionStorage.getItem(key) || initialState,
+    );
     useEffect(() => {
         sessionStorage.setItem(key, value.value);
     });
@@ -14,11 +12,9 @@ export const useSessionState = (key: string, initialState: any) => {
 };
 
 export const useLocalState = (key: string, initialState: any) => {
-    const storageValue = localStorage.getItem(key);
-    if (storageValue) {
-        initialState = storageValue;
-    }
-    const [getter, setter, value] = useState(initialState);
+    const [getter, setter, value] = useState(
+        () => localStorage.getItem(key) || initialState,
+    );
     useEffect(() => {
         localStorage.setItem(key, value.value);
     });

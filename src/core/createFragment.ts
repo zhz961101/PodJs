@@ -1,5 +1,5 @@
 import { effect } from '@vue/reactivity';
-import { uniqKey } from './common';
+import { uniqKey } from '../common';
 import { diffVNodeArray } from './diff';
 import { NewHoxContext, popHoxCtx, pushHoxCtx } from './hox';
 import { patch } from './patch';
@@ -38,7 +38,9 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
                 cacheNodes = nodes;
                 return;
             }
-            diffVNodeArray(lastNodes, nodes).forEach(patcher => patch(patcher, bag));
+            diffVNodeArray(lastNodes, nodes).forEach(patcher =>
+                patch(patcher, bag),
+            );
             lastNodes = nodes;
         },
         mountToLeft: (elem: HTMLElement, anchor: VNode) => {

@@ -1,6 +1,6 @@
 import { createElement } from './createElement';
 import { Patcher, PatcherType } from './diff';
-import { callUnmountCallback } from './hox';
+import { callUnmountCallback } from '../core/hox';
 import { VNode } from './types';
 
 interface ContainerOpt {

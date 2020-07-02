@@ -10,9 +10,10 @@ module.exports = {
         devtool: devMode ? "inline-source-map" : false,
         entry: {
             "taco": './src/index.ts',
+            "taco_light": './src/index-light.ts',
         },
         output: {
-            library: "herb",
+            library: "taco",
             libraryTarget: "umd",
             filename: devMode ? '[name].js' : '[name].min.js',
             path: resolve(__dirname, 'dist')

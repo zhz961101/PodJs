@@ -1,5 +1,5 @@
 import { effect } from '@vue/reactivity';
-import { currentHoxCtx, UnmountCallbackSymbol } from '../hox';
+import { currentHoxCtx, UnmountCallbackSymbol } from '../core/hox';
 
 interface IUseEffect {
     (effectFn: () => void): void;
