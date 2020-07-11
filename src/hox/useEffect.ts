@@ -9,9 +9,11 @@ interface IUseEffect {
 export const useEffect: IUseEffect = effectFn => {
     const unmountRef = Object.create(null) as { value: any };
     unmountRef.value = null;
-    effect(() => {
-        unmountRef.value = effectFn() || null;
-    });
+    requestIdleCallback(() => {
+        effect(() => {
+            unmountRef.value = effectFn() || null;
+        });
+    })
     const ctx = currentHoxCtx();
     if (ctx) {
         ctx[UnmountCallbackSymbol].push(() => unmountRef.value);

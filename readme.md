@@ -53,12 +53,16 @@ npm install -D @tacopie/taco
 ```typescript
 import {html, useState} from '@tacopie/taco';
 
-const App = () => {
+const App = (props, children) => {
+  const { format = x => Number(x) } = props;
   const [_g, _s, count] = useState(1);
   return html`
     <div>
+      <header>
+        ${children}
+      </header>
       <button onclick=${() => count--}>-1</button>
-      ${() => count.value}
+      ${() => format(count.value)}
       <button onclick=${() => count++}>+1</button>
     </div>
   `;
@@ -68,10 +72,11 @@ const App = () => {
 index.ts
 
 ```ts
+import { cn as nzh } from 'nzh';
 import {mount} from '@tacopie/taco';
 import App from './components/App';
 
-mount($('app'), html`<${App} />`);
+mount($('app'), html`<${App} format=${nzh.encodeB}>Hello World.<//>`);
 ```
 
 # Brower Support

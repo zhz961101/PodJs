@@ -20,6 +20,7 @@ export {
     useMotion,
     useStyle,
     css,
+    useCSS,
     useMouse,
     useWindowSize,
     useResponsive,

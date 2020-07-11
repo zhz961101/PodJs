@@ -7,20 +7,22 @@ export function h(
     props: any,
     ...children: any[]
 ): { type: string | Component; props: any; children: VNode[] } {
-    const retChild: VNode[] = children.map(child => {
-        switch (typeof child) {
-            case 'object': {
-                return child;
-            }
-            default: {
-                return {
-                    type: typeIs(child),
-                    props: EmptyObject,
-                    children: EmptyArray,
-                    content: child,
-                };
-            }
-        }
-    });
+    const retChild: VNode[] = children.map(vnodeify);
     return { type, props, children: flatten(retChild) };
+}
+
+export const vnodeify = (children: any): VNode => {
+    switch (typeof children) {
+        case 'object': {
+            return children;
+        }
+        default: {
+            return {
+                type: typeIs(children),
+                props: EmptyObject,
+                children: EmptyArray as VNode[],
+                content: children,
+            };
+        }
+    }
 }

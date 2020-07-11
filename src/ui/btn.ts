@@ -3,10 +3,20 @@ import { GetValue } from '../hox/common';
 import { useEffect } from '../hox/useEffect';
 import { useEventListener } from '../hox/useEventListener';
 import { useMotion } from '../hox/useMotion';
-import { StyleOptions, useStyle } from '../hox/useStyle';
+// import { useCSS } from '../hox/useCSS';
+import { useStyle } from '../hox/useStyle';
 import { html } from '../index';
 import { excludeKeysObj } from './common';
 import { Icon } from './icon';
+import jss from 'jss';
+
+const loadingCircleAnimation = jss.createStyleSheet({
+    '@keyframes loading-circle': {
+        from: { transform: 'rotate(0deg)' },
+        to: { transform: 'rotate(360deg)' }
+    },
+});
+
 
 const ButtonStyle = {
     'line-height': '1.499',
@@ -173,7 +183,7 @@ const disabledStyle = {
 };
 
 const getBtnStyle = (type = '', shape = '', disable = false) => {
-    let style: StyleOptions = { ...ButtonStyle };
+    let style = { ...ButtonStyle } as any;
     switch (type.toLowerCase()) {
         case 'primary':
             style = { ...style, ...primaryStyle };
@@ -233,8 +243,7 @@ const dangerActiveMotion = [
 
 interface ButtonProps {
     type?: 'primary' | 'dashed' | 'danger' | 'link';
-    text?: string;
-    style?: StyleOptions;
+    style?: object;
     shape?: 'circle' | 'round';
     icon?: string;
     disabled?: boolean | Ref<boolean>;
@@ -242,9 +251,15 @@ interface ButtonProps {
     ref?: (elem: HTMLElement) => void;
 }
 
-export const Button = (props: ButtonProps = {}) => {
-    const { type, text, style, shape, icon, ref, disabled, loading } = props;
-    const { styleRef: propsStyleRef } = useStyle(style);
+const setupAnimation = () => {
+    if (!loadingCircleAnimation.attached) {
+        loadingCircleAnimation.attach();
+    }
+}
+
+export const Button = (props: ButtonProps = {}, children) => {
+    const { type, style, shape, icon, ref, disabled, loading } = props;
+    const { styleRef: propsStyleRef } = useStyle(style as any);
     const { styleRef } = useStyle(getBtnStyle(type, shape, GetValue(disabled)));
     const { motionRef, start: activeStart } = useMotion(
         type === 'danger' ? dangerActiveMotion : activeMotion,
@@ -253,7 +268,9 @@ export const Button = (props: ButtonProps = {}) => {
         styleRef: disabledStyleRef,
         add: addDisabled,
         remove: removeDisabled,
-    } = useStyle(disabledStyle, false);
+    } = useStyle(disabledStyle);
+
+    setupAnimation();
 
     let mouseupRef = null;
     if (type !== 'link' && !GetValue(disabled)) {
@@ -270,39 +287,35 @@ export const Button = (props: ButtonProps = {}) => {
 
     return html`
         <button
-            ${excludeKeysObj(props, [
-                'type',
-                'text',
-                'style',
-                'shape',
-                'icon',
-                'ref',
-                'disabled',
-                'loading',
-            ])}
+            ...${excludeKeysObj(props, [
+        'type',
+        'text',
+        'style',
+        'shape',
+        'icon',
+        'ref',
+        'disabled',
+        'loading',
+    ])}
             type="button"
             ref=${[
-                styleRef,
-                propsStyleRef,
-                motionRef,
-                mouseupRef,
-                ref,
-                disabledStyleRef,
-            ]}
-            disabled=${() => GetValue(disabled)}
+            styleRef,
+            propsStyleRef,
+            motionRef,
+            mouseupRef,
+            ref,
+            disabledStyleRef,
+        ]}
+            disabled=${() => !!GetValue(disabled)}
             class=${() => (GetValue(loading) ? 'loading' : '')}
         >
             ${() =>
-                !GetValue(loading)
-                    ? ''
-                    : Icon({
-                          name: 'donut_large',
-                          style: {
-                              animation: 'loadingCircle 1s infinite linear',
-                          },
-                      })}
-            ${() => (!icon || GetValue(loading) ? '' : Icon({ name: icon }))}
-            ${() => (!text ? '' : html` <span>${text}</span> `)}
+            !GetValue(loading)
+                ? ''
+                : html`<${Icon} name='donut_large' style=${{ animation: `${loadingCircleAnimation.keyframes['loading-circle']} 1s infinite linear` }} />`
+        }
+            ${() => (!icon || GetValue(loading) ? '' : html`<${Icon} name=${icon} />`)}
+            ${children}
         </button>
     `;
 };
@@ -330,9 +343,9 @@ const ButtonGroupStyle = {
     },
 };
 
-export const ButtonGroup = (btns: any[]) => {
+export const ButtonGroup = (_, children) => {
     const { styleRef } = useStyle(ButtonGroupStyle);
-    return html` <div ref=${[styleRef]}>${btns}</div> `;
+    return html` <div ref=${[styleRef]}>${children}</div> `;
 };
 
 Button.Group = ButtonGroup;

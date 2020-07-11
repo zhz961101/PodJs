@@ -21,6 +21,7 @@ export { useRequest } from './useRequest';
 // css
 export { useMotion } from './useMotion';
 export { useStyle, css } from './useStyle';
+export { useCSS } from './useCSS';
 
 // io
 export { useMouse } from './useMouse';

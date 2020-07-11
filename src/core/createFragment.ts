@@ -73,6 +73,8 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
             }
             if (elem.parentNode) {
                 elem.parentNode.removeChild(elem);
+            } else {
+                bag.drop();
             }
             // if (container.contains(elem)) {
             //     container.removeChild(elem);
@@ -86,6 +88,13 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
             }
             container.insertBefore(elem, tailAnchor);
         },
+        drop: () => {
+            while (headAnchor.nextSibling !== tailAnchor) {
+                headAnchor.parentNode.removeChild(headAnchor.nextSibling);
+            }
+            // headAnchor.parentNode.removeChild(headAnchor);
+            // tailAnchor.parentNode.removeChild(tailAnchor);
+        }
     };
 
     effect(() => {
@@ -100,10 +109,5 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
         popHoxCtx();
     });
 
-    (window as any).frags.push({
-        bag,
-        headAnchor,
-        tailAnchor,
-    });
     return bag;
 }

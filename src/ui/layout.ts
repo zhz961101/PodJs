@@ -22,11 +22,11 @@ const RowStyle = (opt: typeof defaultOptions) => ({
     'row-gap': opt.rowGap,
 });
 
-export const Row = (cols: any[], opt = defaultOptions) => {
-    opt = { ...defaultOptions, ...opt };
-    const { styleRef } = useStyle(RowStyle(opt));
+export const Row = (props = defaultOptions, children) => {
+    props = { ...defaultOptions, ...props };
+    const { styleRef } = useStyle(RowStyle(props));
 
-    return html` <div style=${opt.style} ref=${[styleRef]}>${cols}</div> `;
+    return html` <div style=${props.style} ref=${[styleRef]}>${children}</div> `;
 };
 
 const defaultColProps = {
@@ -43,14 +43,14 @@ const ColStyle = (span: number, start: number) =>
         },
         start
             ? {
-                  'grid-column-start': start,
-              }
+                'grid-column-start': start,
+            }
             : {},
     );
 
-export const Col = (props: typeof defaultColProps, child: any[]) => {
+export const Col = (props: typeof defaultColProps, children) => {
     const { span, start, style } = props;
     const { styleRef } = useStyle(ColStyle(span, start));
 
-    return html` <div style=${style} ref=${[styleRef]}>${child}</div> `;
+    return html` <div style=${style} ref=${[styleRef]}>${children}</div> `;
 };

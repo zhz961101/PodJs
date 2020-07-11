@@ -112,6 +112,7 @@ export const useMotion = (animLs: AnimationOption[]) => {
         if (!dupe) {
             const styleNode = document.createElement('style');
             styleNode.type = 'text/css';
+            styleNode.setAttribute('taco-ui', '');
 
             styleNode.innerHTML = animLs
                 .map((opt, idx) => cssTextByAnimation(opt, classNames[idx][0]))
