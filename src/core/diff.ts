@@ -6,6 +6,9 @@ const __DEV__ = true;
 
 import isEqual from 'lodash/isEqual';
 import { VNode } from './types';
+import isNil from 'lodash/isNil';
+
+const isSomeNil = (...args: any[]) => args.some(isNil);
 
 const isFunc = f => typeof f === 'function';
 
@@ -50,7 +53,7 @@ export const diff = (prev: VNode, next: VNode) => {
 const diffVnode = (prev: VNode, next: VNode): Patcher[] => {
     const ret = [] as Patcher[];
     if (!sameVNode(prev, next)) {
-        if (prev.content !== next.content) {
+        if (!isSomeNil(prev.content, next.content) && prev.content !== next.content) {
             ret.push(...[NewPatcher(PatcherType.CONTENT_CHANGE, prev, next)]);
         } else {
             ret.push(

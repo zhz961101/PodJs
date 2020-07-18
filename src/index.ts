@@ -1,3 +1,5 @@
+import { onUnmount } from './core/hox';
+
 export { html } from './core/html';
 export { useEffect, useState } from './hox/index';
 export { mount } from './core/mount';
@@ -8,6 +10,7 @@ export {
     useRef,
     useBoolean,
     usePromise,
+    useGenerator,
     useLocalState,
     useSessionState,
     useSize,
@@ -20,12 +23,14 @@ export {
     useMotion,
     useStyle,
     css,
+    useCSS,
     useMouse,
     useWindowSize,
     useResponsive,
     useStateMachine,
     useEmitter,
 } from './hox';
+export { toRaw } from '@vue/reactivity';
 
 // ui
 export { Card, Input, Textarea, Icon, Button, Row, Col } from './ui';

@@ -1,7 +1,10 @@
-import { effect, isRef } from '@vue/reactivity';
+import { effect, isRef, Ref } from '@vue/reactivity';
 import { EmptyArray, EmptyObject } from '../common';
 import { createFragment } from './createFragment';
 import { VNode } from './types';
+import { vnodeify } from './h';
+import BooleanAttrbutes from './const/booleanAttrbutes';
+import RenderReserved from './const/renderReserved';
 
 const arrify = <T>(t: T | T[]) => {
     if (Array.isArray(t)) {
@@ -24,7 +27,7 @@ export function createElement(node: VNode): HTMLElement {
         if (Array.isArray(ComponentRenderd) || ComponentRenderd === null) {
             const frag = document.createDocumentFragment();
             const fragObj = createFragment(
-                () => arrify(type(props, children)),
+                () => arrify(type(props, children)).map(vnodeify),
                 node,
             );
 
@@ -41,21 +44,14 @@ export function createElement(node: VNode): HTMLElement {
             });
         } else if (typeof content === 'function') {
             // 内联组件不挂在hoxctx
-            const rendered = content();
-            if (Array.isArray(rendered)) {
-                const frag = document.createDocumentFragment();
-                const fragObj = createFragment(
-                    () => arrify(content(EmptyObject, EmptyArray)),
-                    node,
-                );
+            const frag = document.createDocumentFragment();
+            const fragObj = createFragment(
+                () => arrify(content(EmptyObject, EmptyArray)).map(vnodeify),
+                node,
+            );
 
-                fragObj.mountFrag(frag);
-                dom = (frag as unknown) as HTMLElement;
-            } else {
-                effect(() => {
-                    dom.textContent = content() + '';
-                });
-            }
+            fragObj.mountFrag(frag);
+            dom = (frag as unknown) as HTMLElement;
         } else {
             dom.textContent = content + '';
         }
@@ -73,7 +69,7 @@ export function createElement(node: VNode): HTMLElement {
 }
 
 const mountStyle = (elem: HTMLElement, style: object) => {
-    if (typeof style !== 'object') {
+    if (typeof style !== 'object' || style === null) {
         return;
     }
     for (const [key, val] of Object.entries(style)) {
@@ -100,23 +96,37 @@ const mountProps = (elem: HTMLElement, props: object) => {
             elem.addEventListener(name, val);
             continue;
         }
+        if (BooleanAttrbutes.includes(k as typeof BooleanAttrbutes[number])) {
+            effect(() => { mountBooleanProps(elem, k, val); });
+            continue;
+        }
+        if (RenderReserved.includes(k as typeof RenderReserved[number])) {
+            // pass
+            continue;
+        }
         switch (k) {
             case 'style': {
                 mountStyle(elem, getVal(val));
                 break;
             }
-            case 'key': {
-                // pass
-                break;
-            }
             case 'ref': {
-                if (typeof val === 'function') {
-                    val(elem);
-                } else if (isRef(val)) {
-                    val.value = elem;
+                if (Array.isArray(val)) {
+                    val.forEach(v => mountRef(elem, v));
+                } else {
+                    mountRef(elem, val);
                 }
                 break;
             }
+            case 'calssName':
+            case 'class': {
+                let prevClassName = '';
+                effect(() => {
+                    const current = getVal(val);
+                    mountClassName(elem, current, prevClassName);
+                    prevClassName = current;
+                })
+                break;
+            };
             default: {
                 effect(() => {
                     elem.setAttribute(key, getVal(val));
@@ -126,3 +136,36 @@ const mountProps = (elem: HTMLElement, props: object) => {
         }
     }
 };
+
+const clsArrify = (clsString: string) => clsString
+    .trim()
+    .split(' ')
+    .map(s => s.trim())
+    .filter(Boolean)
+
+const mountClassName = (elem: HTMLElement, val: string, prev: string) => {
+    if (typeof val !== "string") {
+        return
+    };
+    const curCls = clsArrify(val);
+    const preCls = clsArrify(prev);
+    curCls.forEach(cls => elem.classList.add(cls));
+    preCls.filter(c => !curCls.includes(c))
+        .forEach(c => elem.classList.remove(c));
+}
+
+const mountRef = (elem: HTMLElement, ref: any | Ref<any>) => {
+    if (typeof ref === 'function') {
+        ref(elem);
+    } else if (isRef(ref)) {
+        ref.value = elem;
+    }
+}
+
+const mountBooleanProps = (elem: HTMLElement, key: string, val: boolean) => {
+    if (getVal(val) === true) {
+        elem.setAttribute(key, '');
+    } else {
+        elem.removeAttribute(key);
+    }
+}

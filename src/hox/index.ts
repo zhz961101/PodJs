@@ -5,6 +5,7 @@ export { useValue } from './useValue';
 export { useRef } from './useRef';
 export { useBoolean } from './useBoolean';
 export { usePromise } from './usePromise';
+export { useGenerator } from './useGenerator';
 export { useLocalState, useSessionState } from './useStorageState';
 
 // dom
@@ -21,6 +22,7 @@ export { useRequest } from './useRequest';
 // css
 export { useMotion } from './useMotion';
 export { useStyle, css } from './useStyle';
+export { useCSS } from './useCSS';
 
 // io
 export { useMouse } from './useMouse';

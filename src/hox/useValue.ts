@@ -1,9 +1,8 @@
-import { ref, Ref } from '@vue/reactivity';
-import { useEffect } from './useEffect';
+import { ref, Ref, effect } from '@vue/reactivity';
 import { useState } from './useState';
 
 export function useValue<T>(initial: () => T): Ref<T> {
     const [, , value] = useState();
-    useEffect(() => (value.value = initial()));
+    effect(() => (value.value = initial()));
     return value as Ref<T>;
 }

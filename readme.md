@@ -31,8 +31,45 @@
 - [LICENSE](#license)
 
 # Overview
+没有永恒的不变。
 
 # Features
+
+components
+```ts
+const Content = (
+  { aha = '🤖' },
+  children
+) => html`${aha}${children}`;
+const App = ({
+  { SomeProps }
+}) => html`👈<${Content} aha=${'🦄'}>Hello World!<//>👉`
+```
+
+ES2020
+```ts
+const App = () => {
+  const Timeing = useGenerator(async function* () {
+      while (true) {
+          yield new Date().toTimeString();
+          await new Promise((r) => setTimeout(r, 1000));
+      }
+  });
+  return html`<span>${Timeing}</span>`
+}
+```
+
+auto dependence (`@vue-next/reactivity`)
+```ts
+const App = () => {
+  const counter = useRef(0);
+  return html`<div>
+  <button onclick=${() => counter.value ++}>+</button>
+  count: ${counter}
+  <button onclick=${() => counter.value --}>-</button>
+  </div>`
+}
+```
 
 # Usage
 
@@ -53,12 +90,16 @@ npm install -D @tacopie/taco
 ```typescript
 import {html, useState} from '@tacopie/taco';
 
-const App = () => {
+const App = (props, children) => {
+  const { format = x => Number(x) } = props;
   const [_g, _s, count] = useState(1);
   return html`
     <div>
+      <header>
+        ${children}
+      </header>
       <button onclick=${() => count--}>-1</button>
-      ${() => count.value}
+      ${() => format(count.value)}
       <button onclick=${() => count++}>+1</button>
     </div>
   `;
@@ -68,10 +109,11 @@ const App = () => {
 index.ts
 
 ```ts
+import { cn as nzh } from 'nzh';
 import {mount} from '@tacopie/taco';
 import App from './components/App';
 
-mount($('app'), html`<${App} />`);
+mount($('app'), html`<${App} format=${nzh.encodeB}>Hello World.<//>`);
 ```
 
 # Brower Support
