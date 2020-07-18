@@ -1,6 +1,7 @@
 import flatten from 'lodash/flatten';
 import { EmptyArray, EmptyObject, typeIs } from '../common';
 import { Component, VNode } from './types';
+import { isRef } from '@vue/reactivity';
 
 export function h(
     type: string | Component,
@@ -14,6 +15,14 @@ export function h(
 export const vnodeify = (children: any): VNode => {
     switch (typeof children) {
         case 'object': {
+            if (isRef(children)) {
+                return {
+                    type: "[Obejct Ref]",
+                    props: EmptyObject,
+                    children: EmptyArray as VNode[],
+                    content: children,
+                }
+            }
             return children;
         }
         default: {

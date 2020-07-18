@@ -31,8 +31,45 @@
 - [LICENSE](#license)
 
 # Overview
+没有永恒的不变。
 
 # Features
+
+components
+```ts
+const Content = (
+  { aha = '🤖' },
+  children
+) => html`${aha}${children}`;
+const App = ({
+  { SomeProps }
+}) => html`👈<${Content} aha=${'🦄'}>Hello World!<//>👉`
+```
+
+ES2020
+```ts
+const App = () => {
+  const Timeing = useGenerator(async function* () {
+      while (true) {
+          yield new Date().toTimeString();
+          await new Promise((r) => setTimeout(r, 1000));
+      }
+  });
+  return html`<span>${Timeing}</span>`
+}
+```
+
+auto dependence (`@vue-next/reactivity`)
+```ts
+const App = () => {
+  const counter = useRef(0);
+  return html`<div>
+  <button onclick=${() => counter.value ++}>+</button>
+  count: ${counter}
+  <button onclick=${() => counter.value --}>-</button>
+  </div>`
+}
+```
 
 # Usage
 

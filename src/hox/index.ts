@@ -5,6 +5,7 @@ export { useValue } from './useValue';
 export { useRef } from './useRef';
 export { useBoolean } from './useBoolean';
 export { usePromise } from './usePromise';
+export { useGenerator } from './useGenerator';
 export { useLocalState, useSessionState } from './useStorageState';
 
 // dom

@@ -34,6 +34,7 @@ export const setCurrentHoxRef = (ref: HoxRef<unknown>) => {
     const ctx = currentHoxCtx();
     if (ctx) {
         ctx[HoxMapSymbol].set(ctx[HoxMapIdxSymbol], ref);
+        ctx[HoxMapIdxSymbol]++;
     }
 };
 export const pushHoxCtx = (ctx: HoxCtx) => {
