@@ -31,11 +31,19 @@
 - [LICENSE](#license)
 
 # Overview
+
 没有永恒的不变。
+
+-   all in `JS`
+-   all in `runtime`
+-   reacttive everywhere
+
+try [it](http://zhzluke96.github.io/tacojs-playground/) now!
 
 # Features
 
 components
+
 ```ts
 const Content = (
   { aha = '🤖' },
@@ -47,28 +55,30 @@ const App = ({
 ```
 
 ES2020
+
 ```ts
 const App = () => {
-  const Timeing = useGenerator(async function* () {
-      while (true) {
-          yield new Date().toTimeString();
-          await new Promise((r) => setTimeout(r, 1000));
-      }
-  });
-  return html`<span>${Timeing}</span>`
-}
+    const Timeing = useGenerator(async function* () {
+        while (true) {
+            yield new Date().toTimeString();
+            await new Promise(r => setTimeout(r, 1000));
+        }
+    });
+    return html`<span>${Timeing}</span>`;
+};
 ```
 
 auto dependence (`@vue-next/reactivity`)
+
 ```ts
 const App = () => {
-  const counter = useRef(0);
-  return html`<div>
-  <button onclick=${() => counter.value ++}>+</button>
-  count: ${counter}
-  <button onclick=${() => counter.value --}>-</button>
-  </div>`
-}
+    const counter = useRef(0);
+    return html`<div>
+        <button onclick=${() => counter.value++}>+</button>
+        count: ${counter}
+        <button onclick=${() => counter.value--}>-</button>
+    </div>`;
+};
 ```
 
 # Usage
@@ -88,21 +98,21 @@ npm install -D @tacopie/taco
 /components/App.ts
 
 ```typescript
-import {html, useState} from '@tacopie/taco';
+import { html, useState } from '@tacopie/taco';
 
 const App = (props, children) => {
-  const { format = x => Number(x) } = props;
-  const [_g, _s, count] = useState(1);
-  return html`
-    <div>
-      <header>
-        ${children}
-      </header>
-      <button onclick=${() => count--}>-1</button>
-      ${() => format(count.value)}
-      <button onclick=${() => count++}>+1</button>
-    </div>
-  `;
+    const { format = x => Number(x) } = props;
+    const [_g, _s, count] = useState(1);
+    return html`
+        <div>
+            <header>
+                ${children}
+            </header>
+            <button onclick=${() => count--}>-1</button>
+            ${() => format(count.value)}
+            <button onclick=${() => count++}>+1</button>
+        </div>
+    `;
 };
 ```
 
@@ -110,7 +120,7 @@ index.ts
 
 ```ts
 import { cn as nzh } from 'nzh';
-import {mount} from '@tacopie/taco';
+import { mount } from '@tacopie/taco';
 import App from './components/App';
 
 mount($('app'), html`<${App} format=${nzh.encodeB}>Hello World.<//>`);
@@ -120,14 +130,14 @@ mount($('app'), html`<${App} format=${nzh.encodeB}>Hello World.<//>`);
 
 Target environments are Chrome, Firefox, Safari.If you need to adapt a low-level browser environment, following preprocessors and polyfill are recommended:
 
-- [babel](https://github.com/babel/babel) Babel is a compiler for writing next generation JavaScript.
-- [webcomponentsjs](https://github.com/webcomponents/polyfills/tree/master/packages/webcomponentsjs) v1 spec polyfills
+-   [babel](https://github.com/babel/babel) Babel is a compiler for writing next generation JavaScript.
+-   [webcomponentsjs](https://github.com/webcomponents/polyfills/tree/master/packages/webcomponentsjs) v1 spec polyfills
 
 # Related Efforts
 
-- [lit-element](https://github.com/Polymer/lit-element) A simple base class for creating fast, lightweight web components
-- [vue](https://github.com/vuejs/vue) A progressive, incrementally-adoptable JavaScript framework for building UI on the web.
-- [react](https://github.com/facebook/react) A declarative, efficient, and flexible JavaScript library for building user interfaces.
+-   [lit-element](https://github.com/Polymer/lit-element) A simple base class for creating fast, lightweight web components
+-   [vue](https://github.com/vuejs/vue) A progressive, incrementally-adoptable JavaScript framework for building UI on the web.
+-   [react](https://github.com/facebook/react) A declarative, efficient, and flexible JavaScript library for building user interfaces.
 
 # Maintainers
 
@@ -149,8 +159,8 @@ I'd like to invite you to join [@tacopie](https://trello.com/tacopie2) on Trello
 
 boards:
 
-- [@tacopie/taco](https://trello.com/b/3hIi6dje/tacojs%F0%9F%8C%AE)
-- ...
+-   [@tacopie/taco](https://trello.com/b/3hIi6dje/tacojs%F0%9F%8C%AE)
+-   ...
 
 # LICENSE
 
