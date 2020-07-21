@@ -7,6 +7,7 @@
   "unpkg": "dist/taco.min.js",
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack --mode=production",
+    "build:esm": "cross-env NODE_ENV=production webpack --mode=production --config ./webpack.config.esm.js",
     "build:w": "cross-env NODE_ENV=production webpack --watch --mode=production",
     "dev": "cross-env NODE_ENV=development webpack --mode=development",
     "dev:w": "cross-env NODE_ENV=development webpack --watch --mode=development",
@@ -39,10 +40,12 @@
   "homepage": "https://github.com/zhzLuke96/TacoJs#readme",
   "devDependencies": {
     "@jest/types": "^24.9.0",
+    "@purtuga/esm-webpack-plugin": "^1.2.1",
     "@types/jest": "^24.0.22",
     "@types/lodash": "^4.14.157",
     "@types/requestidlecallback": "^0.3.1",
     "cross-env": "^6.0.3",
+    "esm": "^3.2.25",
     "jest": "^24.9.0",
     "prettier": "^2.0.5",
     "ts-jest": "^24.1.0",

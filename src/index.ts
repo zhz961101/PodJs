@@ -1,4 +1,4 @@
-import { onUnmount } from './core/hox';
+export { onUnmount } from './core/hox';
 
 export { html } from './core/html';
 export { useEffect, useState } from './hox/index';
