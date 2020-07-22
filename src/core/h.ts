@@ -1,4 +1,3 @@
-import flatten from 'lodash/flatten';
 import { EmptyArray, EmptyObject, typeIs } from '../common';
 import { Component, VNode } from './types';
 import { isRef } from '@vue/reactivity';
@@ -9,7 +8,7 @@ export function h(
     ...children: any[]
 ): { type: string | Component; props: any; children: VNode[] } {
     const retChild: VNode[] = children.map(vnodeify);
-    return { type, props, children: flatten(retChild) };
+    return { type, props, children: (retChild || []).flat(Infinity) };
 }
 
 export const vnodeify = (children: any): VNode => {
