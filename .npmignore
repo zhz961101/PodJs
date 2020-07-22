@@ -30,7 +30,9 @@ webpack.config.js
 webpack.config.esm.js
 
 readme.md
+*.md
 local_*/
 *.LICENSE.txt
 .github/
 LICENSE
+prettier.config.js
