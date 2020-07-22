@@ -106,7 +106,7 @@ const mountProps = (elem: HTMLElement, props: object) => {
         }
         switch (k) {
             case 'style': {
-                mountStyle(elem, getVal(val));
+                mountStyle(elem, val);
                 break;
             }
             case 'ref': {
