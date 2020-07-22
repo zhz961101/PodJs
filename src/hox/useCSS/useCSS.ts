@@ -59,7 +59,7 @@ export const useCSS = (style: CSSStyle) => {
             }
             target.classList.add(className);
         },
-        render() {
+        remove() {
             if (!target) {
                 return;
             }
