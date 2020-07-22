@@ -1,15 +1,17 @@
 {
   "name": "@tacopie/taco",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "mvvm framework.",
   "main": "index.js",
   "typings": "dist/types",
   "unpkg": "dist/taco.min.js",
   "scripts": {
-    "build": "cross-env NODE_ENV=production webpack --mode=production",
+    "build": "cross-env NODE_ENV=production webpack --mode=production --config ./webpack.config.js",
+    "build:esm": "cross-env NODE_ENV=production webpack --mode=production --config ./webpack.config.esm.js",
     "build:w": "cross-env NODE_ENV=production webpack --watch --mode=production",
-    "dev": "cross-env NODE_ENV=development webpack --mode=development",
-    "dev:w": "cross-env NODE_ENV=development webpack --watch --mode=development",
+    "build:all": "npm run build && npm run build:esm && npm run dev",
+    "dev": "cross-env NODE_ENV=development webpack --mode=development --config ./webpack.config.js",
+    "dev:w": "cross-env NODE_ENV=development webpack --watch --mode=development --config ./webpack.config.js",
     "all": "npm run dev && npm run build",
     "lint": "tslint -c tslint.json \"./src/**/*.ts\" --force",
     "lint:fix": "tslint -c tslint.json --fix \"./src/**/*.ts\" --force",
@@ -18,7 +20,8 @@
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "debug": "cross-env NODE_ENV=development node --inspect-brk ./node_modules/jest/bin/jest --runInBand",
     "format": "prettier --write ./src/**/**.ts",
-    "analyze": "cross-env NODE_ENV=production ANALYZE_MODE=on webpack --mode=production"
+    "analyze": "cross-env NODE_ENV=production ANALYZE_MODE=on webpack --mode=production --config ./webpack.config.js",
+    "analyze:dev": "cross-env NODE_ENV=development ANALYZE_MODE=on webpack --mode=development --config ./webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -39,12 +42,14 @@
   "homepage": "https://github.com/zhzLuke96/TacoJs#readme",
   "devDependencies": {
     "@jest/types": "^24.9.0",
+    "@purtuga/esm-webpack-plugin": "^1.2.1",
     "@types/jest": "^24.0.22",
-    "@types/lodash": "^4.14.157",
     "@types/requestidlecallback": "^0.3.1",
     "cross-env": "^6.0.3",
+    "esm": "^3.2.25",
     "jest": "^24.9.0",
     "prettier": "^2.0.5",
+    "terser-webpack-plugin": "^3.0.7",
     "ts-jest": "^24.1.0",
     "ts-loader": "^6.2.1",
     "tslint": "^5.20.1",
@@ -58,7 +63,6 @@
     "color": "^3.1.2",
     "htm": "^3.0.4",
     "jss": "^10.3.0",
-    "jss-preset-default": "^10.3.0",
-    "lodash": "^4.17.15"
+    "jss-preset-default": "^10.3.0"
   }
 }

@@ -1,13 +1,17 @@
 import jss from 'jss';
 import preset from 'jss-preset-default';
 import color from 'color';
-import once from 'lodash/once';
 import { CSSStyle } from './types';
 import { uniqKey } from '../../common';
 import { useState } from '../useState';
 
 type StyleSheetType = ReturnType<typeof jss.createStyleSheet>;
 const StyleSheetMap = new Map<string, StyleSheetType>();
+
+const once = (fn) => (...args) => {
+    fn(...args);
+    fn = x => x;
+};
 
 const setup = once(() => {
     jss.setup(preset());

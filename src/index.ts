@@ -1,7 +1,9 @@
-import { onUnmount } from './core/hox';
+export { onUnmount } from './core/hox';
 
 export { html } from './core/html';
-export { useEffect, useState } from './hox/index';
+export { h } from './core/h';
+export { useEffect } from './hox/useEffect';
+export { useState } from './hox/useState';
 export { mount } from './core/mount';
 
 // hox

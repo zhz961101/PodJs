@@ -1,4 +1,6 @@
-import isNative from 'lodash/isNative';
+const isFn = fn => typeof fn === 'function';
+const nativeRegex = /\{\s*\[native code\]\s*\}/;
+const isNative = fn => isFn(fn) && nativeRegex.test('' + fn);
 
 export const typeAs = (o: any) => typeIs(o).slice(8, -1);
 export const typeIs = (o: any) => Object.prototype.toString.call(o);
@@ -9,7 +11,7 @@ export const EmptyObject = Object.freeze({});
 export const uniqKey = () => Math.random().toString(36).slice(2);
 
 const isIOS = false;
-const noop = () => {};
+const noop = () => { };
 
 export const nextTick = (function () {
     let callbacks = []; // 存储需要触发的回调函数
@@ -46,7 +48,7 @@ export const nextTick = (function () {
         (isNative(MutationObserver) ||
             // PhantomJS and iOS 7.x
             MutationObserver.toString() ===
-                '[object MutationObserverConstructor]')
+            '[object MutationObserverConstructor]')
     ) {
         // use MutationObserver where native Promise is not available,
         // e.g. PhantomJS IE11, iOS7, Android 4.4

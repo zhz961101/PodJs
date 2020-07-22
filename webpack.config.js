@@ -2,15 +2,22 @@ const {
     resolve
 } = require('path');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const TerserPlugin = require('terser-webpack-plugin');
+
 const devMode = process.env.NODE_ENV !== 'production'
 const analyzeMode = process.env.ANALYZE_MODE === 'on'
+
+console.log({
+    devMode,
+    analyzeMode
+})
 
 module.exports = {
     ...{
         devtool: devMode ? "inline-source-map" : false,
         entry: {
             "taco": './src/index.ts',
-            "taco_light": './src/index-light.ts',
+            "taco_light": './src/index-core.ts',
         },
         output: {
             library: "taco",
@@ -30,10 +37,17 @@ module.exports = {
                 '.ts', ".js", ".jsx", "tsx"
             ]
         },
+        optimization: {
+            minimize: !devMode,
+            minimizer: [new TerserPlugin()],
+            sideEffects: true,
+            usedExports: true,
+        }
     },
-    ...analyzeMode && {
-        plugins: [
-            new BundleAnalyzerPlugin(),
-        ],
-    }
+    ...(analyzeMode ? {
+        plugins: [new BundleAnalyzerPlugin()]
+    } : {})
+    // plugin: [
+    //     ...(analyzeMode ? [new BundleAnalyzerPlugin()] : [])
+    // ]
 };

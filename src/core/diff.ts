@@ -4,9 +4,10 @@
 const __DEV__ = true;
 ///////////////////
 
-import isEqual from 'lodash/isEqual';
+import isEqual from 'fast-deep-equal';
 import { VNode } from './types';
-import isNil from 'lodash/isNil';
+
+const isNil = x => x == null;
 
 const isSomeNil = (...args: any[]) => args.some(isNil);
 
