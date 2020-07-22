@@ -27,7 +27,10 @@ tslint.json
 
 # webpack config file
 webpack.config.js
+webpack.config.esm.js
 
 readme.md
-webpack.config.esm.js
 local_*/
+*.LICENSE.txt
+.github/
+LICENSE
