@@ -5,7 +5,6 @@ import { diffVNodeArray } from './diff';
 import { NewHoxContext, popHoxCtx, pushHoxCtx } from './hox';
 import { patch } from './patch';
 import { VNode } from './types';
-import { useEffect } from './useEffect';
 
 export function createFragment(render: () => VNode[], rootVnode: VNode) {
     const uk = uniqKey();

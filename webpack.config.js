@@ -17,7 +17,7 @@ module.exports = {
         devtool: devMode ? "inline-source-map" : false,
         entry: {
             "taco": './src/index.ts',
-            "taco_light": './src/index-core.ts',
+            "taco_core": './src/index-core.ts',
         },
         output: {
             library: "taco",
@@ -38,7 +38,7 @@ module.exports = {
             ]
         },
         optimization: {
-            minimize: !devMode,
+            minimize: true,
             minimizer: [new TerserPlugin()],
             sideEffects: true,
             usedExports: true,

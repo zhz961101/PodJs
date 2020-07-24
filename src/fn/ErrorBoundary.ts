@@ -3,7 +3,7 @@ import { HoxCtxStack, SetHoxCtxStackVal } from '../core/hox';
 import { html } from '../core/html';
 import { Component, VNode } from '../core/types';
 import { useRef } from '../core/useRef';
-import { useValue } from '../hox';
+import { useValue } from '../hox/useValue';
 
 interface HolderProps {
     error: string | Error;
