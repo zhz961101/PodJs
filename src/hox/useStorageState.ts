@@ -6,10 +6,14 @@ const Storage2Versions = new WeakMap<Storage, Record<string, number>>();
 
 const getVerMap = (factory: Storage): Record<string, number> => {
     try {
-        return (JSON.parse(factory.getItem(VersionKey)) as unknown) as Record<
+        const map = (JSON.parse(factory.getItem(VersionKey)) as unknown) as Record<
             string,
             number
         >;
+        if (!map) {
+            return {};
+        }
+        return map;
     } catch (error) {
         return {};
     }
