@@ -11,17 +11,17 @@ export const EmptyObject = Object.freeze({});
 export const uniqKey = () => Math.random().toString(36).slice(2);
 
 const isIOS = false;
-const noop = () => { };
+const noop = () => {};
 
 export const nextTick = (function () {
-    let callbacks = []; // 存储需要触发的回调函数
+    const callbacks = []; // 存储需要触发的回调函数
     let pending = false; // 是否正在等待的标识(false:允许触发在下次事件循环触发callbacks中的回调, true: 已经触发过,需要等到下次事件循环)
     let timerFunc; // 设置在下次事件循环触发callbacks的 触发函数
 
     // 处理callbacks的函数
     function nextTickHandler() {
         pending = false; // 可以触发timeFunc
-        let copies = callbacks.slice(0); // 复制callback
+        const copies = callbacks.slice(0); // 复制callback
         callbacks.length = 0; // 清空callback
         for (let i = 0; i < copies.length; i++) {
             copies[i](); // 触发callback回调函数
@@ -30,8 +30,8 @@ export const nextTick = (function () {
 
     // 如果支持Promise,使用Promise实现
     if (typeof Promise !== 'undefined' && isNative(Promise)) {
-        let p = Promise.resolve();
-        let logError = function (err) {
+        const p = Promise.resolve();
+        const logError = function (err) {
             console.error(err);
         };
         timerFunc = function () {
@@ -48,14 +48,14 @@ export const nextTick = (function () {
         (isNative(MutationObserver) ||
             // PhantomJS and iOS 7.x
             MutationObserver.toString() ===
-            '[object MutationObserverConstructor]')
+                '[object MutationObserverConstructor]')
     ) {
         // use MutationObserver where native Promise is not available,
         // e.g. PhantomJS IE11, iOS7, Android 4.4
         let counter = 1;
-        let observer = new MutationObserver(nextTickHandler);
+        const observer = new MutationObserver(nextTickHandler);
         // 创建一个textnode dom节点,并让MutationObserver 监视这个节点;而 timeFunc正是改变这个dom节点的触发函数
-        let textNode = document.createTextNode(String(counter));
+        const textNode = document.createTextNode(String(counter));
         observer.observe(textNode, {
             characterData: true,
         });

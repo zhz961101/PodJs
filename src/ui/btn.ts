@@ -1,6 +1,7 @@
 import { Ref } from '@vue/reactivity';
+import jss from 'jss';
+import { useEffect } from '../core/useEffect';
 import { GetValue } from '../hox/common';
-import { useEffect } from '../hox/useEffect';
 import { useEventListener } from '../hox/useEventListener';
 import { useMotion } from '../hox/useMotion';
 // import { useCSS } from '../hox/useCSS';
@@ -8,15 +9,13 @@ import { useStyle } from '../hox/useStyle';
 import { html } from '../index';
 import { excludeKeysObj } from './common';
 import { Icon } from './icon';
-import jss from 'jss';
 
 const loadingCircleAnimation = jss.createStyleSheet({
     '@keyframes loading-circle': {
         from: { transform: 'rotate(0deg)' },
-        to: { transform: 'rotate(360deg)' }
+        to: { transform: 'rotate(360deg)' },
     },
 });
-
 
 const ButtonStyle = {
     'line-height': '1.499',
@@ -255,7 +254,7 @@ const setupAnimation = () => {
     if (!loadingCircleAnimation.attached) {
         loadingCircleAnimation.attach();
     }
-}
+};
 
 export const Button = (props: ButtonProps = {}, children) => {
     const { type, style, shape, icon, ref, disabled, loading } = props;
@@ -288,33 +287,40 @@ export const Button = (props: ButtonProps = {}, children) => {
     return html`
         <button
             ...${excludeKeysObj(props, [
-        'type',
-        'text',
-        'style',
-        'shape',
-        'icon',
-        'ref',
-        'disabled',
-        'loading',
-    ])}
+                'type',
+                'text',
+                'style',
+                'shape',
+                'icon',
+                'ref',
+                'disabled',
+                'loading',
+            ])}
             type="button"
             ref=${[
-            styleRef,
-            propsStyleRef,
-            motionRef,
-            mouseupRef,
-            ref,
-            disabledStyleRef,
-        ]}
+                styleRef,
+                propsStyleRef,
+                motionRef,
+                mouseupRef,
+                ref,
+                disabledStyleRef,
+            ]}
             disabled=${() => !!GetValue(disabled)}
             class=${() => (GetValue(loading) ? 'loading' : '')}
         >
             ${() =>
-            !GetValue(loading)
-                ? ''
-                : html`<${Icon} name='donut_large' style=${{ animation: `${loadingCircleAnimation.keyframes['loading-circle']} 1s infinite linear` }} />`
-        }
-            ${() => (!icon || GetValue(loading) ? '' : html`<${Icon} name=${icon} />`)}
+                !GetValue(loading)
+                    ? ''
+                    : html`<${Icon}
+                          name="donut_large"
+                          style=${{
+                              animation: `${loadingCircleAnimation.keyframes['loading-circle']} 1s infinite linear`,
+                          }}
+                      />`}
+            ${() =>
+                !icon || GetValue(loading)
+                    ? ''
+                    : html`<${Icon} name=${icon} />`}
             ${children}
         </button>
     `;

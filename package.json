@@ -19,7 +19,8 @@
     "test:cover": "jest --coverage",
     "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
     "debug": "cross-env NODE_ENV=development node --inspect-brk ./node_modules/jest/bin/jest --runInBand",
-    "format": "prettier --write ./src/**/**.ts",
+    "prettier": "prettier --write ./src/**/**.ts",
+    "beautify": "npm run lint:fix && npm run prettier",
     "analyze": "cross-env NODE_ENV=production ANALYZE_MODE=on webpack --mode=production --config ./webpack.config.js",
     "analyze:dev": "cross-env NODE_ENV=development ANALYZE_MODE=on webpack --mode=development --config ./webpack.config.js"
   },

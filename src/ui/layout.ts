@@ -26,7 +26,9 @@ export const Row = (props = defaultOptions, children) => {
     props = { ...defaultOptions, ...props };
     const { styleRef } = useStyle(RowStyle(props));
 
-    return html` <div style=${props.style} ref=${[styleRef]}>${children}</div> `;
+    return html`
+        <div style=${props.style} ref=${[styleRef]}>${children}</div>
+    `;
 };
 
 const defaultColProps = {
@@ -43,8 +45,8 @@ const ColStyle = (span: number, start: number) =>
         },
         start
             ? {
-                'grid-column-start': start,
-            }
+                  'grid-column-start': start,
+              }
             : {},
     );
 

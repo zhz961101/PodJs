@@ -1,5 +1,5 @@
-import { useEffect } from './useEffect';
-import { useState } from './useState';
+import { useEffect } from '../core/useEffect';
+import { useState } from '../core/useState';
 
 export const useClickOutside = (handler: (ev: MouseEvent) => void) => {
     const [, , target] = useState<HTMLElement>();

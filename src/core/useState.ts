@@ -1,7 +1,7 @@
-import { ref, Ref } from '@vue/reactivity';
-import { currentHoxRef, setCurrentHoxRef } from '../core/hox';
+import { isRef, ref, Ref, toRaw } from '@vue/reactivity';
+import { isFunc } from './common';
+import { currentHoxRef, setCurrentHoxRef } from './hox';
 
-type Initializer<T> = T extends () => infer R ? R : T;
 type StateSetter<T> = (v: T) => any;
 type StateGetter<T> = () => T;
 type StateReturnType<T> = [StateGetter<T>, StateSetter<T>, Ref<T>];
@@ -12,8 +12,10 @@ export function useState<T>(initial?: (() => T) | T): StateReturnType<T> {
         return hoxCtx.value as StateReturnType<T>;
     }
     const theRef = ref<T>();
-    if (typeof initial === 'function') {
-        theRef.value = (initial as () => T)();
+    if (isRef(initial)) {
+        theRef.value = toRaw(initial.value) as T;
+    } else if (isFunc(initial)) {
+        theRef.value = initial();
     } else {
         theRef.value = initial;
     }

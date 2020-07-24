@@ -1,6 +1,6 @@
+import { isRef } from '@vue/reactivity';
 import { EmptyArray, EmptyObject, typeIs } from '../common';
 import { Component, VNode } from './types';
-import { isRef } from '@vue/reactivity';
 
 export function h(
     type: string | Component,
@@ -8,7 +8,11 @@ export function h(
     ...children: any[]
 ): { type: string | Component; props: any; children: VNode[] } {
     const retChild: VNode[] = children.map(vnodeify);
-    return { type, props, children: (retChild || []).flat(Infinity) };
+    return {
+        type,
+        props: props || undefined,
+        children: (retChild || []).flat(Infinity),
+    };
 }
 
 export const vnodeify = (children: any): VNode => {
@@ -16,21 +20,21 @@ export const vnodeify = (children: any): VNode => {
         case 'object': {
             if (isRef(children)) {
                 return {
-                    type: "[Obejct Ref]",
-                    props: EmptyObject,
+                    type: '[Obejct Ref]',
+                    props: undefined,
                     children: EmptyArray as VNode[],
                     content: children,
-                }
+                };
             }
             return children;
         }
         default: {
             return {
                 type: typeIs(children),
-                props: EmptyObject,
+                props: undefined,
                 children: EmptyArray as VNode[],
                 content: children,
             };
         }
     }
-}
+};

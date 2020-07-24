@@ -1,5 +1,5 @@
 import { effect, reactive } from '@vue/reactivity';
-import { useState } from './useState';
+import { useState } from '../core/useState';
 
 const IdleCallback =
     (window as any).requestIdleCallback ||

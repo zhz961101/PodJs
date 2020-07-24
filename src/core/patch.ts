@@ -1,6 +1,6 @@
+import { callUnmountCallback } from '../core/hox';
 import { createElement } from './createElement';
 import { Patcher, PatcherType } from './diff';
-import { callUnmountCallback } from '../core/hox';
 import { VNode } from './types';
 
 interface ContainerOpt {
@@ -44,3 +44,29 @@ export function patch(patcher: Patcher, opt: ContainerOpt) {
         }
     }
 }
+
+// class PatcherQueue {
+//     q: (() => void)[];
+//     running: boolean;
+//     constructor() {
+//         this.q = [];
+//         this.running = false;
+//     }
+//     push(p: () => void) {
+//         this.q.push(p);
+//         this.run();
+//     }
+//     run() {
+//         if (this.running) {
+//             return
+//         }
+//         this.running = true;
+//         setTimeout(() => {
+//             this.q.forEach(fn => fn());
+//             this.q = [];
+//             this.running = false;
+//         }, 1)
+//     }
+// }
+
+// export const PatchQueue = new PatcherQueue();

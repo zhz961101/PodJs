@@ -1,6 +1,6 @@
 import { effect } from '@vue/reactivity';
+import { useState } from '../core/useState';
 import { isDef } from './common';
-import { useState } from './useState';
 import { useWindowSize } from './useWindowSize';
 
 interface SizeType {

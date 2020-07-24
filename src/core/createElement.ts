@@ -1,14 +1,14 @@
 import { effect, isRef, Ref } from '@vue/reactivity';
 import { EmptyArray, EmptyObject } from '../common';
-import { createFragment } from './createFragment';
-import { VNode } from './types';
-import { vnodeify } from './h';
 import BooleanAttrbutes from './const/booleanAttrbutes';
 import RenderReserved from './const/renderReserved';
+import { createFragment } from './createFragment';
+import { vnodeify } from './h';
+import { VNode } from './types';
 
 const arrify = <T>(t: T | T[]) => {
     if (Array.isArray(t)) {
-        return t;
+        return t.flat(Infinity);
     }
     return [t];
 };
@@ -23,19 +23,11 @@ export function createElement(node: VNode): HTMLElement {
     // }
     let dom: HTMLElement;
     if (typeof type === 'function') {
-        const ComponentRenderd = type(props, children);
-        if (Array.isArray(ComponentRenderd) || ComponentRenderd === null) {
-            const frag = document.createDocumentFragment();
-            const fragObj = createFragment(
-                () => arrify(type(props, children)).map(vnodeify),
-                node,
-            );
-
-            fragObj.mountFrag(frag);
-            dom = (frag as unknown) as HTMLElement;
-        } else {
-            dom = createElement(ComponentRenderd);
-        }
+        const fragObj = createFragment(() => {
+            const vnode = type(props, children);
+            return arrify(vnode).map(vnodeify);
+        }, node);
+        dom = (fragObj.fragElement as Node) as HTMLElement;
     } else if (type[0] === '[') {
         dom = (document.createTextNode('') as unknown) as HTMLElement;
         if (isRef(content)) {
@@ -44,14 +36,11 @@ export function createElement(node: VNode): HTMLElement {
             });
         } else if (typeof content === 'function') {
             // 内联组件不挂在hoxctx
-            const frag = document.createDocumentFragment();
             const fragObj = createFragment(
                 () => arrify(content(EmptyObject, EmptyArray)).map(vnodeify),
                 node,
             );
-
-            fragObj.mountFrag(frag);
-            dom = (frag as unknown) as HTMLElement;
+            dom = (fragObj.fragElement as Node) as HTMLElement;
         } else {
             dom.textContent = content + '';
         }
@@ -97,7 +86,9 @@ const mountProps = (elem: HTMLElement, props: object) => {
             continue;
         }
         if (BooleanAttrbutes.includes(k as typeof BooleanAttrbutes[number])) {
-            effect(() => { mountBooleanProps(elem, k, val); });
+            effect(() => {
+                mountBooleanProps(elem, k, val);
+            });
             continue;
         }
         if (RenderReserved.includes(k as typeof RenderReserved[number])) {
@@ -124,9 +115,9 @@ const mountProps = (elem: HTMLElement, props: object) => {
                     const current = getVal(val);
                     mountClassName(elem, current, prevClassName);
                     prevClassName = current;
-                })
+                });
                 break;
-            };
+            }
             default: {
                 effect(() => {
                     elem.setAttribute(key, getVal(val));
@@ -137,22 +128,24 @@ const mountProps = (elem: HTMLElement, props: object) => {
     }
 };
 
-const clsArrify = (clsString: string) => clsString
-    .trim()
-    .split(' ')
-    .map(s => s.trim())
-    .filter(Boolean)
+const clsArrify = (clsString: string) =>
+    clsString
+        .trim()
+        .split(' ')
+        .map(s => s.trim())
+        .filter(Boolean);
 
 const mountClassName = (elem: HTMLElement, val: string, prev: string) => {
-    if (typeof val !== "string") {
-        return
-    };
+    if (typeof val !== 'string') {
+        return;
+    }
     const curCls = clsArrify(val);
     const preCls = clsArrify(prev);
     curCls.forEach(cls => elem.classList.add(cls));
-    preCls.filter(c => !curCls.includes(c))
+    preCls
+        .filter(c => !curCls.includes(c))
         .forEach(c => elem.classList.remove(c));
-}
+};
 
 const mountRef = (elem: HTMLElement, ref: any | Ref<any>) => {
     if (typeof ref === 'function') {
@@ -160,7 +153,7 @@ const mountRef = (elem: HTMLElement, ref: any | Ref<any>) => {
     } else if (isRef(ref)) {
         ref.value = elem;
     }
-}
+};
 
 const mountBooleanProps = (elem: HTMLElement, key: string, val: boolean) => {
     if (getVal(val) === true) {
@@ -168,4 +161,4 @@ const mountBooleanProps = (elem: HTMLElement, key: string, val: boolean) => {
     } else {
         elem.removeAttribute(key);
     }
-}
+};

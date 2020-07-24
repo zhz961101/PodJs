@@ -1,8 +1,8 @@
+import { html } from '../core/html';
+import { useEffect } from '../core/useEffect';
 import { GetValue } from '../hox/common';
-import { useEffect } from '../hox/index';
 import { useEventListener } from '../hox/useEventListener';
 import { useStyle } from '../hox/useStyle';
-import { html } from '../index';
 import { excludeKeysObj } from './common';
 
 const InputStyle = {

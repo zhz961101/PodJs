@@ -1,14 +1,19 @@
 import { effect } from '@vue/reactivity';
 import { uniqKey } from '../common';
+import { TacoThrow } from '../fn/ErrorBoundary';
 import { diffVNodeArray } from './diff';
 import { NewHoxContext, popHoxCtx, pushHoxCtx } from './hox';
 import { patch } from './patch';
 import { VNode } from './types';
+import { useEffect } from './useEffect';
 
 export function createFragment(render: () => VNode[], rootVnode: VNode) {
     const uk = uniqKey();
     const headAnchor = document.createComment(`👇${uk}👇`);
     const tailAnchor = document.createComment(`👆${uk}👆`);
+    const fragElement = document.createDocumentFragment();
+    fragElement.appendChild(headAnchor);
+    fragElement.appendChild(tailAnchor);
     let lastNodes = [];
     let cacheNodes = [] as VNode[];
 
@@ -17,6 +22,9 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
     rootVnode.real_dom_right = tailAnchor;
 
     const bag = {
+        get fragElement() {
+            return fragElement;
+        },
         get container() {
             return bag.getContainer();
         },
@@ -25,19 +33,15 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
             ((tailAnchor.parentNode as unknown) as HTMLElement) ||
             null,
         mounted: () => !!bag.getContainer(),
-        mountFrag: (target: HTMLElement | DocumentFragment) => {
-            target.appendChild(headAnchor);
-            target.appendChild(tailAnchor);
-            if (cacheNodes.length) {
-                bag.rerender(cacheNodes);
-                cacheNodes = [];
-            }
-        },
         rerender: (nodes: VNode[]) => {
             if (!bag.container) {
                 cacheNodes = nodes;
+                console.warn('!!!');
                 return;
             }
+            // diffVNodeArray(lastNodes, nodes).forEach(patcher =>
+            //     PatchQueue.push(() => patch(patcher, bag))
+            // );
             diffVNodeArray(lastNodes, nodes).forEach(patcher =>
                 patch(patcher, bag),
             );
@@ -71,10 +75,17 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
                 console.warn('no container found', bag);
                 return;
             }
+            if (elem instanceof DocumentFragment) {
+                // 如果是frag，那是上不了的，应该直接删除这个frag下的所有node
+                if ((elem as any).fragInstance) {
+                    (elem as any).fragInstance.drop();
+                }
+                return;
+            }
             if (elem.parentNode) {
                 elem.parentNode.removeChild(elem);
             } else {
-                bag.drop();
+                console.log('💢💢💢不是吧，阿sir，怎么会没有parentNode呢？');
             }
             // if (container.contains(elem)) {
             //     container.removeChild(elem);
@@ -92,10 +103,12 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
             while (headAnchor.nextSibling !== tailAnchor) {
                 headAnchor.parentNode.removeChild(headAnchor.nextSibling);
             }
-            // headAnchor.parentNode.removeChild(headAnchor);
-            // tailAnchor.parentNode.removeChild(tailAnchor);
-        }
+            headAnchor.parentNode.removeChild(headAnchor);
+            tailAnchor.parentNode.removeChild(tailAnchor);
+        },
     };
+
+    (fragElement as any).fragInstance = bag;
 
     effect(() => {
         // 挂在hoxctx
@@ -104,9 +117,14 @@ export function createFragment(render: () => VNode[], rootVnode: VNode) {
         }
         pushHoxCtx(rootVnode.hoxCtx);
         //
-        const nodes = render();
-        bag.rerender(nodes);
-        popHoxCtx();
+        try {
+            const nodes = render();
+            bag.rerender(nodes);
+        } catch (error) {
+            TacoThrow(error);
+        } finally {
+            popHoxCtx();
+        }
     });
 
     return bag;

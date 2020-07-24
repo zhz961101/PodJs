@@ -13,7 +13,7 @@ export const useEffect: IUseEffect = effectFn => {
         effect(() => {
             unmountRef.value = effectFn() || null;
         });
-    })
+    });
     const ctx = currentHoxCtx();
     if (ctx) {
         ctx[UnmountCallbackSymbol].push(() => unmountRef.value);

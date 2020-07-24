@@ -21,7 +21,6 @@ const includeMaterialIconCss = () => {
 };
 
 export const Icon = ({ name, theme, ...restProps }: IconProps) => {
-
     includeMaterialIconCss();
 
     return html`

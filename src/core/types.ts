@@ -4,9 +4,11 @@ import { HoxCtx } from '../core/hox';
 // export const defComponent = (fn) => fn && typeof fn === "function" ? fn[ComponentSymbol] = true : void (0);
 // export const isComponent = (fn) => fn && typeof fn === "function" && fn[ComponentSymbol];
 
+type Props = Record<string, any>;
+
 export type Component = (
-    props: object,
-    children: VNode[],
+    props?: Props,
+    children?: VNode[],
 ) => VNode | null | VNode[];
 
 export interface VNode {

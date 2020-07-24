@@ -1,5 +1,5 @@
+import { useState } from '../core/useState';
 import { useEventListener } from './useEventListener';
-import { useState } from './useState';
 
 export const useHover = <T extends HTMLElement>() => {
     const [getter, setter, state] = useState(false);

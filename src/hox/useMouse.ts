@@ -1,7 +1,7 @@
+import { useEffect } from '../core/useEffect';
+import { useState } from '../core/useState';
 import { throttle } from './common';
-import { useEffect } from './useEffect';
 import { useEventListener } from './useEventListener';
-import { useState } from './useState';
 
 export const useMouse = () => {
     const [getter, setter, state] = useState({

@@ -1,6 +1,6 @@
-import { useEffect } from './useEffect';
-import { useState } from './useState';
 import { Ref } from '@vue/reactivity';
+import { useEffect } from '../core/useEffect';
+import { useState } from '../core/useState';
 
 interface StateMachineOptions {
     initial: string;

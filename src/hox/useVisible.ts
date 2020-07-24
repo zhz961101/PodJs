@@ -1,5 +1,5 @@
 import { nextTick } from '../common';
-import { useState } from './useState';
+import { useState } from '../core/useState';
 
 export const useVisible = <T extends HTMLElement>() => {
     const [getter, setter, state] = useState(true);

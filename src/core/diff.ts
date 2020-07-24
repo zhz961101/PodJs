@@ -54,13 +54,16 @@ export const diff = (prev: VNode, next: VNode) => {
 const diffVnode = (prev: VNode, next: VNode): Patcher[] => {
     const ret = [] as Patcher[];
     if (!sameVNode(prev, next)) {
-        if (!isSomeNil(prev.content, next.content) && prev.content !== next.content) {
+        if (
+            !isSomeNil(prev.content, next.content) &&
+            prev.content !== next.content
+        ) {
             ret.push(...[NewPatcher(PatcherType.CONTENT_CHANGE, prev, next)]);
         } else {
             ret.push(
                 ...[
-                    NewPatcher(PatcherType.MOUNT, prev, next, prev),
                     NewPatcher(PatcherType.UNMOUNT, prev, null),
+                    NewPatcher(PatcherType.MOUNT, prev, next, prev),
                 ],
             );
         }

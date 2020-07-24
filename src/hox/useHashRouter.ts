@@ -1,6 +1,6 @@
 import { reactive } from '@vue/reactivity';
 import { html } from '../core/html';
-import { useEffect } from '../hox/useEffect';
+import { useEffect } from '../core/useEffect';
 
 interface RouterRoutes {
     [key: string]: (arg: {

@@ -38,7 +38,7 @@
 -   all in `runtime`
 -   reacttive everywhere
 
-try [it](http://zhzluke96.github.io/tacojs-playground/) now!
+[try it now!](http://zhzluke96.github.io/tacojs-playground/)
 
 # Features
 
