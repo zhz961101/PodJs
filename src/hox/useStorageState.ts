@@ -1,5 +1,6 @@
 import { useEffect } from '../core/useEffect';
 import { useState } from '../core/useState';
+import { toRaw } from '@vue/reactivity';
 
 const VersionKey = `@tacopia/taco/hox/useStoregeState/versions`;
 const Storage2Versions = new WeakMap<Storage, Record<string, number>>();
@@ -55,10 +56,20 @@ export const createUseStorageState = (factory: Storage) => {
                 setVersion(key, version, factory);
                 return initialState;
             }
-            return factory.getItem(key);
+            try {
+                return JSON.parse(factory.getItem(key));
+            } catch (err) {
+                return initialState;
+            }
         });
         useEffect(() => {
-            factory.setItem(key, value.value);
+            const val = value.value;
+            const raw = toRaw(val);
+            if (Array.isArray(raw)) {
+                // track array change
+                `${value.value.length}`;
+            }
+            factory.setItem(key, JSON.stringify(toRaw(val)));
         });
         return value;
     };
