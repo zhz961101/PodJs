@@ -39,7 +39,17 @@ module.exports = {
         },
         optimization: {
             minimize: !devMode,
-            minimizer: [new TerserPlugin()],
+            minimizer: [new TerserPlugin({
+                terserOptions: {
+                    parse: {},
+                    compress: {},
+                    module: false,
+                    keep_classnames: false,
+                    keep_fnames: false,
+                    ie8: false,
+                    safari10: false,
+                },
+            })],
             sideEffects: true,
             usedExports: true,
         }
