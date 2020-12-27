@@ -1,6 +1,6 @@
-import { useEffect } from '../core/useEffect';
-import { useState } from '../core/useState';
-import { toRaw } from '@vue/reactivity';
+import { toRaw } from "@vue/reactivity";
+import { useEffect } from "../core/useEffect";
+import { useState } from "../core/useState";
 
 const VersionKey = `@tacopia/taco/hox/useStoregeState/versions`;
 const Storage2Versions = new WeakMap<Storage, Record<string, number>>();

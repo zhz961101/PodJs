@@ -19,5 +19,6 @@
         ]
     },
     "exclude": ["./node_modules", "./dist", "**/__test__", "*.spec.ts"],
-    "include": ["./src"]
+    // "include": ["./src"]
+    "include": ["./src/core.ts"]
 }

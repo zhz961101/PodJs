@@ -1,5 +1,5 @@
-describe('index', () => {
-    it('some case', () => {
+describe("index", () => {
+    it("some case", () => {
         // todo
     });
 });

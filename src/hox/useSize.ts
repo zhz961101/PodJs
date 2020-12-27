@@ -1,4 +1,4 @@
-import { reactive } from '@vue/reactivity';
+import { reactive } from "@vue/reactivity";
 
 const MutationObserver =
     window.MutationObserver ||
@@ -14,7 +14,7 @@ export const useSize = <T extends HTMLElement>() => {
         size,
         sizeRef(elem: T) {
             if ((window as any).ResizeObserver) {
-                new (window as any).ResizeObserver(entries => {
+                new (window as any).ResizeObserver((entries) => {
                     const width = ~~entries[0].contentRect.width;
                     const height = ~~entries[0].contentRect.height;
                     if (width !== size.width) {
@@ -29,7 +29,7 @@ export const useSize = <T extends HTMLElement>() => {
             if (!window.MutationObserver) {
                 return;
             }
-            new MutationObserver(mutationList => {
+            new MutationObserver((mutationList) => {
                 let { width, height } = elem.getBoundingClientRect();
                 width = ~~width;
                 height = ~~height;

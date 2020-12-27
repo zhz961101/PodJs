@@ -1,6 +1,6 @@
-import { reactive } from '@vue/reactivity';
-import { html } from '../core/html';
-import { useEffect } from '../core/useEffect';
+import { reactive } from "@vue/reactivity";
+import { html } from "../core/html";
+import { useEffect } from "../core/useEffect";
 
 interface RouterRoutes {
     [key: string]: (arg: {
@@ -9,7 +9,7 @@ interface RouterRoutes {
     }) => any;
 }
 
-const escapeRegExp = str => str.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+const escapeRegExp = (str) => str.replace(/[-\/\\^$*+?.()|[\]{}]/g, "\\$&");
 
 const defaultNotFound = () => html`
     <h1>Not Found</h1>
@@ -37,28 +37,28 @@ const defaultNotFound = () => html`
 export const useHashRouter = (routes: RouterRoutes) => {
     const routerState = reactive({
         currentComponent: null,
-        pathName: '',
+        pathName: "",
     });
     // bindEvents
     const refresh = () =>
-        (routerState.pathName = location.hash.slice(1) || '/');
-    window.addEventListener('hashchange', refresh, false);
-    window.addEventListener('load', refresh, false);
+        (routerState.pathName = location.hash.slice(1) || "/");
+    window.addEventListener("hashchange", refresh, false);
+    window.addEventListener("load", refresh, false);
 
     // dataInit
-    const strRoutes = Object.keys(routes).filter(k => !k.includes(':'));
+    const strRoutes = Object.keys(routes).filter((k) => !k.includes(":"));
     const regRoutes = Object.keys(routes)
-        .filter(k => k.includes(':'))
-        .map(regRule => {
+        .filter((k) => k.includes(":"))
+        .map((regRule) => {
             let regString = regRule
                 .split(/:[a-zA-Z0-9-_]*/)
                 .map(escapeRegExp)
-                .join('([a-zA-Z0-9-_]*)');
-            regString = '^' + regString + '$';
+                .join("([a-zA-Z0-9-_]*)");
+            regString = "^" + regString + "$";
             const reg = new RegExp(regString);
             const parameterNames = regRule
                 .match(/\:([a-zA-Z0-9-_]*)/g)
-                .map(match => match.replace(/^:/, ''));
+                .map((match) => match.replace(/^:/, ""));
             const test = (pathName: string) => {
                 const parameterValues = [...(reg.exec(pathName) || [])];
                 if (parameterValues.length !== 0) {
@@ -95,8 +95,8 @@ export const useHashRouter = (routes: RouterRoutes) => {
             }
         }
         // not found
-        if (strRoutes.includes('*')) {
-            const component = routes['(']({ pathName, params: {} });
+        if (strRoutes.includes("*")) {
+            const component = routes["("]({ pathName, params: {} });
             routerState.currentComponent = component;
             return;
         }

@@ -1,9 +1,9 @@
-import { reactive } from '@vue/reactivity';
+import { reactive } from "@vue/reactivity";
 
 type reducerFn = <T extends object>(state: T, actionType: string) => T;
 
 const patchState = <T extends object>(newState: T, target: T): T => {
-    Object.keys(newState).forEach(k =>
+    Object.keys(newState).forEach((k) =>
         target[k] === newState[k] ? (target[k] = newState[k]) : void 0,
     );
     return target;
@@ -27,6 +27,6 @@ export const useReducer = <T extends object>(
 export const useStore = <T extends object>(
     initialState: T = null,
 ): [() => T, (newState: T) => T] => {
-    const [getter, dispatch] = useReducer(state => state, initialState);
-    return [getter, newState => dispatch({ state: newState })];
+    const [getter, dispatch] = useReducer((state) => state, initialState);
+    return [getter, (newState) => dispatch({ state: newState })];
 };

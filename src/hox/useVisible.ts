@@ -1,5 +1,5 @@
-import { nextTick } from '../common';
-import { useState } from '../core/useState';
+import { nextTick } from "../common";
+import { useState } from "../core/useState";
 
 export const useVisible = <T extends HTMLElement>() => {
     const [getter, setter, state] = useState(true);
@@ -8,7 +8,7 @@ export const useVisible = <T extends HTMLElement>() => {
         visibleRef(elem: T) {
             nextTick(() => {
                 const intersectionObserver = new IntersectionObserver(
-                    entries => {
+                    (entries) => {
                         if (entries[0].intersectionRatio <= 0) {
                             if (state.value) {
                                 state.value = false;

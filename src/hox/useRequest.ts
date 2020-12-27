@@ -1,5 +1,5 @@
-import { effect, reactive } from '@vue/reactivity';
-import { useState } from '../core/useState';
+import { effect, reactive } from "@vue/reactivity";
+import { useState } from "../core/useState";
 
 const IdleCallback =
     (window as any).requestIdleCallback ||
@@ -37,7 +37,7 @@ type IArgs = string | null | IArgsFn;
 const CONCURRENT_PROMISES = {};
 
 const ArrHash = (arr: any[]): string =>
-    arr.reduce((all, v) => all + String(v), '');
+    arr.reduce((all, v) => all + String(v), "");
 
 const getRets = (fn: IArgsFn): any[] => {
     const Rets = fn();

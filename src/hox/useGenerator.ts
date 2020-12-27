@@ -1,6 +1,6 @@
-import { useEffect } from '../core/useEffect';
-import { useState } from '../core/useState';
-import { delay } from './common';
+import { useEffect } from "../core/useEffect";
+import { useState } from "../core/useState";
+import { delay } from "./common";
 
 export const useGenerator = (
     agFn: AsyncGeneratorFunction,

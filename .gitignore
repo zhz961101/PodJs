@@ -80,3 +80,6 @@ local_test/*.*
 
 # vscode config
 .vscode
+
+*copy *.ts
+*copy.ts

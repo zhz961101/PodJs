@@ -1,7 +1,7 @@
-import { useEffect } from '../core/useEffect';
-import { useState } from '../core/useState';
+import { useEffect } from "../core/useEffect";
+import { useState } from "../core/useState";
 
-const noop = (...x: any[]) => '';
+const noop = (...x: any[]) => "";
 
 export const useEmitter = () => {
     const [getter, setter, emitterCount] = useState(0);

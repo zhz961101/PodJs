@@ -1,5 +1,5 @@
-import { effect, ref, Ref } from '@vue/reactivity';
-import { useState } from '../core/useState';
+import { effect, ref, Ref } from "@vue/reactivity";
+import { useState } from "../core/useState";
 
 export function useValue<T>(initial: () => T): Ref<T> {
     const [, , value] = useState();

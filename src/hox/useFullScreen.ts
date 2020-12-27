@@ -1,4 +1,4 @@
-import { useState } from '../core/useState';
+import { useState } from "../core/useState";
 
 let fullScreen = (element: HTMLElement) => {
     if (element.requestFullscreen) {

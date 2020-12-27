@@ -1,10 +1,10 @@
-import { useEffect } from '../core/useEffect';
-import { useState } from '../core/useState';
+import { useEffect } from "../core/useEffect";
+import { useState } from "../core/useState";
 
 export const useClickOutside = (handler: (ev: MouseEvent) => void) => {
     const [, , target] = useState<HTMLElement>();
     useEffect(() => {
-        const evhandler = event => {
+        const evhandler = (event) => {
             if (!target.value) {
                 return;
             }
@@ -12,8 +12,8 @@ export const useClickOutside = (handler: (ev: MouseEvent) => void) => {
                 handler(event);
             }
         };
-        document.addEventListener('click', evhandler);
-        return () => document.removeEventListener('click', evhandler);
+        document.addEventListener("click", evhandler);
+        return () => document.removeEventListener("click", evhandler);
     });
     return {
         ref(elem) {

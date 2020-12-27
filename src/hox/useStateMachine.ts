@@ -1,6 +1,6 @@
-import { Ref } from '@vue/reactivity';
-import { useEffect } from '../core/useEffect';
-import { useState } from '../core/useState';
+import { Ref } from "@vue/reactivity";
+import { useEffect } from "../core/useEffect";
+import { useState } from "../core/useState";
 
 interface StateMachineOptions {
     initial: string;
@@ -23,7 +23,7 @@ export const useStateMachine = (opt: StateMachineOptions) => {
     for (const stateName in other) {
         if (other.hasOwnProperty(stateName)) {
             const transiton = other[stateName];
-            if (typeof transiton === 'string') {
+            if (typeof transiton === "string") {
                 continue;
             }
             const { value, ...otherActions } = transiton;

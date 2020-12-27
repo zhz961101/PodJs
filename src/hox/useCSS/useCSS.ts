@@ -1,15 +1,15 @@
-import jss from 'jss';
-import preset from 'jss-preset-default';
-import { uniqKey } from '../../common';
-import { useState } from '../../core/useState';
-import { CSSStyle } from './types';
+import jss from "jss";
+import preset from "jss-preset-default";
+import { uniqKey } from "../../common";
+import { useState } from "../../core/useState";
+import { CSSStyle } from "./types";
 
 type StyleSheetType = ReturnType<typeof jss.createStyleSheet>;
 const StyleSheetMap = new Map<string, StyleSheetType>();
 
-const once = fn => (...args) => {
+const once = (fn) => (...args) => {
     fn(...args);
-    fn = x => x;
+    fn = (x) => x;
 };
 
 const setup = once(() => {

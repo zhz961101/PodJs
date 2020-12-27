@@ -1,7 +1,7 @@
-import { useEffect } from '../core/useEffect';
-import { useState } from '../core/useState';
-import { throttle } from './common';
-import { useEventListener } from './useEventListener';
+import { useEffect } from "../core/useEffect";
+import { useState } from "../core/useState";
+import { throttle } from "./common";
+import { useEventListener } from "./useEventListener";
 
 export const useMouse = () => {
     const [getter, setter, state] = useState({
@@ -13,7 +13,7 @@ export const useMouse = () => {
         pageY: 0,
     });
     useEventListener(
-        'mousemove',
+        "mousemove",
         throttle((e: MouseEvent) => {
             state.value = {
                 screenX: e.screenX,

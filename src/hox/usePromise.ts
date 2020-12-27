@@ -1,9 +1,9 @@
-import { useEffect } from '../core/useEffect';
-import { useState } from '../core/useState';
+import { useEffect } from "../core/useEffect";
+import { useState } from "../core/useState";
 
 export function usePromise<T>(futureFactory: () => Promise<T>) {
     const [, setter, value] = useState<T>();
-    const [, ErrSetter, err] = useState('');
+    const [, ErrSetter, err] = useState("");
     const [, loadingSetter, loading] = useState(true);
     useEffect(() => {
         loadingSetter(true);
