@@ -1,332 +1,639 @@
-// AUTO-GENERATED Sun, 27 Dec 2020 15:22:26 GMT
-import {MetaComponent, createVNode} from '../../types'
+// AUTO-GENERATED Mon, 28 Dec 2020 14:59:01 GMT
+import { MetaComponent, createVNode } from '../../types';
+import { mustRequire, once } from '../common';
 
+const mustLib = once(() =>
+    mustRequire('https://unpkg.com/@fluentui/web-components', true, {
+        type: 'module',
+    }),
+);
+
+/**
+ * @typedef BreadcrumbItemProps
+ * @property {todo} unknown todo...
+ */
 interface BreadcrumbItemProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const BreadcrumbItem: MetaComponent<BreadcrumbItemProps> = props =>
-  createVNode(
-      'fluent-breadcrumb-item',
-      { ...props, is: 'fluent-breadcrumb-item' },
-      props.children,
-  );
+/**
+ * Fluent-Component BreadcrumbItem
+ * @type {Taco.MetaComponent<BreadcrumbItemProps>}
+ */
+export const BreadcrumbItem: MetaComponent<BreadcrumbItemProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-breadcrumb-item',
+        { ...props, is: 'fluent-breadcrumb-item' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef DesignSystemProviderProps
+ * @property {todo} unknown todo...
+ */
 interface DesignSystemProviderProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const DesignSystemProvider: MetaComponent<DesignSystemProviderProps> = props =>
-  createVNode(
-      'fluent-design-system-provider',
-      { ...props, is: 'fluent-design-system-provider' },
-      props.children,
-  );
+/**
+ * Fluent-Component DesignSystemProvider
+ * @type {Taco.MetaComponent<DesignSystemProviderProps>}
+ */
+export const DesignSystemProvider: MetaComponent<DesignSystemProviderProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-design-system-provider',
+        { ...props, is: 'fluent-design-system-provider' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef ProgressProps
+ * @property {todo} unknown todo...
+ */
 interface ProgressProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Progress: MetaComponent<ProgressProps> = props =>
-  createVNode(
-      'fluent-progress',
-      { ...props, is: 'fluent-progress' },
-      props.children,
-  );
+/**
+ * Fluent-Component Progress
+ * @type {Taco.MetaComponent<ProgressProps>}
+ */
+export const Progress: MetaComponent<ProgressProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-progress',
+        { ...props, is: 'fluent-progress' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef SliderProps
+ * @property {todo} unknown todo...
+ */
 interface SliderProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Slider: MetaComponent<SliderProps> = props =>
-  createVNode(
-      'fluent-slider',
-      { ...props, is: 'fluent-slider' },
-      props.children,
-  );
+/**
+ * Fluent-Component Slider
+ * @type {Taco.MetaComponent<SliderProps>}
+ */
+export const Slider: MetaComponent<SliderProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-slider',
+        { ...props, is: 'fluent-slider' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef TabsProps
+ * @property {todo} unknown todo...
+ */
 interface TabsProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Tabs: MetaComponent<TabsProps> = props =>
-  createVNode(
-      'fluent-tabs',
-      { ...props, is: 'fluent-tabs' },
-      props.children,
-  );
+/**
+ * Fluent-Component Tabs
+ * @type {Taco.MetaComponent<TabsProps>}
+ */
+export const Tabs: MetaComponent<TabsProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-tabs',
+        { ...props, is: 'fluent-tabs' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef AccordionProps
+ * @property {todo} unknown todo...
+ */
 interface AccordionProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Accordion: MetaComponent<AccordionProps> = props =>
-  createVNode(
-      'fluent-accordion',
-      { ...props, is: 'fluent-accordion' },
-      props.children,
-  );
+/**
+ * Fluent-Component Accordion
+ * @type {Taco.MetaComponent<AccordionProps>}
+ */
+export const Accordion: MetaComponent<AccordionProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-accordion',
+        { ...props, is: 'fluent-accordion' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef ButtonProps
+ * @property {todo} unknown todo...
+ */
 interface ButtonProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Button: MetaComponent<ButtonProps> = props =>
-  createVNode(
-      'fluent-button',
-      { ...props, is: 'fluent-button' },
-      props.children,
-  );
+/**
+ * Fluent-Component Button
+ * @type {Taco.MetaComponent<ButtonProps>}
+ */
+export const Button: MetaComponent<ButtonProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-button',
+        { ...props, is: 'fluent-button' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef DialogProps
+ * @property {todo} unknown todo...
+ */
 interface DialogProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Dialog: MetaComponent<DialogProps> = props =>
-  createVNode(
-      'fluent-dialog',
-      { ...props, is: 'fluent-dialog' },
-      props.children,
-  );
+/**
+ * Fluent-Component Dialog
+ * @type {Taco.MetaComponent<DialogProps>}
+ */
+export const Dialog: MetaComponent<DialogProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-dialog',
+        { ...props, is: 'fluent-dialog' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef ListboxProps
+ * @property {todo} unknown todo...
+ */
 interface ListboxProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Listbox: MetaComponent<ListboxProps> = props =>
-  createVNode(
-      'fluent-listbox',
-      { ...props, is: 'fluent-listbox' },
-      props.children,
-  );
+/**
+ * Fluent-Component Listbox
+ * @type {Taco.MetaComponent<ListboxProps>}
+ */
+export const Listbox: MetaComponent<ListboxProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-listbox',
+        { ...props, is: 'fluent-listbox' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef RadioProps
+ * @property {todo} unknown todo...
+ */
 interface RadioProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Radio: MetaComponent<RadioProps> = props =>
-  createVNode(
-      'fluent-radio',
-      { ...props, is: 'fluent-radio' },
-      props.children,
-  );
+/**
+ * Fluent-Component Radio
+ * @type {Taco.MetaComponent<RadioProps>}
+ */
+export const Radio: MetaComponent<RadioProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-radio',
+        { ...props, is: 'fluent-radio' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef SliderLabelProps
+ * @property {todo} unknown todo...
+ */
 interface SliderLabelProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const SliderLabel: MetaComponent<SliderLabelProps> = props =>
-  createVNode(
-      'fluent-slider-label',
-      { ...props, is: 'fluent-slider-label' },
-      props.children,
-  );
+/**
+ * Fluent-Component SliderLabel
+ * @type {Taco.MetaComponent<SliderLabelProps>}
+ */
+export const SliderLabel: MetaComponent<SliderLabelProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-slider-label',
+        { ...props, is: 'fluent-slider-label' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef TextAreaProps
+ * @property {todo} unknown todo...
+ */
 interface TextAreaProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const TextArea: MetaComponent<TextAreaProps> = props =>
-  createVNode(
-      'fluent-text-area',
-      { ...props, is: 'fluent-text-area' },
-      props.children,
-  );
+/**
+ * Fluent-Component TextArea
+ * @type {Taco.MetaComponent<TextAreaProps>}
+ */
+export const TextArea: MetaComponent<TextAreaProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-text-area',
+        { ...props, is: 'fluent-text-area' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef AnchorProps
+ * @property {todo} unknown todo...
+ */
 interface AnchorProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Anchor: MetaComponent<AnchorProps> = props =>
-  createVNode(
-      'fluent-anchor',
-      { ...props, is: 'fluent-anchor' },
-      props.children,
-  );
+/**
+ * Fluent-Component Anchor
+ * @type {Taco.MetaComponent<AnchorProps>}
+ */
+export const Anchor: MetaComponent<AnchorProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-anchor',
+        { ...props, is: 'fluent-anchor' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef CardProps
+ * @property {todo} unknown todo...
+ */
 interface CardProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Card: MetaComponent<CardProps> = props =>
-  createVNode(
-      'fluent-card',
-      { ...props, is: 'fluent-card' },
-      props.children,
-  );
+/**
+ * Fluent-Component Card
+ * @type {Taco.MetaComponent<CardProps>}
+ */
+export const Card: MetaComponent<CardProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-card',
+        { ...props, is: 'fluent-card' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef DividerProps
+ * @property {todo} unknown todo...
+ */
 interface DividerProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Divider: MetaComponent<DividerProps> = props =>
-  createVNode(
-      'fluent-divider',
-      { ...props, is: 'fluent-divider' },
-      props.children,
-  );
+/**
+ * Fluent-Component Divider
+ * @type {Taco.MetaComponent<DividerProps>}
+ */
+export const Divider: MetaComponent<DividerProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-divider',
+        { ...props, is: 'fluent-divider' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef ListboxOptionProps
+ * @property {todo} unknown todo...
+ */
 interface ListboxOptionProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const ListboxOption: MetaComponent<ListboxOptionProps> = props =>
-  createVNode(
-      'fluent-listbox-option',
-      { ...props, is: 'fluent-listbox-option' },
-      props.children,
-  );
+/**
+ * Fluent-Component ListboxOption
+ * @type {Taco.MetaComponent<ListboxOptionProps>}
+ */
+export const ListboxOption: MetaComponent<ListboxOptionProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-listbox-option',
+        { ...props, is: 'fluent-listbox-option' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef RadioGroupProps
+ * @property {todo} unknown todo...
+ */
 interface RadioGroupProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const RadioGroup: MetaComponent<RadioGroupProps> = props =>
-  createVNode(
-      'fluent-radio-group',
-      { ...props, is: 'fluent-radio-group' },
-      props.children,
-  );
+/**
+ * Fluent-Component RadioGroup
+ * @type {Taco.MetaComponent<RadioGroupProps>}
+ */
+export const RadioGroup: MetaComponent<RadioGroupProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-radio-group',
+        { ...props, is: 'fluent-radio-group' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef TextFieldProps
+ * @property {todo} unknown todo...
+ */
 interface TextFieldProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const TextField: MetaComponent<TextFieldProps> = props =>
-  createVNode(
-      'fluent-text-field',
-      { ...props, is: 'fluent-text-field' },
-      props.children,
-  );
+/**
+ * Fluent-Component TextField
+ * @type {Taco.MetaComponent<TextFieldProps>}
+ */
+export const TextField: MetaComponent<TextFieldProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-text-field',
+        { ...props, is: 'fluent-text-field' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef BadgeProps
+ * @property {todo} unknown todo...
+ */
 interface BadgeProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Badge: MetaComponent<BadgeProps> = props =>
-  createVNode(
-      'fluent-badge',
-      { ...props, is: 'fluent-badge' },
-      props.children,
-  );
+/**
+ * Fluent-Component Badge
+ * @type {Taco.MetaComponent<BadgeProps>}
+ */
+export const Badge: MetaComponent<BadgeProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-badge',
+        { ...props, is: 'fluent-badge' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef CheckboxProps
+ * @property {todo} unknown todo...
+ */
 interface CheckboxProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Checkbox: MetaComponent<CheckboxProps> = props =>
-  createVNode(
-      'fluent-checkbox',
-      { ...props, is: 'fluent-checkbox' },
-      props.children,
-  );
+/**
+ * Fluent-Component Checkbox
+ * @type {Taco.MetaComponent<CheckboxProps>}
+ */
+export const Checkbox: MetaComponent<CheckboxProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-checkbox',
+        { ...props, is: 'fluent-checkbox' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef FlipperProps
+ * @property {todo} unknown todo...
+ */
 interface FlipperProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Flipper: MetaComponent<FlipperProps> = props =>
-  createVNode(
-      'fluent-flipper',
-      { ...props, is: 'fluent-flipper' },
-      props.children,
-  );
+/**
+ * Fluent-Component Flipper
+ * @type {Taco.MetaComponent<FlipperProps>}
+ */
+export const Flipper: MetaComponent<FlipperProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-flipper',
+        { ...props, is: 'fluent-flipper' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef MenuProps
+ * @property {todo} unknown todo...
+ */
 interface MenuProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Menu: MetaComponent<MenuProps> = props =>
-  createVNode(
-      'fluent-menu',
-      { ...props, is: 'fluent-menu' },
-      props.children,
-  );
+/**
+ * Fluent-Component Menu
+ * @type {Taco.MetaComponent<MenuProps>}
+ */
+export const Menu: MetaComponent<MenuProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-menu',
+        { ...props, is: 'fluent-menu' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef SelectProps
+ * @property {todo} unknown todo...
+ */
 interface SelectProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Select: MetaComponent<SelectProps> = props =>
-  createVNode(
-      'fluent-select',
-      { ...props, is: 'fluent-select' },
-      props.children,
-  );
+/**
+ * Fluent-Component Select
+ * @type {Taco.MetaComponent<SelectProps>}
+ */
+export const Select: MetaComponent<SelectProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-select',
+        { ...props, is: 'fluent-select' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef StylesProps
+ * @property {todo} unknown todo...
+ */
 interface StylesProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Styles: MetaComponent<StylesProps> = props =>
-  createVNode(
-      'fluent-styles',
-      { ...props, is: 'fluent-styles' },
-      props.children,
-  );
+/**
+ * Fluent-Component Styles
+ * @type {Taco.MetaComponent<StylesProps>}
+ */
+export const Styles: MetaComponent<StylesProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-styles',
+        { ...props, is: 'fluent-styles' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef TreeItemProps
+ * @property {todo} unknown todo...
+ */
 interface TreeItemProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const TreeItem: MetaComponent<TreeItemProps> = props =>
-  createVNode(
-      'fluent-tree-item',
-      { ...props, is: 'fluent-tree-item' },
-      props.children,
-  );
+/**
+ * Fluent-Component TreeItem
+ * @type {Taco.MetaComponent<TreeItemProps>}
+ */
+export const TreeItem: MetaComponent<TreeItemProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-tree-item',
+        { ...props, is: 'fluent-tree-item' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef BreadcrumbProps
+ * @property {todo} unknown todo...
+ */
 interface BreadcrumbProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Breadcrumb: MetaComponent<BreadcrumbProps> = props =>
-  createVNode(
-      'fluent-breadcrumb',
-      { ...props, is: 'fluent-breadcrumb' },
-      props.children,
-  );
+/**
+ * Fluent-Component Breadcrumb
+ * @type {Taco.MetaComponent<BreadcrumbProps>}
+ */
+export const Breadcrumb: MetaComponent<BreadcrumbProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-breadcrumb',
+        { ...props, is: 'fluent-breadcrumb' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef MenuItemProps
+ * @property {todo} unknown todo...
+ */
 interface MenuItemProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const MenuItem: MetaComponent<MenuItemProps> = props =>
-  createVNode(
-      'fluent-menu-item',
-      { ...props, is: 'fluent-menu-item' },
-      props.children,
-  );
+/**
+ * Fluent-Component MenuItem
+ * @type {Taco.MetaComponent<MenuItemProps>}
+ */
+export const MenuItem: MetaComponent<MenuItemProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-menu-item',
+        { ...props, is: 'fluent-menu-item' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef SkeletonProps
+ * @property {todo} unknown todo...
+ */
 interface SkeletonProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Skeleton: MetaComponent<SkeletonProps> = props =>
-  createVNode(
-      'fluent-skeleton',
-      { ...props, is: 'fluent-skeleton' },
-      props.children,
-  );
+/**
+ * Fluent-Component Skeleton
+ * @type {Taco.MetaComponent<SkeletonProps>}
+ */
+export const Skeleton: MetaComponent<SkeletonProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-skeleton',
+        { ...props, is: 'fluent-skeleton' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef SwitchProps
+ * @property {todo} unknown todo...
+ */
 interface SwitchProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const Switch: MetaComponent<SwitchProps> = props =>
-  createVNode(
-      'fluent-switch',
-      { ...props, is: 'fluent-switch' },
-      props.children,
-  );
+/**
+ * Fluent-Component Switch
+ * @type {Taco.MetaComponent<SwitchProps>}
+ */
+export const Switch: MetaComponent<SwitchProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-switch',
+        { ...props, is: 'fluent-switch' },
+        props.children,
+    );
+};
 
+/**
+ * @typedef TreeViewProps
+ * @property {todo} unknown todo...
+ */
 interface TreeViewProps {
-  todo: unknown
+    todo: unknown;
 }
 
-export const TreeView: MetaComponent<TreeViewProps> = props =>
-  createVNode(
-      'fluent-tree-view',
-      { ...props, is: 'fluent-tree-view' },
-      props.children,
-  );
+/**
+ * Fluent-Component TreeView
+ * @type {Taco.MetaComponent<TreeViewProps>}
+ */
+export const TreeView: MetaComponent<TreeViewProps> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-tree-view',
+        { ...props, is: 'fluent-tree-view' },
+        props.children,
+    );
+};

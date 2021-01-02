@@ -1,46 +1,32 @@
-export const excludeKeysObj = (obj: object, keys: string[]) => {
-    const ret = {};
-    Object.keys(obj)
-        .filter((key) => !keys.includes(key))
-        .forEach((key) => (ret[key] = obj[key]));
-    return ret;
-};
+const requiredFiles = new Set<string>();
+export const mustRequire = (uri: string, isJS?: boolean, attrs?: object) => {
+    if (requiredFiles.has(uri)) return;
+    requiredFiles.add(uri);
 
-export const includeKeysObj = (obj: object, keys: string[]) =>
-    excludeKeysObj(
-        obj,
-        Object.keys(obj).filter((key) => !keys.includes(key)),
+    const isCss = typeof isJS === 'boolean' ? !isJS : /css$/gi.test(uri);
+    const files = Array.from(
+        document.getElementsByTagName(isCss ? 'link' : 'script'),
     );
 
-function isUnDef(obj: any): boolean {
-    return obj === undefined || obj === null;
-}
-
-export function isUnDefAll(arr: any, ...arg: any[]): boolean {
-    if (!Array.isArray(arr)) {
-        arr = [arr];
-    }
-    if (Array.isArray(arg)) {
-        arr = arr.concat(arg);
-    }
-    return arr.length ? arr.reduce((r, o) => r && isUnDef(o), true) : false;
-}
-
-const IncludedCache = new Map<string, boolean>();
-
-export const isIncluded = (name: string) => {
-    if (IncludedCache.has(name)) {
-        return true;
-    }
-    const js = /js$/i.test(name);
-    const es = Array.from(
-        document.getElementsByTagName(js ? "script" : "link"),
-    );
-    for (const node of es) {
-        if (node[js ? "src" : "href"].indexOf(name) !== -1) {
-            IncludedCache.set(name, true);
-            return true;
+    for (const file of files) {
+        const path = file[isCss ? 'href' : 'src'];
+        if (path.includes(uri)) {
+            return;
         }
     }
-    return false;
+    const elem = document.createElement(isCss ? 'link' : 'script');
+    attrs && Object.entries(attrs).forEach(([k, v]) => elem.setAttribute(k, v));
+    elem.setAttribute(isCss ? 'href' : 'src', uri);
+    document.head.appendChild(elem);
+};
+export const once = <Ret>(func: () => Ret) => {
+    let ran = false,
+        memo: Ret;
+    return function () {
+        if (ran) return memo;
+        ran = true;
+        memo = func.apply(this, arguments);
+        func = null;
+        return memo;
+    };
 };

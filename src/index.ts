@@ -21,6 +21,7 @@ export {
 export { MaterialIcon } from './ui/MaterialIcon';
 export * as GridLayout from './ui/GridLayout/GridLayout';
 export * as FluentDesign from './ui/FluentDesign/FluentDesign';
+export * as MaterialDesign from './ui/MaterialDesign/MaterialDesign';
 
 export { Teleport } from './components/Teleport/Teleport';
 export { Suspense } from './components/Suspense/Suspense';

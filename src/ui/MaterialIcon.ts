@@ -1,29 +1,23 @@
 import { h } from '../core';
-import { excludeKeysObj, isIncluded } from './common';
+import { MetaComponent } from '../types';
+import { mustRequire, once } from './common';
 
 const MaterialIconCssURL =
     'https://fonts.googleapis.com/css?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Sharp|Material+Icons+Round|Material+Icons+Two+Tone';
 
-let includeMaterialIconCss = () => {
-    if (isIncluded(MaterialIconCssURL)) {
-        includeMaterialIconCss = () => {};
-        return;
-    }
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = MaterialIconCssURL;
-    document.head.appendChild(link);
-};
+const mustLib = once(() =>
+    mustRequire(MaterialIconCssURL, false, { rel: 'stylesheet' }),
+);
 
 interface IconProps {
     name: string;
     theme?: 'sharp' | 'outlined' | 'round' | 'tow-tone';
-    [key: string]: any;
 }
 
-export const MaterialIcon = ({ name, theme, ...rest }: IconProps) => {
-    includeMaterialIconCss();
+export const MaterialIcon: MetaComponent<IconProps> = props => {
+    mustLib();
 
+    const { name, theme, children, ...rest } = props;
     return h(
         'i',
         {

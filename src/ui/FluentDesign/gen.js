@@ -9,21 +9,38 @@ const warp = (name) => {
     ...normalizeName.slice(1),
   ].join('');
   return `
+/**
+ * @typedef ${normalizeName}Props
+ * @property {todo} unknown todo...
+ */
 interface ${normalizeName}Props {
-  todo: unknown
+    todo: unknown;
 }
 
-export const ${normalizeName}: MetaComponent<${normalizeName}Props> = props =>
-  createVNode(
-      'fluent-${name}',
-      { ...props, is: 'fluent-${name}' },
-      props.children,
-  );
+/**
+ * Fluent-Component ${normalizeName}
+ * @type {Taco.MetaComponent<${normalizeName}Props>}
+ */
+export const ${normalizeName}: MetaComponent<${normalizeName}Props> = props => {
+    mustLib();
+    return createVNode(
+        'fluent-${name}',
+        { ...props, is: 'fluent-${name}' },
+        props.children,
+    );
+};
 `;
 };
 
 fs.writeFileSync('./FluentDesign.ts', `// AUTO-GENERATED ${new Date().toUTCString()}
-import {MetaComponent, createVNode} from '../../types'
+import { MetaComponent, createVNode } from '../../types';
+import { mustRequire, once } from '../common';
+
+const mustLib = once(() =>
+    mustRequire('https://unpkg.com/@fluentui/web-components', true, {
+        type: 'module',
+    }),
+);
 ${["breadcrumb-item",
 "design-system-provider",
 "progress",
