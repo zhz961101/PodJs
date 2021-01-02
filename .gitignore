@@ -83,3 +83,6 @@ local_test/*.*
 
 *copy *.ts
 *copy.ts
+
+*.auto.gen.js
+*.auto.gen.ts
