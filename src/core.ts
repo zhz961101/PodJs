@@ -1,7 +1,8 @@
-import { effect, isRef, Ref } from '@vue/reactivity';
+import { effect, isRef, Ref, unref } from '@vue/reactivity';
 import {
     createComponentNode,
     createTextNode,
+    isAsyncComponent,
     isAsyncComponentSymbol,
     isAsyncGenerator,
     isComponent,
@@ -32,14 +33,18 @@ const destroyVNode = (v: VNode) => {
     v._dom && WDK.removeAllListener(v._dom);
     freeO(v);
 };
+
+const isArr = Array.isArray;
+const arrify = <T>(x: T | T[]): T[] => (!x ? [] : isArr(x) ? x : [x]);
 // 👆 UTILS
 
-export class Component {
+export class Component<Props = any> {
     public static CurrentInstance = null as null | Component;
     public static HooksIdx = 0;
 
     public vnode: VComponentNode;
-    public children = [] as Array<VNode | VNode[]>;
+    public children = [] as Array<VNode>;
+    // TODO: 现在没怎么用上这个锚点，之后可以再抽象一下
     public anchor: Comment;
 
     public parent = null as Component | null;
@@ -54,14 +59,38 @@ export class Component {
 
     public errorCatcher: <Err extends Error>(
         err: Err,
-        source: Component,
+        source: Component<Props>,
     ) => void;
 
     constructor(vnode: VComponentNode) {
         this.vnode = vnode;
         this.vnode._component = this;
         this.anchor = WDK.createAnchor();
-        this.createDOM();
+
+        this.init();
+    }
+    public init() {
+        if (isAsyncComponent(this.vnode)) {
+            const [gen, endCB] = this.renderComponent() as [
+                ReturnType<MetaAsyncGeneratorComponent<Props>>,
+                () => any,
+            ];
+            this.bindAsyncGenerator(gen);
+            endCB();
+        } else {
+            effect(() => {
+                const [view, endCB] = this.renderComponent();
+                // jump to outside of effect
+                skip(() => {
+                    const views = arrify(view);
+                    const vnodes = views.map(
+                        this.normalizeView.bind(this),
+                    ) as VNode[];
+                    this.updateChildren(vnodes);
+                    endCB();
+                });
+            });
+        }
     }
     public mounted() {
         this.context.mountCallbacks.forEach(cb => cb.call(this, this));
@@ -79,41 +108,37 @@ export class Component {
         if (this.anchor.parentElement) {
             return this.anchor.parentElement;
         }
+        // debugger;
     }
     public mountRef(props: any) {
         props.ref && mountRef(props.ref, this);
     }
-    public createDOM() {
-        effect(() => {
-            const props = this.buildMetaProps();
-            this.mountRef(props);
+    public renderComponent() {
+        const props = this.buildMetaProps();
+        this.mountRef(props);
 
-            const lastInstance = Component.CurrentInstance;
-            this.parent = this.parent || lastInstance;
-            Component.HooksIdx = 0;
-            Component.CurrentInstance = this;
+        const lastInstance = Component.CurrentInstance;
+        this.parent = this.parent || lastInstance;
+        Component.HooksIdx = 0;
+        Component.CurrentInstance = this;
 
-            let view: ReturnType<MetaComponent>;
-            try {
-                view = this.vnode.type(props);
-            } catch (error) {
-                this.throwError(error, this);
-                view = [];
-            }
-            Component.HooksIdx = 0;
+        let view: ReturnType<MetaComponent>;
+        try {
+            view = this.vnode.type(props);
+        } catch (error) {
+            this.throwError(error, this);
+            view = [];
+        }
+        Component.HooksIdx = 0;
 
-            skip(() => {
-                const views = Array.isArray(view) ? view : [view];
-                const vnodes = views.map(
-                    this.normalizeView.bind(this),
-                ) as VNode[];
-                this.updateChildren(vnodes.flat(Infinity) as VNode[]);
-                Component.CurrentInstance = lastInstance;
-            });
-        });
+        return [
+            view,
+            () => (Component.CurrentInstance = lastInstance),
+        ] as const;
     }
     public mountChildren(children: VNode[]) {
-        this.children = [...children];
+        // this.vnode.children = children;
+        this.children = children;
         const parent = this.getParentElement();
         if (!parent) {
             return;
@@ -122,7 +147,7 @@ export class Component {
         const frag = this.createChildren();
 
         (this.children.flat(Infinity) as VNode[]).forEach(child =>
-            mountProps(child.props || {}, child._dom),
+            mountProps(child.props || {}, child._dom, false),
         );
 
         this.context.mountCallbacks.forEach(callback =>
@@ -188,19 +213,9 @@ export class Component {
         // PATH
         this.patchCommit(commitQueue);
 
-        // this.vnode.children = children;
-        this.children.length = children.length;
-        children.forEach((child, idx) => {
-            if (Array.isArray(this.children[idx])) {
-                return;
-            }
-            this.children[idx] = child;
-        });
+        this.children = children;
     }
-    private bindAsyncGenerator(
-        gen: ReturnType<MetaAsyncGeneratorComponent>,
-        idx: number,
-    ) {
+    private bindAsyncGenerator(gen: ReturnType<MetaAsyncGeneratorComponent>) {
         subscribeAsyncGenerator(
             gen,
             product => {
@@ -208,69 +223,25 @@ export class Component {
                 const children = product
                     .map(this.normalizeView.bind(this))
                     .flat(Infinity) as VNode[];
-                this.updateChildrenIdx(children, idx);
+                this.updateChildren(children);
             },
             this.throwError.bind(this),
         );
     }
-    private bindRefViewItem(refItem: Ref<ViewItem | ViewItem[]>, idx: number) {
-        effect(() => {
-            const children = Array.isArray(refItem.value)
-                ? refItem.value
-                : [refItem.value];
-            skip(() => {
-                this.updateChildrenIdx(
-                    children.map(this.normalizeBuiltinView),
-                    idx,
-                );
-            });
-        });
-    }
-    private normalizeBuiltinView(v: ViewItem) {
+    private normalizeView(v: ReturnType<MetaComponent>) {
         if (isVNode(v)) {
             return v;
         }
         if (v === null || v === undefined) {
-            return createTextNode('');
-        }
-        return createTextNode(String(v));
-    }
-    private normalizeView(v: ReturnType<MetaComponent>, idx: number) {
-        if (isVNode(v)) {
-            return v;
-        }
-        if (v === null || v === undefined) {
-            return createTextNode('');
-        }
-        if (isAsyncGenerator(v)) {
-            this.bindAsyncGenerator(v, idx);
             return createTextNode('');
         }
         if (isRef(v)) {
-            this.bindRefViewItem(v as Ref<ViewItem | ViewItem[]>, idx);
-            return createTextNode('');
+            return createComponentNode(() => v.value);
         }
         return createTextNode(String(v));
     }
-    private updateChildrenIdx(children: VNode[], idx: number) {
-        const nextChildren = [
-            ...this.children.slice(0, idx),
-            children,
-            ...this.children.slice(idx + 1),
-        ];
-        const flatten = nextChildren.flat(Infinity) as VNode[];
-        const commitQueue = this.diffChildren(flatten);
-        this.patchCommit(commitQueue);
-
-        this.children = nextChildren;
-        // this.vnode.children = flatten;
-    }
-    private diffChildren(nextChild: VNode[]) {
-        const commitQueue = diff(
-            [...((this.children || []).flat(Infinity) as VNode[])],
-            nextChild,
-            this,
-        );
+    private diffChildren(nextChild: Array<VNode>) {
+        const commitQueue = diff([...this.children], nextChild, this);
         return commitQueue;
     }
     private patchCommit(commitQueue: Commit[]) {
@@ -281,92 +252,74 @@ export class Component {
             ...commitQueue.filter(isUNMOUNT),
         ].forEach(this.doCommit.bind(this));
     }
+    public mountTo(parent: Node, refChild?: Node) {
+        if (refChild) {
+            parent.insertBefore(this.getAnchor(), refChild);
+        } else {
+            parent.appendChild(this.getAnchor());
+        }
+        createElement(this.vnode);
+        this.mounted();
+    }
     private doCommit(c: Commit) {
-        const { kind, container, prev, next, nextChild } = c;
-        if (next instanceof Component) {
-            switch (kind) {
-                case CommitKind.UNMOUNT:
-                    next.destructor();
-                case CommitKind.CLEAR:
-                    return next.clearChildren();
-                case CommitKind.MOUNTCOMPONENT:
-                    return next.mountChildren(nextChild);
-                case CommitKind.PATCH: {
-                    console.warn('💣不应该出现在这里💣');
-                    break;
-                }
-            }
-            return;
-        }
-        if (isComponent(next) && isComponent(prev)) {
-            if (!prev._component) {
-                return;
-            }
-            switch (kind) {
-                case CommitKind.CLEAR: {
-                    prev._component.clearChildren();
-                    break;
-                }
-                case CommitKind.MOUNT: {
-                    next._component = next._component || new Component(next);
-                    const parent = prev._component.getParentElement();
-                    if (parent) {
-                        parent.insertBefore(
-                            next._component.anchor,
-                            prev._component.anchor,
-                        );
-                    }
-                    next._component.mounted();
-                    break;
-                }
-                case CommitKind.UNMOUNT: {
-                    prev._component.destructor();
-                    break;
-                }
-                case CommitKind.PATCH: {
-                    next._component = next._component || new Component(next);
-                    const parent = prev._component.getParentElement();
-                    if (parent) {
-                        parent.insertBefore(
-                            next._component.anchor,
-                            prev._component.anchor,
-                        );
-                    }
-                    prev._component.destructor();
-                    next._component.mounted();
-                    break;
-                }
-            }
-            return;
-        }
-        if (!(next instanceof Component) && !(prev instanceof Component)) {
-            switch (kind) {
-                case CommitKind.CLEAR: {
+        const { kind, container, prev, next } = c;
+        switch (kind) {
+            case CommitKind.CLEAR: {
+                if (isComponent(next)) {
+                    next._component.clearChildren();
+                } else {
                     WDK.clearChildren(next._dom);
-                    break;
                 }
-                case CommitKind.MOUNT: {
-                    const parent = prev._dom.parentNode;
+                break;
+            }
+            case CommitKind.MOUNT: {
+                const parent = prev._dom.parentNode;
+                if (isComponent(next)) {
+                    next._component = next._component || new Component(next);
+                    next._component.mountTo(parent, prev._dom);
+                } else {
                     parent.insertBefore(createElement(next), prev._dom);
-                    break;
                 }
-                case CommitKind.UNMOUNT: {
-                    const parent = prev._dom.parentNode;
-                    parent.removeChild(prev._dom);
-                    // freeO(prev);
-                    break;
+                break;
+            }
+            case CommitKind.UNMOUNT: {
+                if (isComponent(prev)) {
+                    prev._component.destructor();
+                } else {
+                    WDK.removeSelf(prev._dom);
                 }
-                case CommitKind.PATCH: {
-                    next._dom = prev._dom;
-                    // freeO(prev);
+                // freeO(prev);
+                break;
+            }
+            case CommitKind.APPEND: {
+                if (container instanceof Component) {
+                    const parent = container.getParentElement();
+                    if (parent) {
+                        parent.insertBefore(
+                            createElement(next),
+                            container.getAnchor(),
+                        );
+                    }
+                } else if (prev) {
+                    container._dom?.insertBefore(
+                        createElement(next),
+                        prev._dom,
+                    );
+                } else {
+                    container._dom?.appendChild(createElement(next));
+                }
+                break;
+            }
+            case CommitKind.PATCH: {
+                next._dom = prev._dom;
+                // freeO(prev);
 
-                    patchProps(prev, next);
-                    patchTextContent(prev, next);
-                    patchValue(prev, next);
-                    patchClass(prev, next);
-                    patchStyle(prev, next);
-                    break;
-                }
+                patchProps(prev, next);
+                patchTextContent(prev, next);
+                patchValue(prev, next);
+                patchClass(prev, next);
+                patchStyle(prev, next);
+                break;
             }
         }
     }
@@ -492,8 +445,8 @@ const patchProps = (prev: VNode, next: VNode | null) => {
     });
 };
 
-// TODO: 支持 Ref<T>
-const mountProps = (props: KVMap, dom: Node) => {
+// TODO: 要处理isSVG的情况
+const mountProps = (props: KVMap, dom: Node, isSVG: boolean) => {
     if (!(dom instanceof HTMLElement)) {
         return;
     }
@@ -502,19 +455,22 @@ const mountProps = (props: KVMap, dom: Node) => {
 
     // value
     if ('value' in dom && props.value) {
-        (dom as any).value = props.value;
+        effect(() => ((dom as any).value = unref(props.value)));
     }
 
     // className
-    const className = pluckPropsValue(props, 'className', true, '');
-    if (className) {
-        dom.className = className;
+    if (props.className) {
+        effect(
+            () => (dom.className = (unref(props.className) || '') as string),
+        );
     }
 
     // inline style
-    Object.keys(pluckPropsValue(props, 'style', true, {})).forEach(
-        k => (dom.style[k] = props.style[k]),
-    );
+    if (props.style && typeof props.style === 'object') {
+        Object.keys(props.style).forEach(k =>
+            effect(() => (dom.style[k] = unref(props.style[k]))),
+        );
+    }
 
     // non eventlistener propsibutes
     Object.keys(props)
@@ -524,13 +480,16 @@ const mountProps = (props: KVMap, dom: Node) => {
                 !k.toLowerCase().startsWith('on'),
         )
         .forEach(k => {
-            if (typeof props[k] === 'boolean') {
-                if (props[k]) {
-                    return dom.setAttribute(k, '');
+            effect(() => {
+                const val = unref(props[k]);
+                if (typeof val === 'boolean') {
+                    if (val) {
+                        return dom.setAttribute(k, '');
+                    }
+                    return dom.removeAttribute(k);
                 }
-                return dom.removeAttribute(k);
-            }
-            dom.setAttribute(k, String(props[k]));
+                dom.setAttribute(k, String(val));
+            });
         });
 
     // listener
@@ -552,41 +511,43 @@ enum CommitKind {
     UNMOUNT,
     PATCH,
     MOUNTCOMPONENT,
+    APPEND,
 }
 
 interface Commit {
     kind: CommitKind;
     container: VNode | Component;
-    prev?: VNode | Component;
-    next?: VNode | Component;
-    nextChild?: VNode[];
+    prev?: VNode;
+    next?: VNode;
 }
 
 const diff = (
-    prevChild = [] as VNode[],
-    nextChild = [] as VNode[],
+    prevChild = [] as Array<VNode>,
+    nextChild = [] as Array<VNode>,
     container: VNode | Component,
 ): Commit[] => {
-    // 💣 切勿过度优化diff
-    const c = (
-        kind: CommitKind,
-        next?: VNode | Component,
-        prev?: VNode | Component,
-        nextChild?: VNode[],
-    ): Commit => ({ kind, container, prev, next, nextChild });
+    // 💣 切勿过度优化diff 💣
+    const c = (kind: CommitKind, next?: VNode, prev?: VNode): Commit => ({
+        kind,
+        container,
+        prev,
+        next,
+    });
 
     const prevLength = prevChild.length;
     const nextLength = nextChild.length;
-    if (prevLength !== nextLength) {
-        return [
-            c(CommitKind.CLEAR, container),
-            c(CommitKind.MOUNTCOMPONENT, container, undefined, nextChild),
-        ];
-    }
+    const patchLength = Math.min(prevLength, nextLength);
+
     const queue = [] as Commit[];
-    for (let idx = 0; idx < nextLength; idx++) {
+
+    for (let idx = 0; idx < patchLength; idx++) {
         const nextNode = nextChild[idx];
         const prevNode = prevChild[idx];
+        if (isArr(nextNode) && isArr(prevNode)) {
+            const subQue = diff(nextNode, prevNode, container);
+            queue.push(...subQue);
+            continue;
+        }
         if (sameVnode(prevNode, nextNode)) {
             queue.push(c(CommitKind.PATCH, nextNode, prevNode));
             queue.push(...diff(prevNode.children, nextNode.children, nextNode));
@@ -596,13 +557,25 @@ const diff = (
         queue.push(c(CommitKind.MOUNT, nextNode, prevNode));
     }
 
+    // rest children
+    queue.push(
+        ...(nextChild.slice(patchLength).flat(Infinity) as VNode[]).map(n =>
+            c(CommitKind.APPEND, n),
+        ),
+    );
+    queue.push(
+        ...(prevChild.slice(patchLength).flat(Infinity) as VNode[]).map(n =>
+            c(CommitKind.UNMOUNT, undefined, n),
+        ),
+    );
+
     return queue;
 };
 
 const sameVnode = (a: VNode, b: VNode) =>
-    a.type === b.type &&
-    a.props.key === b.props.key &&
-    a.children.length === b.children.length;
+    a.type.toString() === b.type.toString() &&
+    a.props?.key === b.props?.key &&
+    a.children?.length === b.children?.length;
 
 const subscribeAsyncGenerator = async <T>(
     g: AsyncGenerator<T | never, T | never, T | unknown>,
@@ -630,9 +603,8 @@ const IdleWhileTrue = (f: () => Promise<boolean>) =>
         IdleWhileTrue(f);
     });
 
-// TODO: 支持SVG
-// 把vnode解析成dom树
-const createElement = (vnode: VNode): Node => {
+// VNODE => DOM🌳
+const createElement = (vnode: VNode, isSVG = false): Node => {
     if (vnode._dom) {
         return vnode._dom;
     }
@@ -641,25 +613,33 @@ const createElement = (vnode: VNode): Node => {
     if (isText(vnode)) {
         dom = WDK.createText(vnode.content);
     } else if (isComponent(vnode)) {
-        const ins = new Component(vnode);
-        dom = ins.getAnchor();
+        vnode._component = vnode._component || new Component(vnode);
+        dom = vnode._component.getAnchor();
     } else {
-        dom = WDK.createDOM(vnode.type as string, vnode.props.is as string);
+        isSVG = vnode.type === 'svg' || isSVG;
 
-        const frag = createChildren(vnode);
+        dom = WDK.createDOM(
+            vnode.type as string,
+            vnode.props?.is as string,
+            isSVG,
+        );
+
+        const frag = createChildren(vnode, isSVG);
         dom.appendChild(frag);
-        mountProps(vnode.props, dom);
+        mountProps(vnode.props, dom, isSVG);
     }
     vnode._dom = dom;
 
     return dom;
 };
 
-const createChildren = (vnode: VNode): DocumentFragment => {
+const createChildren = (vnode: VNode, isSVG = false): DocumentFragment => {
+    isSVG = vnode.type === 'svg' || isSVG;
+
     const frag = WDK.createFragment();
     vnode.children = vnode.children || [];
     for (const child of vnode.children) {
-        const dom = createElement(child);
+        const dom = createElement(child, isSVG);
         frag.appendChild(dom);
     }
     return frag;
@@ -673,23 +653,6 @@ const maybeRef2Component = (v: ViewItem | Ref<ViewItem>): NotRef<ViewItem> => {
     return createComponentNode(() => v.value);
 };
 
-const TextComponent = (
-    children: Array<ViewItem | Ref<ViewItem>>,
-): VComponentNode => ({
-    [isVNodeSymbol]: true,
-    [isComponentSymbol]: true,
-    type: (child => () => child)(children.map(maybeRef2Component)),
-    children: [],
-});
-
-const shouldBeTextComponent = (
-    type: string | MetaComponent,
-    children: Array<ViewItem | Ref<ViewItem>>,
-) =>
-    typeof type === 'string' &&
-    type === '#text' &&
-    (children.length > 1 || children.filter(isRef).length !== 0);
-
 const maybeTextNode = (v: ViewItem): VNode => {
     if (isVNode(v)) return v;
     return createTextNode(v as string);
@@ -700,32 +663,24 @@ const maybeMetaComponent = (v: any): VNode => {
     return v;
 };
 
-// 💣 这个写得太丑了，TODO:重构
 export const h = (
     type: string | MetaComponent,
     props = {} as KVMap,
     ...children: Array<ViewItem | Ref<ViewItem>>
-): VNode | VTextNode | VComponentNode =>
-    shouldBeTextComponent(type, children)
-        ? TextComponent(children)
-        : {
-              [isVNodeSymbol]: true,
-              [isTextSymbol]: type === '#text',
-              [isComponentSymbol]: typeof type === 'function',
-              [isAsyncComponentSymbol]:
-                  type.constructor?.name === 'AsyncGeneratorFunction',
-              type,
-              props: props || {},
-              children: (children || [])
-                  .map(maybeRef2Component)
-                  .map(maybeMetaComponent)
-                  .map(maybeTextNode) as VNode[],
-              _dom: null,
-              content:
-                  type === '#text'
-                      ? String((children || [])[0] as string)
-                      : null,
-          };
+): VNode | VTextNode | VComponentNode => ({
+    [isVNodeSymbol]: true,
+    [isComponentSymbol]: typeof type === 'function',
+    [isAsyncComponentSymbol]:
+        type.constructor?.name === 'AsyncGeneratorFunction',
+    type,
+    props: props || {},
+    children: (children || [])
+        .map(maybeRef2Component)
+        .map(maybeMetaComponent)
+        .map(maybeTextNode) as VNode[],
+    _dom: null,
+    content: type === '#text' ? String((children || [])[0] as string) : null,
+});
 
 // 把vnode 渲染导dom中
 export const render = (
@@ -751,7 +706,7 @@ export const render = (
     for (const child of vnode) {
         const dom = createElement(child);
 
-        mountProps(child.props || {}, child._dom);
+        mountProps(child.props || {}, child._dom, false);
 
         frag.appendChild(dom);
     }

@@ -10,7 +10,10 @@ export default {
     createText(content = '') {
         return document.createTextNode(content);
     },
-    createDOM(type = 'div', is?: string) {
+    createDOM(type = 'div', is?: string, isSVG?: boolean) {
+        if (isSVG) {
+            return document.createElementNS('http://www.w3.org/2000/svg', type);
+        }
         return document.createElement(type, is ? { is } : undefined);
     },
     createFragment() {
@@ -47,6 +50,7 @@ export default {
         handler && dom.removeEventListener(type, handler);
     },
     addListener(dom: Node, type: string, listener: (ev: any) => void) {
+        type = type.toLowerCase();
         const tdom = dom as any;
         tdom.listener = tdom.listener || {};
 

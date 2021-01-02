@@ -1,4 +1,4 @@
-import { customRef, effect, Ref, ref, toRaw } from '@vue/reactivity';
+import { customRef, effect, isRef, Ref, ref, toRaw } from '@vue/reactivity';
 import { Component } from './core';
 
 // 👇 UTILS
@@ -51,12 +51,27 @@ export const useUnmount = (cb: (c: Component) => void) => {
     ins.context.unmountCallbacks.push(cb);
     setter(true);
 };
-export const useRef = <T>(inital: T | (() => T)) => {
+export const useRef = <T>(inital = null as T | (() => T)) => {
     const [ret, setter] = hoxPrepare();
     if (ret) {
         return ret as Ref<T>;
     }
     const refT = ref<T>();
+    if (typeof inital === 'function') {
+        refT.value = (inital as () => T)();
+    } else {
+        refT.value = inital as T;
+    }
+    setter(refT);
+    return refT;
+};
+type RawRef<T> = { value: T };
+export const useRawRef = <T>(inital: T | (() => T)) => {
+    const [ret, setter] = hoxPrepare();
+    if (ret) {
+        return ret as RawRef<T>;
+    }
+    const refT = { value: null as T } as RawRef<T>;
     if (typeof inital === 'function') {
         refT.value = (inital as () => T)();
     } else {
@@ -123,7 +138,7 @@ export const useEffect = (
     }, options);
 };
 export const useWatch = <WatchRet>(
-    watcher?: () => WatchRet,
+    watcher?: (() => WatchRet) | Ref<WatchRet>,
     eff?: (current: WatchRet | null, last: WatchRet | null) => void,
     options?: any,
 ) => {
@@ -134,7 +149,7 @@ export const useWatch = <WatchRet>(
     setter(true);
     let lastRet = null;
     effect(() => {
-        const watchRet = watcher && watcher();
+        const watchRet = isRef(watcher) ? watcher.value : watcher && watcher();
         skip(() => {
             const maybeFn = eff(watchRet, lastRet);
             lastRet = watchRet;
@@ -144,7 +159,19 @@ export const useWatch = <WatchRet>(
         });
     }, options);
 };
-export const useMemo = <T>(factory: () => T, depEff?: () => void) => {
+export const useMemo = <T>(factory: () => T) => {
+    const [ret, setter, ins, idx] = hoxPrepare();
+    if (ret) {
+        return ret as Ref<T>;
+    }
+    const memo = ref();
+    effect(() => {
+        const next = factory();
+        skip(() => (memo.value = next));
+    });
+    return setter(memo) as Ref<T>;
+};
+export const useMemoDep = <T>(factory: () => T, depEff?: () => void) => {
     const [ret, setter, ins, idx] = hoxPrepare();
     if (ret) {
         return ret as T;
@@ -159,7 +186,7 @@ export const useMemo = <T>(factory: () => T, depEff?: () => void) => {
     return setter(factory()) as T;
 };
 export const useCallback = <CB extends Function>(cb: CB, depEff?: () => void) =>
-    useMemo(() => cb, depEff);
+    useMemoDep(() => cb, depEff);
 
 type Reducer<ReducerState, ReducerAction> = (
     state: ReducerState,
@@ -225,8 +252,8 @@ export const useErrThrower = (): ((
 };
 
 export const useChannel = () => {
-    const currentResolver = useRef(() => (...args: any[]) => void 0);
-    const chan = useRef(Promise.resolve());
+    const currentResolver = useRawRef(() => (...args: any[]) => void 0);
+    const chan = useRawRef(Promise.resolve());
     const reset = (msg?: any) => {
         currentResolver.value(msg);
         chan.value = new Promise(
@@ -234,7 +261,12 @@ export const useChannel = () => {
         );
     };
     reset();
-    return [chan, reset] as const;
+    const signal = useRef(null);
+    const throwSignal = (x: unknown) => {
+        signal.value = x;
+        return chan.value;
+    };
+    return [throwSignal, reset, signal] as const;
 };
 
 ///////////////////////////////////////////

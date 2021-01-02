@@ -20,7 +20,8 @@ const useTeleport = () => {
                     return;
                 }
                 teleportContainer.appendChild(component.getAnchor());
-                component.mountChildren([...component.vnode.children]);
+                component.mountTo(teleportContainer);
+                component.mountChildren(component.children);
                 return;
             }
             if (teleportContainer.contains(component as HTMLElement)) {
@@ -37,6 +38,6 @@ export const Teleport = ({ children }: MetaProps) => {
     );
     useTeleport().value = component.value;
     const ins = useInstance();
-    ins.vnode.children = [];
+    // ins.vnode.children = [];
     return null;
 };

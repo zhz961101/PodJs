@@ -58,7 +58,9 @@ export interface VComponentNode<Props extends KVMap = {}> extends VNode {
 export const createComponentNode = (type: MetaComponent): VComponentNode => ({
     [isVNodeSymbol]: true,
     [isComponentSymbol]: true,
+    [isAsyncComponentSymbol]: isAsyncGenerator(type),
     type,
+    props: {},
 });
 export const isAsyncComponentSymbol = Symbol('isAsyncComponent');
 export interface VAsyncComponentNode<Props extends KVMap = {}> extends VNode {
