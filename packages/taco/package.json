@@ -1,23 +1,29 @@
 {
   "name": "@tacopie/taco",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "mvvm framework.",
-  "source": "src/index.ts",
+  "source": "lib/index.ts",
   "author": "zhzluke96",
   "homepage": "https://github.com/zhzLuke96/TacoJs#readme",
   "license": "GPL-3.0",
-  "main": "dist/taco.js",
+  "main": "dist/taco.umd.min.js",
   "types": "dist/index.d.ts",
+  "module": "dist/taco.esm.min.js",
+  "unpkg": "dist/taco.umd.min.js",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
   },
   "files": [
-    "lib"
+    "dist/**/*"
   ],
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "taco",
+    "mvvm"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zhzLuke96/TacoJs.git"
@@ -30,7 +36,10 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production rollup -c",
-    "dev": "cross-env NODE_ENV=development rollup -c -w",
+    "dev": "cross-env NODE_ENV=development rollup -c",
+    "dev:w": "cross-env NODE_ENV=development rollup -c -w",
+    "test": "jest",
+    "pre:publish": "yarn build && yarn dev",
     "prettier": "prettier --write ./src/**/**.ts",
     "beautify": "npm run lint:fix && npm run prettier"
   }

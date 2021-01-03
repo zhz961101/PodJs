@@ -6,8 +6,8 @@
   "author": "zhzluke96",
   "license": "GPL-3.0",
   "source": "lib/index.ts",
-  "main": "dist/taco-ui.js",
-  "module": "dist/taco-ui.module.js",
+  "main": "dist/taco-ui.umd.js",
+  "module": "dist/taco-ui.esm.js",
   "unpkg": "dist/taco-ui.umd.js",
   "types": "dist/index.d.ts",
   "directories": {
@@ -15,7 +15,7 @@
     "test": "__tests__"
   },
   "files": [
-    "lib"
+    "dist/**/*"
   ],
   "publishConfig": {
     "access": "public"
