@@ -1,73 +1,29 @@
 {
-  "name": "@tacopie/taco",
-  "version": "1.0.11",
-  "description": "mvvm framework.",
-  "source": "src/index.ts",
-  "main": "dist/taco.js",
-  "exports": "dist/taco.modern.js",
-  "module": "dist/taco.module.js",
-  "unpkg": "dist/taco.umd.js",
-  "scripts": {
-    "build": "cross-env NODE_ENV=production webpack --mode=production --config ./webpack.config.js",
-    "build:esm": "cross-env NODE_ENV=production webpack --mode=production --config ./webpack.config.esm.js",
-    "build:w": "cross-env NODE_ENV=production webpack --watch --mode=production",
-    "build:all": "npm run build && npm run build:esm && npm run dev",
-    "dev": "cross-env NODE_ENV=development webpack --mode=development --config ./webpack.config.js",
-    "dev:esm": "cross-env NODE_ENV=development webpack --mode=development --config ./webpack.config.esm.js",
-    "dev:esm:w": "cross-env NODE_ENV=development webpack --watch  --mode=development --config ./webpack.config.esm.js",
-    "dev:w": "cross-env NODE_ENV=development webpack --watch --mode=development --config ./webpack.config.js",
-    "build:m": "microbundle --external none --define @NODE_ENV=production",
-    "dev:m": "microbundle --external none --no-compress watch --define NODE_ENV=development",
-    "all": "npm run dev && npm run build",
-    "lint": "tslint -c tslint.json \"./src/**/*.ts\" --force",
-    "lint:fix": "tslint -c tslint.json --fix \"./src/**/*.ts\" --force",
-    "test": "jest",
-    "test:cover": "jest --coverage",
-    "coverage": "jest --coverage --coverageReporters=text-lcov | coveralls",
-    "debug": "cross-env NODE_ENV=development node --inspect-brk ./node_modules/jest/bin/jest --runInBand",
-    "prettier": "prettier --write ./src/**/**.ts",
-    "beautify": "npm run lint:fix && npm run prettier",
-    "analyze": "cross-env NODE_ENV=production ANALYZE_MODE=on webpack --mode=production --config ./webpack.config.js",
-    "analyze:dev": "cross-env NODE_ENV=development ANALYZE_MODE=on webpack --mode=development --config ./webpack.config.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/zhzLuke96/TacoJs.git"
-  },
-  "keywords": [
-    "taco",
-    "mvvm"
+  "name": "root",
+  "private": true,
+  "workspaces": [
+    "packages/*"
   ],
-  "author": "zhzluke96",
-  "license": "GPL-3.0",
-  "bugs": {
-    "url": "https://github.com/zhzLuke96/TacoJs/issues"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
-  "homepage": "https://github.com/zhzLuke96/TacoJs#readme",
   "devDependencies": {
     "@jest/types": "^26.6.2",
-    "@purtuga/esm-webpack-plugin": "^1.5.0",
+    "@rollup/plugin-node-resolve": "^11.0.1",
     "@types/jest": "^26.0.19",
     "@types/requestidlecallback": "^0.3.1",
     "cross-env": "^7.0.3",
     "esm": "^3.2.25",
     "jest": "^26.6.3",
+    "lerna": "^3.22.1",
     "microbundle": "^0.13.0",
     "prettier": "^2.2.1",
     "rollup": "^2.35.1",
-    "terser-webpack-plugin": "^3.0.7",
+    "rollup-plugin-replace": "^2.2.0",
+    "rollup-plugin-terser": "^7.0.2",
+    "rollup-plugin-typescript2": "^0.29.0",
     "ts-jest": "^26.4.4",
-    "ts-loader": "^8.0.12",
     "tslint": "^5.20.1",
-    "typescript": "^4.1.3",
-    "webpack-bundle-analyzer": "^4.3.0",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10"
+    "typescript": "^4.1.3"
   },
-  "dependencies": {
-    "@vue/reactivity": "^3.0.4"
+  "scripts": {
+    "test": "lerna run test"
   }
 }

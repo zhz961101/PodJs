@@ -1,0 +1,37 @@
+{
+  "name": "@tacopie/taco",
+  "version": "1.0.11",
+  "description": "mvvm framework.",
+  "source": "src/index.ts",
+  "author": "zhzluke96",
+  "homepage": "https://github.com/zhzLuke96/TacoJs#readme",
+  "license": "GPL-3.0",
+  "main": "dist/taco.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "lib": "lib",
+    "test": "__tests__"
+  },
+  "files": [
+    "lib"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhzLuke96/TacoJs.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zhzLuke96/TacoJs/issues"
+  },
+  "dependencies": {
+    "@vue/reactivity": "^3.0.4"
+  },
+  "scripts": {
+    "build": "cross-env NODE_ENV=production rollup -c",
+    "dev": "cross-env NODE_ENV=development rollup -c -w",
+    "prettier": "prettier --write ./src/**/**.ts",
+    "beautify": "npm run lint:fix && npm run prettier"
+  }
+}
