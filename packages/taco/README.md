@@ -1,11 +1,14 @@
-# `@tacopie/taco`
+# @tacopie/taco
+core library.
 
-> TODO: description
+# Features
 
-## Usage
+🚧🚧WIP🚧🚧
 
-```
-const taco = require('@tacopie/taco');
+# Changelog
 
-// TODO: DEMONSTRATE API
-```
+reconfiguration.
+
+# LICENSE
+
+GPL-V3.0

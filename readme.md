@@ -13,118 +13,31 @@
 
 [![github star](https://img.shields.io/github/stars/zhzLuke96/TacoJs.svg?style=social)](https://github.com/zhzLuke96/TacoJs)
 
+# What is Taco
+
+🚧🚧WIP🚧🚧
+
 # Index
 
 - [Taco](#taco)
+- [What is Taco](#what-is-taco)
 - [Index](#index)
-- [Overview](#overview)
-- [Features](#features)
-- [Usage](#usage)
-  - [Browser](#browser)
-  - [Webpack](#webpack)
+- [Quick Start](#quick-start)
+- [Taco Palygroud](#taco-palygroud)
 - [Brower Support](#brower-support)
 - [Related Efforts](#related-efforts)
 - [Maintainers](#maintainers)
 - [Contributing](#contributing)
-- [Changelog](#changelog)
 - [Todo](#todo)
 - [LICENSE](#license)
 
-# Overview
+# Quick Start
 
-没有永恒的不变。
+🚧🚧WIP🚧🚧
 
--   all in `JS`
--   all in `runtime`
--   reacttive everywhere
+# Taco Palygroud
 
 [try it now!](http://zhzluke96.github.io/tacojs-playground/)
-
-# Features
-
-components
-
-```ts
-const Content = (
-  { aha = '🤖' },
-  children
-) => html`${aha}${children}`;
-const App = ({
-  { SomeProps }
-}) => html`👈<${Content} aha=${'🦄'}>Hello World!<//>👉`
-```
-
-ES2020
-
-```ts
-const App = () => {
-    const Timeing = useGenerator(async function* () {
-        while (true) {
-            yield new Date().toTimeString();
-            await new Promise(r => setTimeout(r, 1000));
-        }
-    });
-    return html`<span>${Timeing}</span>`;
-};
-```
-
-auto dependence (`@vue-next/reactivity`)
-
-```ts
-const App = () => {
-    const counter = useRef(0);
-    return html`<div>
-        <button onclick=${() => counter.value++}>+</button>
-        count: ${counter}
-        <button onclick=${() => counter.value--}>-</button>
-    </div>`;
-};
-```
-
-# Usage
-
-## Browser
-
-```html
-<script src="https://unpkg.com/@tacopie/taco"></script>
-```
-
-## Webpack
-
-```
-npm install -D @tacopie/taco
-```
-
-/components/App.ts
-
-```typescript
-import { html, useState } from '@tacopie/taco';
-
-const App = (props, children) => {
-    const { format = x => Number(x) } = props;
-    const [_g, _s, count] = useState(1);
-    return html`
-        <div>
-            <header>
-                ${children}
-            </header>
-            <button onclick=${() => count--}>-1</button>
-            ${() => format(count.value)}
-            <button onclick=${() => count++}>+1</button>
-        </div>
-    `;
-};
-```
-
-index.ts
-
-```ts
-import { cn as nzh } from 'nzh';
-import { mount } from '@tacopie/taco';
-import App from './components/App';
-
-mount($('app'), html`<${App} format=${nzh.encodeB}>Hello World.<//>`);
-```
 
 # Brower Support
 
@@ -148,10 +61,6 @@ Target environments are Chrome, Firefox, Safari.If you need to adapt a low-level
 Feel free to dive in! [Open an issue](https://github.com/zhzLuke96/TacoJs/issues/new) or submit PRs.
 
 TacoJs follows the [Contributor Covenant](http://contributor-covenant.org/version/1/3/0/) Code of Conduct.
-
-# Changelog
-
-feat: COMING.
 
 # Todo
 
