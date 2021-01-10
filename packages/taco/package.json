@@ -1,7 +1,7 @@
 {
   "name": "@tacopie/taco",
-  "version": "1.0.12",
-  "description": "mvvm framework.",
+  "version": "1.0.13",
+  "description": "Productivity Tools.",
   "source": "lib/index.ts",
   "author": "zhzluke96",
   "homepage": "https://github.com/zhzLuke96/TacoJs#readme",
@@ -38,6 +38,7 @@
     "build": "cross-env NODE_ENV=production rollup -c",
     "dev": "cross-env NODE_ENV=development rollup -c",
     "dev:w": "cross-env NODE_ENV=development rollup -c -w",
+    "dev:W": "cross-env NODE_ENV=development rollup -c -w",
     "test": "jest",
     "pre:publish": "yarn build && yarn dev",
     "prettier": "prettier --write ./src/**/**.ts",

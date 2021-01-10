@@ -1,14 +1,14 @@
 import { Ref } from '@vue/reactivity';
 import { Component } from './core';
 
-export type KVMap = Record<string | number | symbol, unknown>;
+export type KVMap = Record<string | number | symbol, any>;
 
 export const isVNodeSymbol = Symbol('isVNode');
-export interface VNode {
+export interface VNode<Props extends KVMap = any> {
     [isVNodeSymbol]: true;
 
-    type: string | MetaComponent;
-    props?: KVMap;
+    type: string | MetaComponent<Props>;
+    props?: Props;
     children?: VNode[];
 
     _dom?: null | Node;
@@ -49,21 +49,24 @@ export const createTextNode = (content: string): VTextNode => ({
     props: {},
 });
 export const isComponentSymbol = Symbol('isComponent');
-export interface VComponentNode<Props extends KVMap = {}> extends VNode {
+export interface VComponentNode<Props extends KVMap = {}> extends VNode<Props> {
     [isComponentSymbol]: true;
 
     props?: Props;
     type: MetaComponent<Props>;
 }
-export const createComponentNode = (type: MetaComponent): VComponentNode => ({
+export const createComponentNode = <Props>(
+    type: MetaComponent<Props>,
+): VComponentNode<Props> => ({
     [isVNodeSymbol]: true,
     [isComponentSymbol]: true,
     [isAsyncComponentSymbol]: isAsyncGenerator(type),
     type,
-    props: {},
+    props: {} as Props,
 });
 export const isAsyncComponentSymbol = Symbol('isAsyncComponent');
-export interface VAsyncComponentNode<Props extends KVMap = {}> extends VNode {
+export interface VAsyncComponentNode<Props extends KVMap = {}>
+    extends VNode<Props> {
     [isAsyncComponentSymbol]: true;
 
     props?: Props;

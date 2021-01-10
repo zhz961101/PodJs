@@ -1,4 +1,5 @@
 import { effect, isRef, Ref, unref } from '@vue/reactivity';
+import { resolveConfigFile } from 'prettier';
 import {
     createComponentNode,
     createTextNode,
@@ -36,6 +37,8 @@ const destroyVNode = (v: VNode) => {
 
 const isArr = Array.isArray;
 const arrify = <T>(x: T | T[]): T[] => (!x ? [] : isArr(x) ? x : [x]);
+
+const isThenable = (x: unknown) => x && typeof x['then'] === 'function';
 // 👆 UTILS
 
 export class Component<Props = any> {
@@ -71,15 +74,15 @@ export class Component<Props = any> {
     }
     public init() {
         if (isAsyncComponent(this.vnode)) {
-            const [gen, endCB] = this.renderComponent() as [
+            const [gen, popInstanceStack] = this.renderComponent() as [
                 ReturnType<MetaAsyncGeneratorComponent<Props>>,
                 () => any,
             ];
             this.bindAsyncGenerator(gen);
-            endCB();
+            popInstanceStack();
         } else {
             effect(() => {
-                const [view, endCB] = this.renderComponent();
+                const [view, popInstanceStack] = this.renderComponent();
                 // jump to outside of effect
                 skip(() => {
                     const views = arrify(view);
@@ -87,7 +90,7 @@ export class Component<Props = any> {
                         this.normalizeView.bind(this),
                     ) as VNode[];
                     this.updateChildren(vnodes);
-                    endCB();
+                    popInstanceStack();
                 });
             });
         }
@@ -123,6 +126,9 @@ export class Component<Props = any> {
         Component.CurrentInstance = this;
 
         let view: ReturnType<MetaComponent>;
+        // TODO: support lazy component
+        // 其实 component/lazy ，可以实现，但是也可以原生支持
+        // 还是想让核心小一点，这块需要重构一下
         try {
             view = this.vnode.type(props);
         } catch (error) {
@@ -180,7 +186,7 @@ export class Component<Props = any> {
             this.vnode.type.displayName || this.vnode.type.name || 'anonymous'
         );
     }
-    private destructor() {
+    public destructor() {
         this.vnode.children?.forEach(destroyVNode);
         delete this.vnode._component;
         WDK.removeSelf(this.anchor);
@@ -210,10 +216,11 @@ export class Component<Props = any> {
     private updateChildren(children: VNode[]) {
         // 应该在这里diff
         const commitQueue = this.diffChildren(children);
-        // PATH
-        this.patchCommit(commitQueue);
 
         this.children = children;
+
+        // PATH
+        CommitScheduler.do(commitQueue);
     }
     private bindAsyncGenerator(gen: ReturnType<MetaAsyncGeneratorComponent>) {
         subscribeAsyncGenerator(
@@ -238,19 +245,15 @@ export class Component<Props = any> {
         if (isRef(v)) {
             return createComponentNode(() => v.value);
         }
+        if (isThenable(v)) {
+            // TODO: 支持promise
+            return createTextNode('');
+        }
         return createTextNode(String(v));
     }
     private diffChildren(nextChild: Array<VNode>) {
         const commitQueue = diff([...this.children], nextChild, this);
         return commitQueue;
-    }
-    private patchCommit(commitQueue: Commit[]) {
-        const isUNMOUNT = (c: Commit) => c.kind === CommitKind.UNMOUNT;
-        const isNotUNMOUNT = (c: Commit) => c.kind !== CommitKind.UNMOUNT;
-        [
-            ...commitQueue.filter(isNotUNMOUNT),
-            ...commitQueue.filter(isUNMOUNT),
-        ].forEach(this.doCommit.bind(this));
     }
     public mountTo(parent: Node, refChild?: Node) {
         if (refChild) {
@@ -261,69 +264,147 @@ export class Component<Props = any> {
         createElement(this.vnode);
         this.mounted();
     }
-    private doCommit(c: Commit) {
-        const { kind, container, prev, next } = c;
-        switch (kind) {
-            case CommitKind.CLEAR: {
-                if (isComponent(next)) {
-                    next._component.clearChildren();
-                } else {
-                    WDK.clearChildren(next._dom);
-                }
-                break;
-            }
-            case CommitKind.MOUNT: {
-                const parent = prev._dom.parentNode;
-                if (isComponent(next)) {
-                    next._component = next._component || new Component(next);
-                    next._component.mountTo(parent, prev._dom);
-                } else {
-                    parent.insertBefore(createElement(next), prev._dom);
-                }
-                break;
-            }
-            case CommitKind.UNMOUNT: {
-                if (isComponent(prev)) {
-                    prev._component.destructor();
-                } else {
-                    WDK.removeSelf(prev._dom);
-                }
-                // freeO(prev);
-                break;
-            }
-            case CommitKind.APPEND: {
-                if (container instanceof Component) {
-                    const parent = container.getParentElement();
-                    if (parent) {
-                        parent.insertBefore(
-                            createElement(next),
-                            container.getAnchor(),
-                        );
-                    }
-                } else if (prev) {
-                    container._dom?.insertBefore(
-                        createElement(next),
-                        prev._dom,
-                    );
-                } else {
-                    container._dom?.appendChild(createElement(next));
-                }
-                break;
-            }
-            case CommitKind.PATCH: {
-                next._dom = prev._dom;
-                // freeO(prev);
+}
 
-                patchProps(prev, next);
-                patchTextContent(prev, next);
-                patchValue(prev, next);
-                patchClass(prev, next);
-                patchStyle(prev, next);
-                break;
+// ### time slice ###
+// TODO:
+// 可以优化
+// 比如一个 TextNode 出现了多次文本 patch，可以合并，甚至中断patch
+// 但是可能带来副作用，增加性能压力
+const CommitScheduler = (() => {
+    type CommitNode = Commit & { timestamp: number; nextNode?: CommitNode };
+
+    let currentSyncCommitHead: CommitNode;
+
+    const queueStack = [] as {
+        asyncCommitHead: CommitNode;
+        // 现在就是删除操作是要求同步的
+        syncCommitHead: CommitNode;
+    }[];
+
+    const mapNode = (head: CommitNode, fn: (c: Commit) => void) => {
+        let cur = head;
+        while (cur) {
+            fn(cur);
+            cur = cur.nextNode;
+        }
+    };
+    const clearSyncCommit = () => {
+        mapNode(currentSyncCommitHead, doCommit);
+        currentSyncCommitHead = undefined;
+    };
+    const trunCommit = (head?: CommitNode) => {
+        if (!head) {
+            clearSyncCommit();
+            return tryTrunCommit();
+        }
+        const { nextNode: nextCommit } = head;
+        requestIdleCallback(() => {
+            doCommit(head);
+            trunCommit(nextCommit);
+        });
+    };
+    const tryTrunCommit = () => {
+        if (currentSyncCommitHead === undefined && queueStack.length !== 0) {
+            const { syncCommitHead, asyncCommitHead } = queueStack.shift();
+            currentSyncCommitHead = syncCommitHead;
+            trunCommit(asyncCommitHead);
+            return;
+        }
+    };
+
+    const commitArr2Lk = (queue: Commit[], timestamp: number): CommitNode => {
+        if (queue.length === 0) return;
+        const head = { ...queue[0], timestamp } as CommitNode;
+        let cur = head;
+        queue.slice(1).forEach(c => {
+            cur.nextNode = { ...c, timestamp };
+            cur = cur.nextNode;
+        });
+        return head;
+    };
+
+    const isUNMOUNT = (c: Commit) => c.kind === CommitKind.UNMOUNT;
+    const isNotUNMOUNT = (c: Commit) => !isUNMOUNT(c);
+    return {
+        do(queue: Commit[]) {
+            const timestamp = performance.now();
+
+            const asyncCommitHead = commitArr2Lk(
+                queue.filter(isNotUNMOUNT),
+                timestamp,
+            );
+            const syncCommitHead = commitArr2Lk(
+                queue.filter(isUNMOUNT),
+                timestamp,
+            );
+
+            queueStack.push({ asyncCommitHead, syncCommitHead });
+
+            tryTrunCommit();
+        },
+    };
+})();
+
+const doCommit = (c: Commit) => {
+    const { kind, container, prev, next } = c;
+    switch (kind) {
+        case CommitKind.CLEAR: {
+            if (isComponent(next)) {
+                next._component.clearChildren();
+            } else {
+                WDK.clearChildren(next._dom);
             }
+            break;
+        }
+        case CommitKind.MOUNT: {
+            const parent = prev._dom.parentNode;
+            if (isComponent(next)) {
+                next._component = next._component || new Component(next);
+                next._component.mountTo(parent, prev._dom);
+            } else {
+                parent.insertBefore(createElement(next), prev._dom);
+            }
+            break;
+        }
+        case CommitKind.UNMOUNT: {
+            if (isComponent(prev)) {
+                prev._component.destructor();
+            } else {
+                WDK.removeSelf(prev._dom);
+            }
+            // freeO(prev);
+            break;
+        }
+        case CommitKind.APPEND: {
+            if (container instanceof Component) {
+                const parent = container.getParentElement();
+                if (parent) {
+                    parent.insertBefore(
+                        createElement(next),
+                        container.getAnchor(),
+                    );
+                }
+            } else if (prev) {
+                container._dom?.insertBefore(createElement(next), prev._dom);
+            } else {
+                container._dom?.appendChild(createElement(next));
+            }
+            break;
+        }
+        case CommitKind.PATCH: {
+            next._dom = prev._dom;
+            // freeO(prev);
+
+            patchProps(prev, next);
+            patchTextContent(prev, next);
+            patchValue(prev, next);
+            patchClass(prev, next);
+            patchStyle(prev, next);
+            break;
         }
     }
-}
+};
 
 const mountRef = <T>(refOrCallback: Ref<T> | ((x: T) => void), value: T) => {
     if (!refOrCallback) {
