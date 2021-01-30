@@ -1,4 +1,4 @@
-# @tacopie/taco
+# `@tacopie/taco`
 core library.
 
 # Features

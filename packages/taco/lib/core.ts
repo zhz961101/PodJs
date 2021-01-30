@@ -410,7 +410,7 @@ const mountRef = <T>(refOrCallback: Ref<T> | ((x: T) => void), value: T) => {
     if (!refOrCallback) {
         return;
     }
-    if (isRef(refOrCallback)) {
+    if (isRef(refOrCallback) || 'value' in refOrCallback) {
         return (refOrCallback.value = value);
     }
     if (typeof refOrCallback !== 'function') {

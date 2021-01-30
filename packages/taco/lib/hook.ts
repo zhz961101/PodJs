@@ -1,11 +1,26 @@
-import { customRef, effect, isRef, Ref, ref, toRaw } from '@vue/reactivity';
+import {
+    customRef,
+    effect,
+    isRef,
+    Ref,
+    ref,
+    toRaw,
+    unref,
+} from '@vue/reactivity';
 import { Component } from './core';
 
 // 👇 UTILS
-const skip = (f: () => any) => Promise.resolve().then(f);
+export const skip = (f: () => any) => Promise.resolve().then(f);
 
 const resizeArr = (idx: number, arr: any[]) =>
     (arr.length = idx > arr.length ? idx : arr.length);
+
+export const readonly = <T>(x: T | Ref<T>) =>
+    ({
+        get value() {
+            return unref(x);
+        },
+    } as { readonly value: T });
 // 👆 UTILS
 
 const HOOKS = (Symbol('HOOKS') as unknown) as string;
@@ -120,20 +135,24 @@ export const usePtr = <T>(inital: T | (() => T)) => {
     }
     return pt;
 };
-
-export const useEffect = (
-    eff: () => undefined | (() => void),
-    options?: any,
-) => {
-    const [inited, setter, ins] = hoxPrepare();
+export type Refof<T> = Ptrof<T>;
+export type Mptr<T> = T extends Ref<infer U> ? Ref<U> | U : Ref<T> | T;
+export const unptr = unref;
+export const useEffect = (eff: () => void | (() => void), options?: any) => {
+    const [inited, setter, ins, idx] = hoxPrepare();
     if (inited) {
         return;
     }
     setter(true);
     effect(() => {
+        if (typeof ins.context.unmountCallbacks[idx] === 'function') {
+            ins.context.unmountCallbacks[idx]();
+            ins.context.unmountCallbacks[idx] = undefined;
+        }
         const maybeFn = eff();
         if (typeof maybeFn === 'function') {
-            ins.context.unmountCallbacks.push(maybeFn);
+            ins.context.unmountCallbacks[idx] = maybeFn;
+            resizeArr(idx, ins.context.unmountCallbacks);
         }
     }, options);
 };
@@ -142,19 +161,24 @@ export const useWatch = <WatchRet>(
     eff?: (current: WatchRet | null, last: WatchRet | null) => void,
     options?: any,
 ) => {
-    const [inited, setter, ins] = hoxPrepare();
+    const [inited, setter, ins, idx] = hoxPrepare();
     if (inited) {
         return;
     }
     setter(true);
     let lastRet = null;
     effect(() => {
+        if (typeof ins.context.unmountCallbacks[idx] === 'function') {
+            ins.context.unmountCallbacks[idx]();
+            ins.context.unmountCallbacks[idx] = undefined;
+        }
         const watchRet = isRef(watcher) ? watcher.value : watcher && watcher();
         skip(() => {
             const maybeFn = eff(watchRet, lastRet);
             lastRet = watchRet;
             if (typeof maybeFn === 'function') {
-                ins.context.unmountCallbacks.push(maybeFn);
+                ins.context.unmountCallbacks[idx] = maybeFn;
+                resizeArr(idx, ins.context.unmountCallbacks);
             }
         });
     }, options);
@@ -188,38 +212,37 @@ export const useMemoDep = <T>(factory: () => T, depEff?: () => void) => {
 export const useCallback = <CB extends Function>(cb: CB, depEff?: () => void) =>
     useMemoDep(() => cb, depEff);
 
-type Reducer<ReducerState, ReducerAction> = (
+export type Reducer<ReducerState, ReducerAction> = (
     state: ReducerState,
     action: ReducerAction,
 ) => ReducerState;
 
-export const useReducer = <
-    ReducerState,
-    ReducerAction extends number | string | boolean
->(
+export const useReducer = <ReducerState, ReducerAction>(
     reducer: Reducer<ReducerState, ReducerAction>,
     initialState: ReducerState,
-    initialAction: ReducerAction,
+    initialAction?: ReducerAction,
 ) => {
     let [ret, setter, ins, idx] = hoxPrepare();
-    if (ret) {
-        ret = setter({
-            state: initialAction
-                ? reducer(initialState, initialAction)
-                : initialState,
-        });
+    if (!ret) {
+        ret = setter(
+            ref(
+                initialAction
+                    ? reducer(initialState, initialAction)
+                    : initialState,
+            ),
+        );
     }
     return [
-        ret.state,
-        useCallback((action: ReducerAction) => {
-            setter({
-                state: reducer(ret.state, action),
-            });
-        }),
-    ];
+        ret as Ref<ReducerState>,
+        (action: ReducerAction) => {
+            ret.value = reducer(ret.state, action);
+        },
+    ] as const;
 };
-// TODO: 没什么意义其实
-export const useState = (): any => {};
+export const useState = <T>(inital = null as T | (() => T)) => {
+    const state = useRef(inital);
+    return [() => state.value, (x: T) => (state.value = x), state] as const;
+};
 
 ///////////////////////////////////////////
 

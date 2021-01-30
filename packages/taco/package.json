@@ -36,6 +36,7 @@
   },
   "scripts": {
     "build": "cross-env NODE_ENV=production rollup -c",
+    "build:all": "yarn dev && yarn build",
     "dev": "cross-env NODE_ENV=development rollup -c",
     "dev:w": "cross-env NODE_ENV=development rollup -c -w",
     "dev:W": "cross-env NODE_ENV=development rollup -c -w",
