@@ -1,16 +1,27 @@
-import { useState } from "../core/useState";
+import { useReducers } from './useReducers';
 
-export const useBoolean = (init = false) => {
-    const [getter, setter, state] = useState(init);
-    const toggle = () => setter(!getter());
-    const setTrue = () => setter(true);
-    const setFalse = () => setter(false);
-    return {
-        getter,
-        setter,
-        state,
-        toggle,
-        setTrue,
-        setFalse,
-    };
+const reducers = {
+    on() {
+        return true;
+    },
+    off() {
+        return false;
+    },
+    toggle(value: boolean) {
+        return !value;
+    },
 };
+
+export const useBoolean = (inital = false) => {
+    return useReducers(reducers, inital);
+};
+
+export const useSwitch = (inital = false) => {
+    const [value, { on, off, toggle }] = useBoolean(inital);
+    return [value, on, off, toggle] as const;
+};
+
+export function useToggle(initialValue: boolean = false) {
+    const [value, { toggle }] = useBoolean(initialValue);
+    return [value, toggle] as const;
+}

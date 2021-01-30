@@ -1,16 +1,44 @@
-import { useEffect } from "../core/useEffect";
-import { useState } from "../core/useState";
+import { useCallback, useEffect, useState } from '@tacopie/taco';
+import { useCounter } from './useCounter';
 
-export function usePromise<T>(futureFactory: () => Promise<T>) {
-    const [, setter, value] = useState<T>();
-    const [, ErrSetter, err] = useState("");
-    const [, loadingSetter, loading] = useState(true);
-    useEffect(() => {
-        loadingSetter(true);
-        futureFactory()
-            .then(setter)
-            .then(() => loadingSetter(false))
-            .catch(ErrSetter);
+enum AsyncStatus {
+    IDLE = 'idle',
+    PENDING = 'pending',
+    SUCCESS = 'success',
+    ERROR = 'error',
+}
+
+export function usePromise<T>(
+    futureFactory: () => Promise<T>,
+    immediate = true,
+) {
+    const [, setValue, value] = useState<T>();
+    const [, setErr, err] = useState('');
+    const [, setStatus, status] = useState(AsyncStatus.IDLE);
+    const [pendingCount, { inc, dec }] = useCounter();
+
+    const execute = useCallback(() => {
+        setStatus(AsyncStatus.PENDING);
+        setValue(null);
+        setErr(null);
+
+        inc();
+        return futureFactory()
+            .then(response => {
+                setStatus(AsyncStatus.SUCCESS);
+                setValue(response);
+            })
+            .catch(err => {
+                setErr(err);
+                setStatus(AsyncStatus.ERROR);
+            })
+            .finally(dec);
     });
-    return { value, loading, err };
+
+    useEffect(() => {
+        if (immediate) {
+            execute();
+        }
+    });
+    return [value, pendingCount, status, err];
 }

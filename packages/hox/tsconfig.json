@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": "./lib",
+        "declarationDir": "./dist/types",
+        "sourceMap": true,
+        "target": "es5",
+        "declaration": true,
+        "declarationMap": true,
+        "removeComments": false,
+        "noImplicitAny": false,
+        "experimentalDecorators": true,
+        "esModuleInterop": true,
+        "downlevelIteration": true,
+        "lib": [
+            "es2020",
+            "dom",
+            "esnext.asynciterable",
+        ],
+    },
+    "include": ["./lib"]
+}

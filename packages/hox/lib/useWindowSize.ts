@@ -1,18 +1,18 @@
-import { reactive } from "@vue/reactivity";
+import { reactive } from '@tacopie/taco';
 
 export const useWindowSize = () => {
-    const Size = reactive({
+    const size = reactive({
         w: window.innerWidth,
         h: window.innerHeight,
     });
-    window.addEventListener("resize", ({ target }) => {
+    window.addEventListener('resize', ({ target }) => {
         const { innerWidth, innerHeight } = target as any;
-        if (innerWidth !== Size.w) {
-            Size.w = innerWidth;
+        if (innerWidth !== size.w) {
+            size.w = innerWidth;
         }
-        if (innerHeight !== Size.h) {
-            Size.h = innerHeight;
+        if (innerHeight !== size.h) {
+            size.h = innerHeight;
         }
     });
-    return { Size };
+    return size;
 };

@@ -1,10 +1,11 @@
-import { useEffect } from "../core/useEffect";
-import { useState } from "../core/useState";
-import { throttle } from "./common";
-import { useEventListener } from "./useEventListener";
+import { throttle } from './common';
+import { useEventListener } from './useEventListener';
+import { useRef } from '@tacopie/taco';
 
-export const useMouse = () => {
-    const [getter, setter, state] = useState({
+const { max, min } = Math;
+export const useMouse = (fpsLimit = 30) => {
+    fpsLimit = max(10, min(120, fpsLimit));
+    const state = useRef({
         screenX: 0,
         screenY: 0,
         clientX: 0,
@@ -13,7 +14,7 @@ export const useMouse = () => {
         pageY: 0,
     });
     useEventListener(
-        "mousemove",
+        'mousemove',
         throttle((e: MouseEvent) => {
             state.value = {
                 screenX: e.screenX,
@@ -23,7 +24,8 @@ export const useMouse = () => {
                 pageX: e.pageX,
                 pageY: e.pageY,
             };
-        }, 33.33),
-    )(window);
+        }, 1000 / fpsLimit),
+        window,
+    );
     return state;
 };

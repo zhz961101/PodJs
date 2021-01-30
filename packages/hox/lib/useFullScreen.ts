@@ -1,4 +1,4 @@
-import { useState } from "../core/useState";
+import { unref, useRef } from '@tacopie/taco';
 
 let fullScreen = (element: HTMLElement) => {
     if (element.requestFullscreen) {
@@ -39,13 +39,13 @@ let isFullscreen = () => {
 };
 
 export const useFullScreen = () => {
-    let element: HTMLElement = null;
-    const [getter, setter, isFullscreenState] = useState(false);
+    let element = useRef(null as null | HTMLElement);
+    const isFullscreenState = useRef(false);
     function setFull() {
         if (isFullscreenState.value) {
             return;
         }
-        fullScreen(element || ((document as any) as HTMLElement));
+        fullScreen(unref(element) || ((document as any) as HTMLElement));
         isFullscreenState.value = true;
     }
     function exitFull() {
@@ -62,13 +62,5 @@ export const useFullScreen = () => {
             setFull();
         }
     }
-    return {
-        ref(elem) {
-            element = elem;
-        },
-        isFullscreen: isFullscreenState,
-        setFull,
-        exitFull,
-        toggleFull,
-    };
+    return [isFullscreenState, element, setFull, exitFull, toggleFull];
 };

@@ -1,16 +1,14 @@
-import { toRaw } from "@vue/reactivity";
-import { useEffect } from "../core/useEffect";
-import { useState } from "../core/useState";
+import { toRaw } from '@vue/reactivity';
+import { useEffect, useState } from '@tacopie/taco';
 
 const VersionKey = `@tacopia/taco/hox/useStoregeState/versions`;
 const Storage2Versions = new WeakMap<Storage, Record<string, number>>();
 
 const getVerMap = (factory: Storage): Record<string, number> => {
     try {
-        const map = (JSON.parse(factory.getItem(VersionKey)) as unknown) as Record<
-            string,
-            number
-        >;
+        const map = (JSON.parse(
+            factory.getItem(VersionKey),
+        ) as unknown) as Record<string, number>;
         if (!map) {
             return {};
         }
