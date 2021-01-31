@@ -14,7 +14,7 @@ const warp = (name) => {
  * @property {todo} unknown todo...
  */
 interface ${normalizeName}Props {
-    todo: unknown;
+    // TODO: need props
 }
 
 /**
@@ -32,7 +32,7 @@ export const ${normalizeName}: MetaComponent<${normalizeName}Props> = props => {
 `;
 };
 
-fs.writeFileSync('./FluentDesign.ts', `// AUTO-GENERATED ${new Date().toUTCString()}
+fs.writeFileSync('./FluentDesign.gen.ts', `// AUTO-GENERATED ${new Date().toUTCString()}
 import { MetaComponent, createVNode } from '@tacopie/taco';
 import { mustRequire, once } from '../common';
 

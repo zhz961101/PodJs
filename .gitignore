@@ -88,3 +88,4 @@ local_test/*.*
 *.auto.gen.ts
 
 *.html
+*.gen.ts
