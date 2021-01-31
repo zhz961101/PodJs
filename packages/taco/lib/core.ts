@@ -406,7 +406,13 @@ const doCommit = (c: Commit) => {
     }
 };
 
-const mountRef = <T>(refOrCallback: Ref<T> | ((x: T) => void), value: T) => {
+const mountRef = <T>(
+    refOrCallback: Ref<T> | ((x: T) => void) | Array<Ref<T> | ((x: T) => void)>,
+    value: T,
+) => {
+    if (Array.isArray(refOrCallback)) {
+        return refOrCallback.forEach(rf => mountRef(rf, value));
+    }
     if (!refOrCallback) {
         return;
     }
@@ -756,6 +762,7 @@ export const h = (
     type,
     props: props || {},
     children: (children || [])
+        .flat(Infinity)
         .map(maybeRef2Component)
         .map(maybeMetaComponent)
         .map(maybeTextNode) as VNode[],
