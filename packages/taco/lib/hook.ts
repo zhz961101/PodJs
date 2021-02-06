@@ -6,21 +6,20 @@ import {
     ref,
     toRaw,
     unref,
+    enableTracking,
+    pauseTracking,
 } from '@vue/reactivity';
 import { Component } from './core';
 
 // 👇 UTILS
-export const skip = (f: () => any) => Promise.resolve().then(f);
+export const skip = (f: () => any) => {
+    pauseTracking();
+    f();
+    enableTracking();
+};
 
 const resizeArr = (idx: number, arr: any[]) =>
     (arr.length = idx > arr.length ? idx : arr.length);
-
-export const readonly = <T>(x: T | Ref<T>) =>
-    ({
-        get value() {
-            return unref(x);
-        },
-    } as { readonly value: T });
 // 👆 UTILS
 
 const HOOKS = (Symbol('HOOKS') as unknown) as string;

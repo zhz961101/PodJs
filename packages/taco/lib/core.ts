@@ -1,6 +1,5 @@
 import { effect, isRef, Ref, unref } from '@vue/reactivity';
-import { resolveConfigFile } from 'prettier';
-import { Mptr } from './hook';
+import { Mptr, skip } from './hook';
 import {
     createComponentNode,
     createTextNode,
@@ -25,8 +24,6 @@ import {
 import WDK from './WDK';
 
 // 👇 UTILS
-const skip = (f: () => any) => Promise.resolve().then(f);
-
 const freeO = (o: any) =>
     o && typeof o === 'object' && Object.keys(o).forEach(k => delete o[k]);
 
