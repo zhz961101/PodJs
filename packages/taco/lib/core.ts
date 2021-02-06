@@ -1,5 +1,6 @@
 import { effect, isRef, Ref, unref } from '@vue/reactivity';
 import { resolveConfigFile } from 'prettier';
+import { Mptr } from './hook';
 import {
     createComponentNode,
     createTextNode,
@@ -533,30 +534,48 @@ const patchProps = (prev: VNode, next: VNode | null) => {
 };
 
 // TODO: 要处理isSVG的情况
-const mountProps = (props: KVMap, dom: Node, isSVG: boolean) => {
+const mountProps = (props: KVMap<Mptr | (() => any)>, dom: Node, isSVG: boolean) => {
     if (!(dom instanceof HTMLElement)) {
         return;
     }
 
-    props.ref && mountRef(props.ref as any, dom);
+    if(props.ref) {
+        mountRef(props.ref as any, dom);
+    }
 
     // value
     if ('value' in dom && props.value) {
-        effect(() => ((dom as any).value = unref(props.value)));
+        if(typeof props.value === 'function'){
+            effect(() => (dom as any).value = props.value());
+        } else {
+            effect(() => ((dom as any).value = unref(props.value)));
+        }
     }
 
     // className
     if (props.className) {
-        effect(
-            () => (dom.className = (unref(props.className) || '') as string),
-        );
+        if(typeof props.className === 'function'){
+            effect(() => dom.className = props.className() || '');
+        } else {
+            effect(
+                () => (dom.className = (unref(props.className) || '') as string),
+            );
+        }
     }
 
     // inline style
-    if (props.style && typeof props.style === 'object') {
-        Object.keys(props.style).forEach(k =>
-            effect(() => (dom.style[k] = unref(props.style[k]))),
-        );
+    if (props.style) {
+        if(typeof props.style === 'object') {
+            if(isRef(props.style)){
+                effect(() => Object.keys(unref(props.style)).forEach(k => dom.style[k] = props.style[k]));
+            } else {
+                Object.keys(props.style).forEach(k =>
+                    effect(() => (dom.style[k] = unref(props.style[k]))),
+                );
+            }
+        } else if (typeof props.style === 'function') {
+            effect(() => Object.keys(props.style()).forEach(k => dom.style[k] = props.style[k]))
+        }
     }
 
     // non eventlistener propsibutes
@@ -568,7 +587,12 @@ const mountProps = (props: KVMap, dom: Node, isSVG: boolean) => {
         )
         .forEach(k => {
             effect(() => {
-                const val = unref(props[k]);
+                const val = (() => {
+                    if(typeof props[k] === 'function'){
+                        return props[k]();
+                    }
+                    return unref(props[k]);
+                })();
                 if (typeof val === 'boolean') {
                     if (val) {
                         return dom.setAttribute(k, '');
@@ -669,7 +693,7 @@ const subscribeAsyncGenerator = async <T>(
     mapFn: (x: T, done: boolean) => void,
     onerror: (err: Error) => void,
 ) =>
-    IdleWhileTrue(async () => {
+    doneLoop(async () => {
         const { value, done } = await g.next().catch(err => {
             onerror(err);
             return { value: null, done: true };
@@ -681,13 +705,13 @@ const subscribeAsyncGenerator = async <T>(
         return done;
     });
 
-const IdleWhileTrue = (f: () => Promise<boolean>) =>
-    window.requestIdleCallback(async () => {
+const doneLoop = (f: () => Promise<boolean>) =>
+    window.requestAnimationFrame(async () => {
         const done = await f();
         if (done) {
             return;
         }
-        IdleWhileTrue(f);
+        doneLoop(f);
     });
 
 // VNODE => DOM🌳
@@ -750,9 +774,9 @@ const maybeMetaComponent = (v: any): VNode => {
     return v;
 };
 
-export const h = (
-    type: string | MetaComponent,
-    props = {} as KVMap,
+export const h = <Props extends KVMap>(
+    type: string | MetaComponent<Props>,
+    props = {} as Props,
     ...children: Array<ViewItem | Ref<ViewItem>>
 ): VNode | VTextNode | VComponentNode => ({
     [isVNodeSymbol]: true,

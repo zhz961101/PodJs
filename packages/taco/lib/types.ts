@@ -1,7 +1,7 @@
 import { Ref } from '@vue/reactivity';
 import { Component } from './core';
 
-export type KVMap = Record<string | number | symbol, any>;
+export type KVMap<Value = any> = Record<string | number | symbol, Value>;
 
 export const isVNodeSymbol = Symbol('isVNode');
 export interface VNode<Props extends KVMap = any> {
@@ -111,11 +111,6 @@ export interface MetaAsyncGeneratorComponent<Props = {}> {
     >;
     displayName?: string;
 }
-// export type MetaComponent<Props = {}> =
-//     | _MetaComponent<Props, ViewItem | ViewItem[]>
-//     | _MetaComponent<Props, Ref<ViewItem | ViewItem[]>>
-//     | MetaAsyncGeneratorComponent<Props>;
-
 export interface MetaComponent<Props = {}> {
     (props?: MetaProps & Props):
         | ViewItem
@@ -126,22 +121,6 @@ export interface MetaComponent<Props = {}> {
               ViewItem | ViewItem[] | never,
               unknown
           >;
-    // (): ViewItem;
-    // (): ViewItem[];
-    // (): Ref<ViewItem | ViewItem[]>;
-    // (): AsyncGenerator<
-    //     ViewItem | ViewItem[] | never,
-    //     ViewItem | ViewItem[] | never,
-    //     unknown
-    // >;
-    // (props?: MetaProps & Props): ViewItem;
-    // (props?: MetaProps & Props): ViewItem[];
-    // (props?: MetaProps & Props): Ref<ViewItem | ViewItem[]>;
-    // (props?: MetaProps & Props): AsyncGenerator<
-    //     ViewItem | ViewItem[] | never,
-    //     ViewItem | ViewItem[] | never,
-    //     unknown
-    // >;
     displayName?: string;
 }
 

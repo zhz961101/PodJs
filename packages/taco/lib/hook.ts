@@ -136,7 +136,7 @@ export const usePtr = <T>(inital: T | (() => T)) => {
     return pt;
 };
 export type Refof<T> = Ptrof<T>;
-export type Mptr<T> = T extends Ref<infer U> ? Ref<U> | U : Ref<T> | T;
+export type Mptr<T = any> = T extends Ref<infer U> ? Ref<U> | U : Ref<T> | T;
 export const unptr = unref;
 export const useEffect = (eff: () => void | (() => void), options?: any) => {
     const [inited, setter, ins, idx] = hoxPrepare();
