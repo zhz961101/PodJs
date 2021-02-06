@@ -42,7 +42,6 @@
     "dev:W": "cross-env NODE_ENV=development rollup -c -w",
     "test": "jest",
     "pre:publish": "yarn build && yarn dev",
-    "prettier": "prettier --write ./src/**/**.ts",
-    "beautify": "npm run lint:fix && npm run prettier"
+    "prettier": "prettier --write ./lib/**/**.ts"
   }
 }
