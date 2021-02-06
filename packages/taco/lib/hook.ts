@@ -10,17 +10,7 @@ import {
     pauseTracking,
 } from '@vue/reactivity';
 import { Component } from './core';
-
-// 👇 UTILS
-export const skip = (f: () => any) => {
-    pauseTracking();
-    f();
-    enableTracking();
-};
-
-const resizeArr = (idx: number, arr: any[]) =>
-    (arr.length = idx > arr.length ? idx : arr.length);
-// 👆 UTILS
+import { skip, resizeArr } from './utils';
 
 const HOOKS = (Symbol('HOOKS') as unknown) as string;
 export const useInstance = () => {

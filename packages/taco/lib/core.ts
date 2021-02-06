@@ -1,5 +1,5 @@
 import { effect, isRef, Ref, unref } from '@vue/reactivity';
-import { Mptr, skip } from './hook';
+import { Mptr } from './hook';
 import {
     createComponentNode,
     createTextNode,
@@ -23,34 +23,7 @@ import {
 } from './types';
 import WDK from './WDK';
 
-// 👇 UTILS
-const freeO = (o: any) =>
-    o && typeof o === 'object' && Object.keys(o).forEach(k => delete o[k]);
-
-const destroyVNode = (v: VNode) => {
-    v._dom && WDK.removeSelf(v._dom);
-    v._dom && WDK.removeAllListener(v._dom);
-    freeO(v);
-};
-
-const isArr = Array.isArray;
-const arrify = <T>(x: T | T[]): T[] => (!x ? [] : isArr(x) ? x : [x]);
-
-const isThenable = (x: unknown) => x && typeof x['then'] === 'function';
-
-const once = <Args extends any[], Ret>(fn: (...args: Args) => Ret) => {
-    let called = false;
-    return (...args: Args) => {
-        if (called) {
-            return;
-        }
-        called = true;
-        const ret = fn(...args);
-        fn = null;
-        return ret;
-    };
-};
-// 👆 UTILS
+import { destroyVNode, isArr, arrify, isThenable, once, skip } from './utils';
 
 export class Component<Props = any> {
     public static CurrentInstance = null as null | Component;
@@ -105,7 +78,13 @@ export class Component<Props = any> {
                 popInstanceStack();
             } else {
                 // 🍳 Partial Function Component
+
                 const partailStartIdx = Component.HooksIdx;
+                /**
+                 * 这里带来了一个问题就是，hooks除了一些场景里面会触发gc，其他情况都没什么用
+                 * 也许hook需要更加高级的数据结构来支持更相应式的场景？
+                 * 😩~
+                 */
                 effect(() => {
                     Component.HooksIdx = partailStartIdx;
                     const view = viewOrPartailFunction();
@@ -244,9 +223,7 @@ export class Component<Props = any> {
         };
     }
     private updateChildren(children: VNode[]) {
-        // 应该在这里diff
         const commitQueue = this.diffChildren(children);
-
         this.children = children;
 
         // PATH
@@ -562,11 +539,10 @@ const patchProps = (prev: VNode, next: VNode | null) => {
     });
 };
 
-// TODO: 要处理isSVG的情况
 const mountProps = (
     props: KVMap<Mptr | (() => any)>,
     dom: Node,
-    isSVG: boolean,
+    isSVG: boolean, // 好像不用特殊处理😅
 ) => {
     if (!(dom instanceof HTMLElement)) {
         return;
@@ -769,7 +745,7 @@ const createElement = (vnode: VNode, isSVG = false): Node => {
         vnode._component = vnode._component || new Component(vnode);
         dom = vnode._component.getAnchor();
     } else {
-        isSVG = vnode.type === 'svg' || isSVG;
+        isSVG = isSVG || vnode.type === 'svg';
 
         dom = WDK.createDOM(
             vnode.type as string,
@@ -787,7 +763,7 @@ const createElement = (vnode: VNode, isSVG = false): Node => {
 };
 
 const createChildren = (vnode: VNode, isSVG = false): DocumentFragment => {
-    isSVG = vnode.type === 'svg' || isSVG;
+    isSVG = isSVG || vnode.type === 'svg';
 
     const frag = WDK.createFragment();
     vnode.children = vnode.children || [];
@@ -833,10 +809,11 @@ export const h = <Props extends KVMap>(
         .map(maybeMetaComponent)
         .map(maybeTextNode) as VNode[],
     _dom: null,
+    // FIXME: 这里太丑了，应该让children支持其他类型，然后text从children拿content（但是类型有点不好写）
     content: type === '#text' ? String((children || [])[0] as string) : null,
 });
 
-// 把vnode 渲染导dom中
+// 把vnode渲染到dom中
 export const render = (
     vnodeOrComponent: VNode | VNode[] | MetaComponent | AsyncFunctionComponent,
     target: HTMLElement,
@@ -862,174 +839,3 @@ export const render = (
     }
     target.append(frag);
 };
-
-///////////////////////////////////////////
-// 👇 testcase
-///////////////////////////////////////////
-
-// const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-// const randInt = (max: number) => ~~(Math.random() * max);
-
-// const dateTime = ref(Date.now());
-// setInterval(() => (dateTime.value = Date.now()), 500);
-
-// const App = () => {
-//     let timer = 500;
-//     const state = useRef('rolling' as 'start' | 'rolling');
-//     const [chan, go] = useChannel();
-//     return h('div', {}, [
-//         h('#text', null, ['roll food 🌮!']),
-//         h('br'),
-//         h(async function* () {
-//             while (true) {
-//                 for (const food of '🍕/🍔/🍟/🌭/🌮/🌯/🥫/🍖/🍗/🥩/🍠/🍣/🍤'.split(
-//                     '/',
-//                 )) {
-//                     await sleep(timer);
-//                     timer = Math.min(500, timer + randInt(50) + 10);
-//                     if (timer >= 500) {
-//                         state.value = 'start';
-//                         console.log('block');
-//                         await chan.value;
-//                     }
-//                     yield [
-//                         h('h1', null, [h('#text', null, [food])]),
-//                         h('span', null, [h('#text', null, [`${Date.now()}`])]),
-//                     ];
-//                 }
-//             }
-//         }),
-//         h(
-//             'button',
-//             {
-//                 onclick() {
-//                     if (state.value === 'start') {
-//                         go();
-//                         state.value = 'rolling';
-//                         timer = 33.33;
-//                     } else {
-//                         go();
-//                         timer = 33.33;
-//                     }
-//                 },
-//             },
-//             [h('#text', null, [state])],
-//         ),
-//     ]);
-// };
-
-// render(App, document.querySelector('#app'));
-
-// function useDebouncedRef<T>(value: T, delay = 200) {
-//     let timeout: number;
-//     return customRef<T>((track, trigger) => {
-//         return {
-//             get() {
-//                 track();
-//                 return value;
-//             },
-//             set(newValue) {
-//                 clearTimeout(timeout);
-//                 timeout = setTimeout(() => {
-//                     value = newValue;
-//                     trigger();
-//                 }, delay);
-//             },
-//         };
-//     });
-// }
-
-// const Counter = () => {
-//     const count = useRef(0);
-
-//     const toastRef = useTeleport();
-
-//     useWatch(
-//         () => toastRef.value,
-//         elem => {
-//             if (elem instanceof HTMLElement) {
-//                 elem.classList.add('message');
-//             }
-//         },
-//     );
-
-//     return [
-//         h('#text', null, [count]),
-//         h('br'),
-//         h(
-//             'button',
-//             {
-//                 onclick() {
-//                     count.value++;
-//                 },
-//             },
-//             [h('#text', null, ['+'])],
-//         ),
-//         h(
-//             'button',
-//             {
-//                 onclick() {
-//                     count.value--;
-//                 },
-//             },
-//             [h('#text', null, ['-'])],
-//         ),
-//         h('div', { ref: toastRef }, [h('#text', null, ['awesome! ', count])]),
-//         h(Teleport, null, [h('#text', null, ['this!'])]),
-//     ];
-// };
-// render(Counter, document.querySelector('#app2'));
-
-// const cssList = [
-//     { background: '#fad0c4' },
-//     { background: '#f99185' },
-//     { background: '#fda085' },
-//     { background: '#96e6a1' },
-//     { background: '#ebedee' },
-//     { background: '#330867' },
-// ];
-
-// const TheCircle = async function* () {
-//     let idx = 0;
-//     while (1) {
-//         yield h('div', {
-//             style: {
-//                 transition: 'all 0.3s',
-//                 transform: `translate3d(${randInt(300) - 300}px, ${
-//                     randInt(300) - 300
-//                 }px, 0)`,
-//                 opacity: 0.5,
-//                 'pointer-events': 'none',
-//                 width: '400px',
-//                 height: '400px',
-//                 margin: '0 auto',
-//                 borderRadius: '100%',
-//                 ...cssList[idx],
-//             },
-//         });
-//         idx = (idx + 1) % cssList.length;
-//         await sleep(1000);
-//     }
-//     return null;
-// };
-// render(TheCircle, document.querySelector('#app3'));
-
-// const Likes = (props: { info: { likes: string[] } }) => {
-//     const like1 = props.info.likes[0];
-//     return h('div', null, [h('span', null, [h('#text', null, [like1])])]);
-// };
-
-// const UserInfo = () => {
-//     const info = 0.5 > Math.random() ? {} : { likes: ['music'] };
-//     const rerender = ref(1);
-//     [rerender.value];
-//     useCatcher(console.warn);
-//     return [
-//         h('button', { onclick: () => (rerender.value = Math.random()) }, [
-//             h('#text', null, ['roll']),
-//         ]),
-//         h('pre', null, [h('#text', null, [JSON.stringify(info, null, 2)])]),
-//         h(Likes, { info }),
-//     ];
-// };
-// render(UserInfo, document.querySelector('#app4'));
