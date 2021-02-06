@@ -70,7 +70,7 @@ export interface VAsyncComponentNode<Props extends KVMap = {}>
     [isAsyncComponentSymbol]: true;
 
     props?: Props;
-    type: MetaAsyncGeneratorComponent<Props>;
+    type: AsyncFunctionComponent<Props>;
 }
 export const isVNode = (x: unknown): x is VNode =>
     x && x[isVNodeSymbol] === true;
@@ -91,38 +91,40 @@ export type ViewItem = string | number | void | null | _VNode;
 
 export interface MetaProps {
     children?: VNode[];
+    ref?: Ref<any>;
+    key?: string | number | Symbol;
 }
-type _MetaComponent<Props, ComponentRet> = (
-    props?: MetaProps & Props,
-) => ComponentRet;
 
-export interface MetaSyncComponent<Props = {}> {
-    (props?: MetaProps & Props):
-        | ViewItem
-        | ViewItem[]
-        | Ref<ViewItem | ViewItem[]>;
+interface FunctionComponent<Ret, Props = {}> {
+    (props?: MetaProps & Props): Ret;
+
     displayName?: string;
+    defaultProps?: Props;
 }
-export interface MetaAsyncGeneratorComponent<Props = {}> {
-    (props?: MetaProps & Props): AsyncGenerator<
+
+export type SyncFunctionComponent<Props = {}> = FunctionComponent<
+    ViewItem | ViewItem[] | Ref<ViewItem | ViewItem[]>,
+    Props
+>;
+
+export type AsyncFunctionComponent<Props = {}> = FunctionComponent<
+    AsyncGenerator<
         ViewItem | ViewItem[] | never,
         ViewItem | ViewItem[] | never,
         unknown
-    >;
-    displayName?: string;
-}
-export interface MetaComponent<Props = {}> {
-    (props?: MetaProps & Props):
-        | ViewItem
-        | ViewItem[]
-        | Ref<ViewItem | ViewItem[]>
-        | AsyncGenerator<
-              ViewItem | ViewItem[] | never,
-              ViewItem | ViewItem[] | never,
-              unknown
-          >;
-    displayName?: string;
-}
+    >,
+    Props
+>;
+
+export type PartialComponent<Props = {}> = FunctionComponent<
+    SyncFunctionComponent<Props> | AsyncFunctionComponent<Props>,
+    Props
+>;
+
+export type MetaComponent<Props = {}> =
+    | SyncFunctionComponent<Props>
+    | AsyncFunctionComponent<Props>
+    | PartialComponent<Props>;
 
 export const isAsyncGenerator = <T = any, TR = any, TN = any>(
     x: unknown,

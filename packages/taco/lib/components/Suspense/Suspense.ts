@@ -1,4 +1,4 @@
-import { MetaAsyncGeneratorComponent } from '../../types';
+import { AsyncFunctionComponent } from '../../types';
 import { useCatcher, useChannel, useErrThrower, useInstance } from '../../hook';
 import { Component, h } from '../../core';
 
@@ -39,7 +39,7 @@ const useSuspense = () => {
     return chan;
 };
 
-export const Suspense: MetaAsyncGeneratorComponent<SuspenseProps> = async function* (
+export const Suspense: AsyncFunctionComponent<SuspenseProps> = async function* (
     props,
 ) {
     const chan = useSuspense();

@@ -14,7 +14,7 @@ import {
     isVNode,
     isVNodeSymbol,
     KVMap,
-    MetaAsyncGeneratorComponent,
+    AsyncFunctionComponent,
     MetaComponent,
     MetaProps,
     VComponentNode,
@@ -40,6 +40,19 @@ const isArr = Array.isArray;
 const arrify = <T>(x: T | T[]): T[] => (!x ? [] : isArr(x) ? x : [x]);
 
 const isThenable = (x: unknown) => x && typeof x['then'] === 'function';
+
+const once = <Args extends any[], Ret>(fn: (...args: Args) => Ret) => {
+    let called = false;
+    return (...args: Args) => {
+        if (called) {
+            return;
+        }
+        called = true;
+        const ret = fn(...args);
+        fn = null;
+        return ret;
+    };
+};
 // 👆 UTILS
 
 export class Component<Props = any> {
@@ -76,24 +89,40 @@ export class Component<Props = any> {
     public init() {
         if (isAsyncComponent(this.vnode)) {
             const [gen, popInstanceStack] = this.renderComponent() as [
-                ReturnType<MetaAsyncGeneratorComponent<Props>>,
+                ReturnType<AsyncFunctionComponent<Props>>,
                 () => any,
             ];
             this.bindAsyncGenerator(gen);
             popInstanceStack();
         } else {
-            effect(() => {
-                const [view, popInstanceStack] = this.renderComponent();
-                // jump to outside of effect
-                skip(() => {
-                    const views = arrify(view);
-                    const vnodes = views.map(
-                        this.normalizeView.bind(this),
-                    ) as VNode[];
-                    this.updateChildren(vnodes);
-                    popInstanceStack();
+            const [
+                viewOrPartailFunction,
+                popInstanceStack,
+            ] = this.renderComponent();
+            if (typeof viewOrPartailFunction !== 'function') {
+                const views = arrify(viewOrPartailFunction);
+                const vnodes = views.map(
+                    this.normalizeView.bind(this),
+                ) as VNode[];
+                this.updateChildren(vnodes);
+                popInstanceStack();
+            } else {
+                // 🍳 Partial Function Component
+                const partailStartIdx = Component.HooksIdx;
+                effect(() => {
+                    Component.HooksIdx = partailStartIdx;
+                    const view = viewOrPartailFunction();
+                    // jump to outside of effect
+                    skip(() => {
+                        const views = arrify(view);
+                        const vnodes = views.map(
+                            this.normalizeView.bind(this),
+                        ) as VNode[];
+                        this.updateChildren(vnodes);
+                        popInstanceStack();
+                    });
                 });
-            });
+            }
         }
     }
     public mounted() {
@@ -118,7 +147,10 @@ export class Component<Props = any> {
         props.ref && mountRef(props.ref, this);
     }
     public renderComponent() {
-        const props = this.buildMetaProps();
+        const props = {
+            ...(this.vnode.type.defaultProps || {}),
+            ...this.buildMetaProps(),
+        };
         this.mountRef(props);
 
         const lastInstance = Component.CurrentInstance;
@@ -140,7 +172,7 @@ export class Component<Props = any> {
 
         return [
             view,
-            () => (Component.CurrentInstance = lastInstance),
+            once(() => (Component.CurrentInstance = lastInstance)),
         ] as const;
     }
     public mountChildren(children: VNode[]) {
@@ -223,7 +255,7 @@ export class Component<Props = any> {
         // PATH
         CommitScheduler.do(commitQueue);
     }
-    private bindAsyncGenerator(gen: ReturnType<MetaAsyncGeneratorComponent>) {
+    private bindAsyncGenerator(gen: ReturnType<AsyncFunctionComponent>) {
         subscribeAsyncGenerator(
             gen,
             product => {
@@ -534,19 +566,23 @@ const patchProps = (prev: VNode, next: VNode | null) => {
 };
 
 // TODO: 要处理isSVG的情况
-const mountProps = (props: KVMap<Mptr | (() => any)>, dom: Node, isSVG: boolean) => {
+const mountProps = (
+    props: KVMap<Mptr | (() => any)>,
+    dom: Node,
+    isSVG: boolean,
+) => {
     if (!(dom instanceof HTMLElement)) {
         return;
     }
 
-    if(props.ref) {
+    if (props.ref) {
         mountRef(props.ref as any, dom);
     }
 
     // value
     if ('value' in dom && props.value) {
-        if(typeof props.value === 'function'){
-            effect(() => (dom as any).value = props.value());
+        if (typeof props.value === 'function') {
+            effect(() => ((dom as any).value = props.value()));
         } else {
             effect(() => ((dom as any).value = unref(props.value)));
         }
@@ -554,27 +590,36 @@ const mountProps = (props: KVMap<Mptr | (() => any)>, dom: Node, isSVG: boolean)
 
     // className
     if (props.className) {
-        if(typeof props.className === 'function'){
-            effect(() => dom.className = props.className() || '');
+        if (typeof props.className === 'function') {
+            effect(() => (dom.className = props.className() || ''));
         } else {
             effect(
-                () => (dom.className = (unref(props.className) || '') as string),
+                () =>
+                    (dom.className = (unref(props.className) || '') as string),
             );
         }
     }
 
     // inline style
     if (props.style) {
-        if(typeof props.style === 'object') {
-            if(isRef(props.style)){
-                effect(() => Object.keys(unref(props.style)).forEach(k => dom.style[k] = props.style[k]));
+        if (typeof props.style === 'object') {
+            if (isRef(props.style)) {
+                effect(() =>
+                    Object.keys(unref(props.style)).forEach(
+                        k => (dom.style[k] = props.style[k]),
+                    ),
+                );
             } else {
                 Object.keys(props.style).forEach(k =>
                     effect(() => (dom.style[k] = unref(props.style[k]))),
                 );
             }
         } else if (typeof props.style === 'function') {
-            effect(() => Object.keys(props.style()).forEach(k => dom.style[k] = props.style[k]))
+            effect(() =>
+                Object.keys(props.style()).forEach(
+                    k => (dom.style[k] = props.style[k]),
+                ),
+            );
         }
     }
 
@@ -588,7 +633,7 @@ const mountProps = (props: KVMap<Mptr | (() => any)>, dom: Node, isSVG: boolean)
         .forEach(k => {
             effect(() => {
                 const val = (() => {
-                    if(typeof props[k] === 'function'){
+                    if (typeof props[k] === 'function') {
                         return props[k]();
                     }
                     return unref(props[k]);
@@ -796,11 +841,7 @@ export const h = <Props extends KVMap>(
 
 // 把vnode 渲染导dom中
 export const render = (
-    vnodeOrComponent:
-        | VNode
-        | VNode[]
-        | MetaComponent
-        | MetaAsyncGeneratorComponent,
+    vnodeOrComponent: VNode | VNode[] | MetaComponent | AsyncFunctionComponent,
     target: HTMLElement,
 ) => {
     target.innerHTML = '';

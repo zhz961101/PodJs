@@ -1,8 +1,8 @@
 import { useErrThrower, useInstance, useWatch } from '../../hook';
 import {
     createComponentNode,
-    MetaAsyncGeneratorComponent,
-    MetaSyncComponent,
+    AsyncFunctionComponent,
+    SyncFunctionComponent,
     VNode,
 } from '../../types';
 
@@ -91,12 +91,12 @@ export function ServerComponent<Props, Payload extends object>(
     uri: string,
     pending: true,
     payload?: Payload,
-): MetaAsyncGeneratorComponent<Props>;
+): AsyncFunctionComponent<Props>;
 export function ServerComponent<Props, Payload extends object>(
     uri: string,
     pending: false,
     payload?: Payload,
-): MetaSyncComponent<Props>;
+): SyncFunctionComponent<Props>;
 export function ServerComponent<Props, Payload extends object>(
     uri: string,
     pending?: boolean,
@@ -114,7 +114,7 @@ export function ServerComponent<Props, Payload extends object>(
             const entry = nodeMap['ENTRY'];
             entry.props = { ...entry.props, ...props };
             return snode2vnode(entry, nodeMap).children;
-        } as MetaAsyncGeneratorComponent<Props>;
+        } as AsyncFunctionComponent<Props>;
     }
     return (props => {
         const ins = useInstance();
@@ -134,5 +134,5 @@ export function ServerComponent<Props, Payload extends object>(
                 });
         });
         return props.children;
-    }) as MetaSyncComponent<Props>;
+    }) as SyncFunctionComponent<Props>;
 }

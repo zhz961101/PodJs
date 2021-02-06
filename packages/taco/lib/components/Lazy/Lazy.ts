@@ -1,14 +1,21 @@
 import { useRef, useWatch } from '../../hook';
-import { createComponentNode, MetaComponent } from '../../types';
+import {
+    createComponentNode,
+    SyncFunctionComponent,
+    // AsyncFunctionComponent,
+} from '../../types';
 import { Component } from '../../core';
 import { useSuspenseAdapter } from '../Suspense/Suspense';
 
+// FIXME: 这里加上AsyncFunctionComponent有类型错误，按道理应该没问题
+type Render<Props = {}> = SyncFunctionComponent<Props>;
+
 export function lazy<Props>(
-    factory: () => Promise<MetaComponent<Props>>,
-): MetaComponent<Props> {
-    let cachedType: MetaComponent<Props>;
+    factory: () => Promise<Render<Props>>,
+): Render<Props> {
+    let cachedType: Render<Props>;
     return () => {
-        const metaType = useRef<MetaComponent<Props> | null>(null);
+        const metaType = useRef<Render<Props> | null>(null);
         const componet = useRef(
             () =>
                 new Component(
