@@ -33,6 +33,7 @@
   },
   "homepage": "https://github.com/zhzLuke96/TacoJs#readme",
   "dependencies": {
-    "@tacopie/taco": "^1.0.14"
+    "@tacopie/taco": "^1.0.14",
+    "csstype": "^3.0.6"
   }
 }

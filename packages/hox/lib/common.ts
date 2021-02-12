@@ -1,4 +1,4 @@
-import { isRef, Ref } from "@vue/reactivity";
+import { isRef, Ref } from '@vue/reactivity';
 
 const MAX_GET_DEPTH = 20;
 export const getFuncVal = (fn, depth = 0) => {
@@ -18,7 +18,7 @@ export function GetValue<T>(x: T | Ref<T>): T {
     return x;
 }
 
-const isDefObject = (o) => o !== undefined && o !== null;
+const isDefObject = o => o !== undefined && o !== null;
 
 export const isDef = (arr: any, ...arg: any[]): boolean => {
     if (!Array.isArray(arr)) {
@@ -36,20 +36,20 @@ const shuffle = (arr: any[]) => {
     ) {}
     return arr;
 };
-const shuffleStr = (s: string) => shuffle(s.split("")).join("");
+const shuffleStr = (s: string) => shuffle(s.split('')).join('');
 const performanceHEX = () =>
     shuffleStr(
-        parseInt(performance.now().toString().replace(".", ""), 10).toString(
+        parseInt(performance.now().toString().replace('.', ''), 10).toString(
             16,
         ),
     );
 const DateHEX = () => shuffleStr(Date.now().toString(16));
 const RandomHEX = () => shuffleStr(Math.random().toString(16).slice(2));
-export const UniqueId = (gap = "_", unit = 6, part = 3) =>
+export const UniqueId = (gap = '_', unit = 6, part = 3) =>
     shuffle(
         Array.from(
             `${performanceHEX()}${DateHEX()}${RandomHEX()}`.matchAll(
-                new RegExp(`.{${unit}}`, "g"),
+                new RegExp(`.{${unit}}`, 'g'),
             ),
         ),
     )
@@ -82,3 +82,16 @@ export const debounce = (fn, time = 500) => {
 
 export const delay = (ms: number) =>
     new Promise((resolve, reject) => setTimeout(resolve, ms));
+
+export const once = <Args extends any[], Ret>(fn: (...args: Args) => Ret) => {
+    let called = false;
+    return (...args: Args) => {
+        if (called) {
+            return;
+        }
+        called = true;
+        const ret = fn(...args);
+        fn = null;
+        return ret;
+    };
+};

@@ -1,30 +1,38 @@
 import { useReducer, Ref } from '@tacopie/taco';
 
-// TODO: action opt 支持多参数并且能正确类型推导
+type ArgumentTailTypes<F> = F extends (first: any, ...args: infer A) => any
+    ? A
+    : never;
 
 export const useReducers = <
     ReducerState,
-    Reducers extends Record<Keys, (state: ReducerState) => ReducerState>,
+    Action extends (state: ReducerState, ...args: any[]) => ReducerState,
+    Reducers extends { [k: string]: Action },
     Keys extends keyof Reducers
 >(
     reducers: Reducers,
     initialState: ReducerState,
 ) => {
-    const [value, dispatch] = useReducer<ReducerState, Keys>(
-        (state, action) => reducers[action](state),
-        initialState,
-    );
-    const opt = {};
+    const [value, dispatch] = useReducer<
+        ReducerState,
+        { key: Keys; args: any[] }
+    >((state, { key, args }) => reducers[key](state, ...args), initialState);
+    const opt = {} as {
+        [k in Keys]: (
+            ...args: ArgumentTailTypes<typeof reducers[k]>
+        ) => ReducerState;
+    };
     Object.keys(reducers).forEach(k => {
-        opt[k] = () => dispatch(k as Keys);
+        opt[k] = (...args: any[]) => dispatch({ key: k as Keys, args });
     });
-    return [value, opt as { [k in Keys]: () => void }] as const;
+    return [value, opt] as const;
 };
 
 const singleMap = new WeakMap();
 export const useSingleReducers = <
     ReducerState,
-    Reducers extends Record<Keys, (state: ReducerState) => ReducerState>,
+    Action extends (state: ReducerState, ...args: any[]) => ReducerState,
+    Reducers extends { [k: string]: Action },
     Keys extends keyof Reducers
 >(
     reducers: Reducers,

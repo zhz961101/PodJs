@@ -28,6 +28,6 @@ export const useDebounce = <T>(inital: T, delayMS = 100, immediate = false) => {
             delayMS,
             immediate,
         ),
-        readonly(debouncedValue),
+        readonly(debouncedValue) as { readonly value: T },
     ] as const;
 };

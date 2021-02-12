@@ -1,9 +1,9 @@
 import { throttle } from './common';
 import { useEventListener } from './useEventListener';
-import { useRef } from '@tacopie/taco';
+import { Mptr, useRef } from '@tacopie/taco';
 
 const { max, min } = Math;
-export const useMouse = (fpsLimit = 30) => {
+export const useMouse = (fpsLimit = 30, dom?: Mptr<EventTarget>) => {
     fpsLimit = max(10, min(120, fpsLimit));
     const state = useRef({
         screenX: 0,
@@ -25,7 +25,7 @@ export const useMouse = (fpsLimit = 30) => {
                 pageY: e.pageY,
             };
         }, 1000 / fpsLimit),
-        window,
+        dom || window,
     );
     return state;
 };

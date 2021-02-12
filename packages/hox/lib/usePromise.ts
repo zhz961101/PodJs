@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from '@tacopie/taco';
+import { useCallback, useEffect, useRef } from '@tacopie/taco';
 import { useCounter } from './useCounter';
 
 enum AsyncStatus {
@@ -12,25 +12,25 @@ export function usePromise<T>(
     futureFactory: () => Promise<T>,
     immediate = true,
 ) {
-    const [, setValue, value] = useState<T>();
-    const [, setErr, err] = useState('');
-    const [, setStatus, status] = useState(AsyncStatus.IDLE);
+    const value = useRef<T>();
+    const err = useRef('');
+    const status = useRef(AsyncStatus.IDLE);
     const [pendingCount, { inc, dec }] = useCounter();
 
     const execute = useCallback(() => {
-        setStatus(AsyncStatus.PENDING);
-        setValue(null);
-        setErr(null);
+        status.value = AsyncStatus.PENDING;
+        value.value = null;
+        err.value = null;
 
         inc();
         return futureFactory()
             .then(response => {
-                setStatus(AsyncStatus.SUCCESS);
-                setValue(response);
+                status.value = AsyncStatus.SUCCESS;
+                value.value = response;
             })
-            .catch(err => {
-                setErr(err);
-                setStatus(AsyncStatus.ERROR);
+            .catch(error => {
+                err.value = error;
+                status.value = AsyncStatus.ERROR;
             })
             .finally(dec);
     });

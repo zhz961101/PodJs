@@ -6,6 +6,7 @@ export const usePrevious = <T>(target: Ref<T>) => {
     useEffect(() => {
         ref.value = previous;
         previous = target.value;
+        return () => (previous = undefined);
     });
     return ref;
 };

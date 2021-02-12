@@ -2,7 +2,10 @@ import { useEffect, useCallback } from '@tacopie/taco';
 import { Ref, unref } from '@vue/reactivity';
 
 export const useEventListener = (
-    eventName: string,
+    eventName:
+        | keyof HTMLElementEventMap
+        | keyof WindowEventMap
+        | keyof DocumentEventMap,
     handler: EventListener,
     _element = window as EventTarget | Ref<null | EventTarget>,
     options = {} as boolean | AddEventListenerOptions,
@@ -14,8 +17,7 @@ export const useEventListener = (
 
     useEffect(() => {
         const element = unref(_element);
-        const isSupported = element && element.addEventListener;
-        if (!isSupported) {
+        if (!(element && element.addEventListener)) {
             return;
         }
 

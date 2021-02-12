@@ -1,6 +1,6 @@
-import { useMemo, useState, useEffect, skip } from '@tacopie/taco';
+import { useMemo, useRef, useEffect, skip } from '@tacopie/taco';
 
-export const useMedia = <T>(
+export const useMediaQuery = <T>(
     queries: string[],
     values: T[],
     defaultValue: T,
@@ -16,15 +16,19 @@ export const useMedia = <T>(
             : defaultValue;
     };
 
-    const [, setValue, value] = useState(getValue);
+    const value = useRef(getValue);
 
     useEffect(() => {
-        const handler = () => setValue(getValue());
+        const handler = () => (value.value = getValue());
         skip(() => {
-            mediaQueryLists.value.forEach(mql => mql.addListener(handler));
+            mediaQueryLists.value.forEach(mql =>
+                mql.addEventListener('change', handler),
+            );
         });
         return () =>
-            mediaQueryLists.value.forEach(mql => mql.removeListener(handler));
+            mediaQueryLists.value.forEach(mql =>
+                mql.removeEventListener('change', handler),
+            );
     });
 
     return value;

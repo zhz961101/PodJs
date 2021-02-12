@@ -9,5 +9,5 @@ export const useCounter = (defaultCounter = 0) =>
             increment: (n: number) => n + 1,
             reset: () => defaultCounter,
         },
-        0,
+        defaultCounter,
     );
