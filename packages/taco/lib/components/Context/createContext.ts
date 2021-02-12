@@ -18,5 +18,5 @@ export const createContext = <ContextPayload>(
         const ins = useInstance();
         return ins.getContextValue(key) || defaultContext;
     };
-    return [Provider, useContext];
+    return [Provider, useContext] as const;
 };
