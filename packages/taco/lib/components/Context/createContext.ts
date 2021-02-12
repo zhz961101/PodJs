@@ -1,4 +1,4 @@
-import { MetaProps } from '../../types';
+import { MetaProps, MetaComponent } from '../../types';
 import { useInstance } from '../../hook';
 
 interface ProviderProps<T> {
@@ -18,5 +18,8 @@ export const createContext = <ContextPayload>(
         const ins = useInstance();
         return ins.getContextValue(key) || defaultContext;
     };
-    return [Provider, useContext] as const;
+    return [
+        Provider as MetaComponent<ProviderProps<ContextPayload>>,
+        useContext,
+    ] as const;
 };
