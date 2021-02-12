@@ -4,3 +4,4 @@ export { Slotable } from './Slotable/Slotable';
 export { ServerComponent } from './ServerComponent/ServerComponent';
 export { lazy } from './Lazy/Lazy';
 export { ErrorBoundary } from './ErrorBoundary/ErrorBoundary';
+export { createContext } from './Context/createContext';
