@@ -250,7 +250,7 @@ export class Component<Props = any> {
             return createTextNode('');
         }
         if (isRef(v)) {
-            return createComponentNode(() => v.value);
+            return createComponentNode(() => () => v.value);
         }
         if (isThenable(v)) {
             // TODO: 支持promise
