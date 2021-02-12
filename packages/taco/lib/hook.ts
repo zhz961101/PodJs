@@ -2,12 +2,11 @@ import {
     customRef,
     effect,
     isRef,
+    reactive,
     Ref,
     ref,
     toRaw,
     unref,
-    enableTracking,
-    pauseTracking,
 } from '@vue/reactivity';
 import { Component } from './core';
 import { skip, resizeArr } from './utils';
@@ -228,9 +227,39 @@ export const useReducer = <ReducerState, ReducerAction>(
         },
     ] as const;
 };
-export const useState = <T>(inital = null as T | (() => T)) => {
-    const state = useRef(inital);
-    return [() => state.value, (x: T) => (state.value = x), state] as const;
+export const useState = <T extends Record<keyof any, any>>(
+    inital?: undefined | T | (() => T),
+) => {
+    const [val, setter, ins, idx] = hoxPrepare();
+    if (val) {
+        return [
+            val as T,
+            (t: T) => {
+                if (typeof t === 'object') {
+                    Object.entries(t).forEach(
+                        ([k, v]) => ((val as any)[k] = v),
+                    );
+                }
+            },
+        ] as const;
+    }
+    let warpVal: T;
+    if (typeof inital === 'function') {
+        warpVal = (inital as () => T)();
+    } else {
+        warpVal = inital;
+    }
+    setter(warpVal);
+    return [
+        warpVal,
+        (t: T) => {
+            if (typeof t === 'object') {
+                Object.entries(t).forEach(
+                    ([k, v]) => ((warpVal as any)[k] = v),
+                );
+            }
+        },
+    ] as const;
 };
 
 ///////////////////////////////////////////
