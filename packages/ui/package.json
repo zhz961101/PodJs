@@ -1,6 +1,6 @@
 {
   "name": "@tacopie/ui",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "TacoJs UI library",
   "keywords": [],
   "author": "zhzluke96",
@@ -9,7 +9,7 @@
   "main": "dist/taco-ui.umd.js",
   "module": "dist/taco-ui.esm.js",
   "unpkg": "dist/taco-ui.umd.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/types/index.d.ts",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -34,6 +34,6 @@
   },
   "homepage": "https://github.com/zhzLuke96/TacoJs#readme",
   "dependencies": {
-    "@tacopie/taco": "^1.0.15"
+    "@tacopie/taco": "^1.0.16"
   }
 }

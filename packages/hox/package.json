@@ -1,6 +1,6 @@
 {
   "name": "@tacopie/hox",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "hooks library for TacoJs",
   "keywords": [],
   "author": "zhzluke96",
@@ -9,6 +9,7 @@
   "main": "dist/taco-hox.js",
   "module": "dist/taco-hox.esm.js",
   "unpkg": "dist/taco-hox.umd.js",
+  "types": "dist/types/index.d.ts",
   "directories": {
     "lib": "lib",
     "test": "__tests__"
@@ -33,7 +34,9 @@
   },
   "homepage": "https://github.com/zhzLuke96/TacoJs#readme",
   "dependencies": {
-    "@tacopie/taco": "^1.0.15",
+    "@tacopie/taco": "^1.0.16"
+  },
+  "devDependencies": {
     "csstype": "^3.0.6"
   }
 }

@@ -10,13 +10,30 @@ import replace from 'rollup-plugin-replace';
 const input = ['./lib/index.ts'];
 const isDEV = process.env.NODE_ENV !== 'production';
 
+import pkg from './package.json'
+
+const plugins = [
+  replace({
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+  }),
+  nodeResolve(),
+  typescript({
+    useTsconfigDeclarationDir: true
+  }),
+  isDEV ? null : terser({
+    format: {
+      comments: RegExp(`${pkg.name}`)
+    }
+  }),
+];
+
 export default [
   // UMD
   {
     input,
     external: ['@tacopie/taco'],
 
-    plugins: [nodeResolve(), isDEV ? null : terser(), typescript()],
+    plugins,
     output: {
       file: `dist/taco-hox.umd.${isDEV ? '' : 'min.'}js`,
       format: 'umd',
@@ -31,11 +48,7 @@ export default [
     input,
     external: ['@tacopie/taco'],
 
-    plugins: [
-      replace({
-        '@tacopie/taco': JSON.stringify('/packages/taco/dist/taco.esm.min.js'),
-      }), nodeResolve(), isDEV ? null : terser(), typescript()
-    ],
+    plugins,
     output: {
       file: `dist/taco-ui.esm.${isDEV ? '' : 'min.'}js`,
       format: 'esm',
