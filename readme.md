@@ -15,7 +15,7 @@
 
 # What is Taco
 
-🚧🚧WIP🚧🚧
+Next-generation Web-App-Framework. 💫Reactivity, 📐Functional, and 🌮All-in-JS.
 
 # Index
 
@@ -24,6 +24,7 @@
 - [Index](#index)
 - [Quick Start](#quick-start)
 - [Taco Palygroud](#taco-palygroud)
+- [Examples](#examples)
 - [Brower Support](#brower-support)
 - [Related Efforts](#related-efforts)
 - [Maintainers](#maintainers)
@@ -33,11 +34,43 @@
 
 # Quick Start
 
-🚧🚧WIP🚧🚧
+ESM
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <div id="root"></div>
+  <script type="module">
+import * as Taco from 'https://unpkg.com/@tacopie/taco?module';
+
+const {
+    useState,
+    render,
+} = Taco;
+
+// 一个实时JSX的库
+import htm from 'https://unpkg.com/htm?module';
+const html = htm.bind(Taco.h);
+
+const App = () => {
+    const css = { margin: '.5rem', padding: '1rem', 'font-weight': 900 };
+    const [state] = useState({name: "🌮TacoJS"});
+    return html`<h3>Hello, ${state.name}</h3>`
+}
+
+render(App, document.querySelector('#root'));
+  </script>
+</html>
+```
 
 # Taco Palygroud
 
 [try it now!](http://zhzluke96.github.io/tacojs-playground/)
+
+# Examples
+
+In [this repository](https://github.com/zhzLuke96/TacoJs-examples) you can find example projects.
+
+> use Typescript/TSX/Webpack
 
 # Brower Support
 
