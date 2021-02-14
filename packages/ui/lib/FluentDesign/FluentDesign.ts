@@ -1,4 +1,4 @@
-// AUTO-GENERATED Sun, 31 Jan 2021 14:11:38 GMT
+// AUTO-GENERATED Sun, 14 Feb 2021 11:55:57 GMT
 import { MetaComponent, createVNode } from '@tacopie/taco';
 import { mustRequire, once } from '../common';
 
@@ -12,7 +12,7 @@ const mustLib = once(() =>
  * @typedef BreadcrumbItemProps
  * @property {todo} unknown todo...
  */
-interface BreadcrumbItemProps {
+interface BreadcrumbItemProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -33,7 +33,7 @@ export const BreadcrumbItem: MetaComponent<BreadcrumbItemProps> = props => {
  * @typedef DesignSystemProviderProps
  * @property {todo} unknown todo...
  */
-interface DesignSystemProviderProps {
+interface DesignSystemProviderProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -54,7 +54,7 @@ export const DesignSystemProvider: MetaComponent<DesignSystemProviderProps> = pr
  * @typedef ProgressProps
  * @property {todo} unknown todo...
  */
-interface ProgressProps {
+interface ProgressProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -75,7 +75,7 @@ export const Progress: MetaComponent<ProgressProps> = props => {
  * @typedef SliderProps
  * @property {todo} unknown todo...
  */
-interface SliderProps {
+interface SliderProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -96,7 +96,7 @@ export const Slider: MetaComponent<SliderProps> = props => {
  * @typedef TabsProps
  * @property {todo} unknown todo...
  */
-interface TabsProps {
+interface TabsProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -117,7 +117,7 @@ export const Tabs: MetaComponent<TabsProps> = props => {
  * @typedef AccordionProps
  * @property {todo} unknown todo...
  */
-interface AccordionProps {
+interface AccordionProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -138,7 +138,7 @@ export const Accordion: MetaComponent<AccordionProps> = props => {
  * @typedef ButtonProps
  * @property {todo} unknown todo...
  */
-interface ButtonProps {
+interface ButtonProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -159,7 +159,7 @@ export const Button: MetaComponent<ButtonProps> = props => {
  * @typedef DialogProps
  * @property {todo} unknown todo...
  */
-interface DialogProps {
+interface DialogProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -180,7 +180,7 @@ export const Dialog: MetaComponent<DialogProps> = props => {
  * @typedef ListboxProps
  * @property {todo} unknown todo...
  */
-interface ListboxProps {
+interface ListboxProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -201,7 +201,7 @@ export const Listbox: MetaComponent<ListboxProps> = props => {
  * @typedef RadioProps
  * @property {todo} unknown todo...
  */
-interface RadioProps {
+interface RadioProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -222,7 +222,7 @@ export const Radio: MetaComponent<RadioProps> = props => {
  * @typedef SliderLabelProps
  * @property {todo} unknown todo...
  */
-interface SliderLabelProps {
+interface SliderLabelProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -243,7 +243,7 @@ export const SliderLabel: MetaComponent<SliderLabelProps> = props => {
  * @typedef TextAreaProps
  * @property {todo} unknown todo...
  */
-interface TextAreaProps {
+interface TextAreaProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -264,7 +264,7 @@ export const TextArea: MetaComponent<TextAreaProps> = props => {
  * @typedef AnchorProps
  * @property {todo} unknown todo...
  */
-interface AnchorProps {
+interface AnchorProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -285,7 +285,7 @@ export const Anchor: MetaComponent<AnchorProps> = props => {
  * @typedef CardProps
  * @property {todo} unknown todo...
  */
-interface CardProps {
+interface CardProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -306,7 +306,7 @@ export const Card: MetaComponent<CardProps> = props => {
  * @typedef DividerProps
  * @property {todo} unknown todo...
  */
-interface DividerProps {
+interface DividerProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -327,7 +327,7 @@ export const Divider: MetaComponent<DividerProps> = props => {
  * @typedef ListboxOptionProps
  * @property {todo} unknown todo...
  */
-interface ListboxOptionProps {
+interface ListboxOptionProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -348,7 +348,7 @@ export const ListboxOption: MetaComponent<ListboxOptionProps> = props => {
  * @typedef RadioGroupProps
  * @property {todo} unknown todo...
  */
-interface RadioGroupProps {
+interface RadioGroupProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -369,7 +369,7 @@ export const RadioGroup: MetaComponent<RadioGroupProps> = props => {
  * @typedef TextFieldProps
  * @property {todo} unknown todo...
  */
-interface TextFieldProps {
+interface TextFieldProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -390,7 +390,7 @@ export const TextField: MetaComponent<TextFieldProps> = props => {
  * @typedef BadgeProps
  * @property {todo} unknown todo...
  */
-interface BadgeProps {
+interface BadgeProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -411,7 +411,7 @@ export const Badge: MetaComponent<BadgeProps> = props => {
  * @typedef CheckboxProps
  * @property {todo} unknown todo...
  */
-interface CheckboxProps {
+interface CheckboxProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -432,7 +432,7 @@ export const Checkbox: MetaComponent<CheckboxProps> = props => {
  * @typedef FlipperProps
  * @property {todo} unknown todo...
  */
-interface FlipperProps {
+interface FlipperProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -453,7 +453,7 @@ export const Flipper: MetaComponent<FlipperProps> = props => {
  * @typedef MenuProps
  * @property {todo} unknown todo...
  */
-interface MenuProps {
+interface MenuProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -474,7 +474,7 @@ export const Menu: MetaComponent<MenuProps> = props => {
  * @typedef SelectProps
  * @property {todo} unknown todo...
  */
-interface SelectProps {
+interface SelectProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -495,7 +495,7 @@ export const Select: MetaComponent<SelectProps> = props => {
  * @typedef StylesProps
  * @property {todo} unknown todo...
  */
-interface StylesProps {
+interface StylesProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -516,7 +516,7 @@ export const Styles: MetaComponent<StylesProps> = props => {
  * @typedef TreeItemProps
  * @property {todo} unknown todo...
  */
-interface TreeItemProps {
+interface TreeItemProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -537,7 +537,7 @@ export const TreeItem: MetaComponent<TreeItemProps> = props => {
  * @typedef BreadcrumbProps
  * @property {todo} unknown todo...
  */
-interface BreadcrumbProps {
+interface BreadcrumbProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -558,7 +558,7 @@ export const Breadcrumb: MetaComponent<BreadcrumbProps> = props => {
  * @typedef MenuItemProps
  * @property {todo} unknown todo...
  */
-interface MenuItemProps {
+interface MenuItemProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -579,7 +579,7 @@ export const MenuItem: MetaComponent<MenuItemProps> = props => {
  * @typedef SkeletonProps
  * @property {todo} unknown todo...
  */
-interface SkeletonProps {
+interface SkeletonProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -600,7 +600,7 @@ export const Skeleton: MetaComponent<SkeletonProps> = props => {
  * @typedef SwitchProps
  * @property {todo} unknown todo...
  */
-interface SwitchProps {
+interface SwitchProps extends Record<keyof any, any> {
     // TODO: need props
 }
 
@@ -621,7 +621,7 @@ export const Switch: MetaComponent<SwitchProps> = props => {
  * @typedef TreeViewProps
  * @property {todo} unknown todo...
  */
-interface TreeViewProps {
+interface TreeViewProps extends Record<keyof any, any> {
     // TODO: need props
 }
 

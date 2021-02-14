@@ -13,7 +13,7 @@ const warp = (name) => {
  * @typedef ${normalizeName}Props
  * @property {todo} unknown todo...
  */
-interface ${normalizeName}Props {
+interface ${normalizeName}Props extends Record<keyof any, any> {
     // TODO: need props
 }
 
