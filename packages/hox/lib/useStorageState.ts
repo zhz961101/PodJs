@@ -1,5 +1,4 @@
-import { toRaw } from '@vue/reactivity';
-import { useEffect, useRef } from '@tacopie/taco';
+import { useEffect, useRef, toRaw, Ref } from '@tacopie/taco';
 
 const VersionKey = `@tacopia/taco/hox/useStoregeState/versions`;
 const Storage2Versions = new WeakMap<Storage, Record<string, number>>();
@@ -73,6 +72,16 @@ export const createUseStorageState = (factory: Storage) => {
     };
 };
 
-export const useSessionState = createUseStorageState(sessionStorage);
+const sessionStorageEffect = createUseStorageState(sessionStorage);
+export const useSessionState = <State>(
+    key: string,
+    initialState: State,
+    version: number = 0,
+): Ref<State> => sessionStorageEffect(key, initialState, version);
 
-export const useLocalState = createUseStorageState(localStorage);
+const localStorageEffect = createUseStorageState(localStorage);
+export const useLocalState = <State>(
+    key: string,
+    initialState: State,
+    version: number = 0,
+): Ref<State> => localStorageEffect(key, initialState, version);

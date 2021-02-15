@@ -6,7 +6,7 @@
   "author": "zhzluke96",
   "license": "GPL-3.0",
   "source": "lib/index.ts",
-  "main": "dist/taco-hox.js",
+  "main": "dist/taco-hox.umd.js",
   "module": "dist/taco-hox.esm.js",
   "unpkg": "dist/taco-hox.umd.js",
   "types": "dist/types/index.d.ts",

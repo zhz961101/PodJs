@@ -40,7 +40,9 @@ const style2css = (style: StyleProperties, supperSelector: string) => {
 
 export const useStyle = (
     styleOrFactory: Mptr<StyleProperties> | (() => StyleProperties),
-    selector = (idx: string) => `.${idx}`,
+    selector = (idx: string) => `[data-style-idx=${idx}]`,
+    bindStyleFn = (elem: HTMLElement, idx: string) =>
+        elem.setAttribute('data-style-idx', idx),
 ) => {
     const styleIdx = useRef(() => Math.random().toString(36).substr(2));
     const styleSelector = useMemo(() => selector(styleIdx.value));
@@ -62,4 +64,6 @@ export const useStyle = (
                 styleSelector.value,
             )),
     );
+
+    return (elemRef: HTMLElement) => bindStyleFn(elemRef, unref(styleIdx));
 };
