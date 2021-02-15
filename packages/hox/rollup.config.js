@@ -41,6 +41,9 @@ export default [
       esModule: false,
       exports: 'named',
       sourcemap: isDEV,
+      globals: {
+        '@tacopie/taco': 'taco'
+      }
     },
   },
   // ESM
@@ -53,7 +56,7 @@ export default [
       file: `dist/taco-ui.esm.${isDEV ? '' : 'min.'}js`,
       format: 'esm',
       exports: 'named',
-      sourcemap: isDEV,
+      sourcemap: isDEV
     },
   },
 ];

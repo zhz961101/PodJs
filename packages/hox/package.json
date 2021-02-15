@@ -1,6 +1,6 @@
 {
   "name": "@tacopie/hox",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "hooks library for TacoJs",
   "keywords": [],
   "author": "zhzluke96",
@@ -34,7 +34,7 @@
   },
   "homepage": "https://github.com/zhzLuke96/TacoJs#readme",
   "dependencies": {
-    "@tacopie/taco": "^1.0.16"
+    "@tacopie/taco": "^1.0.18"
   },
   "devDependencies": {
     "csstype": "^3.0.6"

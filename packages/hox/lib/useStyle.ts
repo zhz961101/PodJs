@@ -83,12 +83,12 @@ const styleRegistry = new (class StyleRegistry {
 
 export const useStyle = (
     styleOrFactory: Mptr<StyleProperties> | (() => StyleProperties),
-    selectorFn = (idx: string) => `[data-style-idx=${idx}]`,
+    selectorFn = (idx: string) => `[data-style-idx="${idx}"]`,
     bindStyleFn = (elem: HTMLElement, idx: string) =>
         elem.setAttribute('data-style-idx', idx),
 ) => {
     const styleIdx = useRef('');
-    const styleContainer = useRef(document.createElement('style'));
+    const styleContainer = useRef(() => document.createElement('style'));
     useWatch(
         () =>
             typeof styleOrFactory === 'function'
