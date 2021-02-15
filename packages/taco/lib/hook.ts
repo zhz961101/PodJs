@@ -243,12 +243,13 @@ export const useState = <T extends Record<keyof any, any>>(
             },
         ] as const;
     }
-    let warpVal: T;
+    let initalVal: T;
     if (typeof inital === 'function') {
-        warpVal = (inital as () => T)();
+        initalVal = (inital as () => T)();
     } else {
-        warpVal = inital;
+        initalVal = inital;
     }
+    const warpVal = reactive(initalVal || {});
     setter(warpVal);
     return [
         warpVal,
