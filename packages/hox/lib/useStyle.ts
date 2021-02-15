@@ -39,52 +39,79 @@ const style2css = (style: StyleProperties, supperSelector: string) => {
 };
 
 const styleRegistry = new (class StyleRegistry {
-    idx2Style = new Map<string, StyleProperties>();
-    style2idx = new Map<string, string>();
-    idxCount = new Map<string, number>();
+    selector = 'data-style-key';
+
+    style2key = new Map<string, string>();
+    key2Style = new Map<string, StyleProperties>();
+    keyCount = new Map<string, number>();
+    key2DOM = new Map<string, HTMLStyleElement>();
 
     hash(sp: StyleProperties) {
         return encodeURIComponent(JSON.stringify(sp));
     }
 
-    register(sp: StyleProperties) {
-        const hash = this.hash(sp);
-        if (this.style2idx.has(hash)) {
-            const idx = this.style2idx.get(hash);
-            this.idxCount.set(idx, (this.idxCount.get(idx) || 0) + 1);
-            return this.style2idx.get(hash)!;
+    mountStyle(sp: StyleProperties, key: string) {
+        if (this.key2DOM.has(key)) {
+            console.warn('Duplicate style definition!');
+            return;
         }
-        const idx = Math.random().toString(36).substr(2);
-        this.idx2Style.set(idx, sp);
-        this.style2idx.set(hash, idx);
-        this.idxCount.set(idx, 1);
-        return idx;
+        const styleElement = document.createElement('style');
+        styleElement.innerHTML = style2css(sp, this.selector);
+        const container =
+            document.head || document.body || document.children[0];
+        container.appendChild(styleElement);
+        this.key2DOM.set(key, styleElement);
     }
 
-    unregister(idx: string) {
-        if (!this.idx2Style.has(idx)) {
+    unmountStyle(key: string) {
+        const container =
+            document.head || document.body || document.children[0];
+        const dom = this.key2DOM.get(key);
+        if (!dom) {
             return;
         }
-        this.idxCount.set(idx, (this.idxCount.get(idx) || 0) - 1);
-        if (this.idxCount.get(idx) > 0) {
-            return;
+        this.key2DOM.delete(key);
+        if (container.contains(dom)) {
+            container.removeChild(dom);
         }
-        const sp = this.idx2Style.get(idx);
+    }
+
+    register(sp: StyleProperties) {
         const hash = this.hash(sp);
-        this.style2idx.delete(hash);
-        this.idx2Style.delete(idx);
-        this.idxCount.delete(idx);
+        if (this.style2key.has(hash)) {
+            const key = this.style2key.get(hash);
+            this.keyCount.set(key, (this.keyCount.get(key) || 0) + 1);
+            return this.style2key.get(hash)!;
+        }
+        const key = Math.random().toString(36).substr(2);
+        this.key2Style.set(key, sp);
+        this.style2key.set(hash, key);
+        this.keyCount.set(key, 1);
+        this.mountStyle(sp, key);
+        return key;
+    }
+
+    unregister(key: string) {
+        if (!this.key2Style.has(key)) {
+            return;
+        }
+        this.keyCount.set(key, (this.keyCount.get(key) || 0) - 1);
+        if (this.keyCount.get(key) > 0) {
+            return;
+        }
+        const sp = this.key2Style.get(key);
+        const hash = this.hash(sp);
+        this.style2key.delete(hash);
+        this.key2Style.delete(key);
+        this.keyCount.delete(key);
+        this.unmountStyle(key);
     }
 })();
 
 export const useStyle = (
     styleOrFactory: Mptr<StyleProperties> | (() => StyleProperties),
-    selectorFn = (idx: string) => `[data-style-idx="${idx}"]`,
-    bindStyleFn = (elem: HTMLElement, idx: string) =>
-        elem.setAttribute('data-style-idx', idx),
 ) => {
     const styleIdx = useRef('');
-    const styleContainer = useRef(() => document.createElement('style'));
     useWatch(
         () =>
             typeof styleOrFactory === 'function'
@@ -93,21 +120,12 @@ export const useStyle = (
         (currentStyle: StyleProperties) => {
             const idx = styleRegistry.register(currentStyle);
             styleIdx.value = idx;
-
-            const container =
-                document.head || document.body || document.children[0];
-            if (!container.contains(styleContainer.value)) {
-                container.appendChild(styleContainer.value);
-            }
-
-            styleContainer.value.innerHTML = style2css(
-                currentStyle,
-                selectorFn(idx),
-            );
-
             return () => styleRegistry.unregister(idx);
         },
     );
 
-    return (elemRef: HTMLElement) => bindStyleFn(elemRef, unref(styleIdx));
+    return (elemRef: HTMLElement) =>
+        elemRef &&
+        styleIdx.value &&
+        elemRef.setAttribute(styleRegistry.selector, unref(styleIdx));
 };
