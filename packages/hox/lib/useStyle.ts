@@ -56,7 +56,7 @@ const styleRegistry = new (class StyleRegistry {
             return;
         }
         const styleElement = document.createElement('style');
-        styleElement.innerHTML = style2css(sp, this.selector);
+        styleElement.innerHTML = style2css(sp, key);
         const container =
             document.head || document.body || document.children[0];
         container.appendChild(styleElement);
