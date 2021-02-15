@@ -1,6 +1,6 @@
 {
   "name": "@tacopie/ui",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "TacoJs UI library",
   "keywords": [],
   "author": "zhzluke96",
@@ -34,6 +34,6 @@
   },
   "homepage": "https://github.com/zhzLuke96/TacoJs#readme",
   "dependencies": {
-    "@tacopie/taco": "^1.0.16"
+    "@tacopie/taco": "^1.0.18"
   }
 }

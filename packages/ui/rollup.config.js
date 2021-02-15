@@ -41,6 +41,9 @@ export default [
       esModule: false,
       exports: 'named',
       sourcemap: isDEV,
+      globals: {
+        '@tacopie/taco': 'taco'
+      }
     },
   },
   // ESM
