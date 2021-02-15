@@ -47,13 +47,9 @@ const styleRegistry = new (class StyleRegistry {
         return encodeURIComponent(JSON.stringify(sp));
     }
 
-    has(sp: StyleProperties) {
-        return this.idx2Style.has(this.hash(sp));
-    }
-
     register(sp: StyleProperties) {
         const hash = this.hash(sp);
-        if (this.has(sp)) {
+        if (this.style2idx.has(hash)) {
             const idx = this.style2idx.get(hash);
             this.idxCount.set(idx, (this.idxCount.get(idx) || 0) + 1);
             return this.style2idx.get(hash)!;
