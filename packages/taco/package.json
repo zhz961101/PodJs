@@ -1,6 +1,6 @@
 {
   "name": "@tacopie/taco",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "Productivity Tools.",
   "source": "lib/index.ts",
   "author": "zhzluke96",

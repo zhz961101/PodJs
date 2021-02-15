@@ -300,13 +300,24 @@ const CommitScheduler = (() => {
         mapNode(currentSyncCommitHead, doCommit);
         currentSyncCommitHead = undefined;
     };
-    const trunCommit = (head?: CommitNode) => {
+
+    // FIXME:
+    // 因为：requestIdleCallback 会有明显的卡顿感
+    // 想把 patch 、 mount 这两个实时性要求高的单独用requestAnimationFrame
+    // 其他用 requestIdleCallback
+    // 前提是重构一下scheduler，现在不太好加特性
+    const trunCommit = (
+        head?: CommitNode,
+        caller = requestAnimationFrame as
+            | typeof requestAnimationFrame
+            | typeof requestIdleCallback,
+    ) => {
         if (!head) {
             clearSyncCommit();
             return tryTrunCommit();
         }
         const { nextNode: nextCommit } = head;
-        requestIdleCallback(() => {
+        caller(() => {
             doCommit(head);
             trunCommit(nextCommit);
         });
